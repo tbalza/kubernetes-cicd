@@ -66,12 +66,13 @@ module "eks" {
   cluster_endpoint_public_access  = true
   cluster_endpoint_private_access = true
 
-  enable_irsa = true # Check
+  enable_irsa = true
+
+  # To add the current caller identity as an administrator
+  enable_cluster_creator_admin_permissions = true
 
   create_kms_key            = false
   cluster_encryption_config = {}
-
-  enable_cluster_creator_admin_permissions = true
 
   cluster_addons = {
     coredns = {
@@ -86,7 +87,7 @@ module "eks" {
     aws-ebs-csi-driver = {
       service_account_role_arn = module.ebs_csi_driver_irsa.iam_role_arn
       #addon_version            = "v1.29.1-eksbuild.1"
-      most_recent              = true # false
+      most_recent = true # false
     }
   }
 
@@ -234,7 +235,6 @@ module "eks" {
         instance_metadata_tags      = "disabled"
       }
 
-
       # aws-auth configmap (deprecated?) replaced by "cluster access entries"
 
       create_iam_role          = true
@@ -263,47 +263,112 @@ module "eks" {
   }
 
   access_entries = {
-    # One access entry with a policy associated
-    ex-single = {
+    argocd = {
+      #kubernetes_groups = ["system:masters"]  # This gives Argo CD full admin access; adjust as necessary based on least privilege principles
       kubernetes_groups = []
-      principal_arn     = aws_iam_role.this["single"].arn
+      principal_arn     = aws_iam_role.argo_cd.arn  # Ensure you have an IAM role created for Argo CD
 
       policy_associations = {
-        single = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+        admin_policy = {
+          policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
           access_scope = {
-            namespaces = ["argocd"] #check
-            type       = "namespace"
+            type = "cluster" # use RBAC role for more granular control
           }
         }
       }
     }
 
-    # Example of adding multiple policies to a single access entry
-    ex-multiple = {
-      kubernetes_groups = []
-      principal_arn     = aws_iam_role.this["multiple"].arn
+    jenkins = {
+      kubernetes_groups = ["edit"]  # Typically 'edit' role is sufficient for Jenkins within its namespace
+      principal_arn     = aws_iam_role.jenkins.arn  # Ensure you have an IAM role created for Jenkins
 
       policy_associations = {
-        ex-one = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSEditPolicy"
+        edit_policy = {
+          policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSEditPolicy"
           access_scope = {
-            namespaces = ["argocd"] # argocd
+            namespaces = ["jenkins"]
             type       = "namespace"
-          }
-        }
-        ex-two = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
-          access_scope = {
-            type = "cluster"
           }
         }
       }
     }
   }
-
-  tags = local.tags
 }
+#resource "aws_iam_role" "this" {
+#  for_each = toset(["argocd", "jenkins"])
+#
+#  name = "ex-${each.key}"
+#
+#  # Just using for this example
+#  assume_role_policy = jsonencode({
+#    Version = "2012-10-17"
+#    Statement = [
+#      {
+#        Action = "sts:AssumeRole"
+#        Effect = "Allow"
+#        Sid    = "Example"
+#        Principal = {
+#          Service = "ec2.amazonaws.com"
+#        }
+#      },
+#    ]
+#  })
+#
+#  tags = local.tags
+#}
+resource "aws_iam_role" "argo_cd" {
+  name = "ArgoCDRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Principal = {
+          Service = "eks.amazonaws.com"
+        }
+        Effect = "Allow"
+        Sid = ""
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role" "jenkins" {
+  name = "JenkinsRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Principal = {
+          Service = "eks.amazonaws.com"
+        }
+        Effect = "Allow"
+        Sid = ""
+      }
+    ]
+  })
+}
+resource "aws_iam_role_policy_attachment" "argo_cd_admin" {
+  role       = aws_iam_role.argo_cd.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "jenkins_basic" {
+  role       = aws_iam_role.jenkins.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+output "argo_cd_iam_role_arn" {
+  value = aws_iam_role.argo_cd.arn
+}
+
+output "jenkins_iam_role_arn" {
+  value = aws_iam_role.jenkins.arn
+}
+
 
 ################################################################################
 # VPC
@@ -326,7 +391,7 @@ module "vpc" {
   one_nat_gateway_per_az = false
   #create_egress_only_igw = true
 
-  enable_dns_hostnames = true
+  enable_dns_hostnames = true # needed for EFS
   enable_dns_support   = true
 
   public_subnet_tags = {
@@ -531,29 +596,6 @@ data "aws_ami" "eks_default" { # Retrieve the latest EKS optimized AMI
   }
 }
 
-resource "aws_iam_role" "this" {
-  for_each = toset(["single", "multiple"])
-
-  name = "ex-${each.key}"
-
-  # Just using for this example
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Sid    = "Example"
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-      },
-    ]
-  })
-
-  tags = local.tags
-}
-
 ###############################################################################
 # Providers
 ###############################################################################
@@ -575,7 +617,7 @@ provider "kubernetes" {
   host                   = module.eks.cluster_endpoint                                 # var.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data) # var.cluster_ca_cert
   exec {
-    api_version = "client.authentication.k8s.io/v1beta1"                        # /v1alpha1"
+    api_version = "client.authentication.k8s.io/v1beta1"                          # /v1alpha1"
     args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name] # var.cluster_name
     command     = "aws"
   }
@@ -607,7 +649,7 @@ provider "helm" {
 # https://www.youtube.com/watch?v=ZfjpWOC5eoE
 
 # by default ALB creates one per ingress, to combine use annotation
-# alb.ingress.kubernetes.io/group.name: example-group
+# alb.ingress.kubernetes.io/group.name: argo-cd-cluster
 # alb.ingress.kubernetes.io/group.order: '1'
 
 # echo server
@@ -620,7 +662,7 @@ module "aws_load_balancer_controller_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = ">= 5.39.0"
 
-  role_name = "aws-load-balancer-controller"
+  role_name                              = "aws-load-balancer-controller"
   attach_load_balancer_controller_policy = true
 
   oidc_providers = {
@@ -666,21 +708,21 @@ resource "helm_release" "aws_load_balancer_controller" {
   }
 
   # Resource requests and limits
-#  set {
-#    name  = "resources.requests.cpu"
-#    value = "100m"
-#  }
-#  set {
-#    name  = "resources.requests.memory"
-#    value = "128Mi"
-#  }
-#  set {
-#    name  = "resources.limits.memory"
-#    value = "128Mi"
-#  }
+  #  set {
+  #    name  = "resources.requests.cpu"
+  #    value = "100m"
+  #  }
+  #  set {
+  #    name  = "resources.requests.memory"
+  #    value = "128Mi"
+  #  }
+  #  set {
+  #    name  = "resources.limits.memory"
+  #    value = "128Mi"
+  #  }
 
-  depends_on = [ # checkk
-    module.aws_load_balancer_controller_irsa_role,# important
+  depends_on = [                                   # checkk
+    module.aws_load_balancer_controller_irsa_role, # important
     #aws_iam_role_policy_attachment.alb_controller_policy_attachment,
     module.eks # important
   ]
@@ -699,6 +741,12 @@ resource "kubernetes_namespace" "argo_cd" {
   }
 }
 
+resource "kubernetes_namespace" "jenkins" {
+  metadata {
+    name = "jenkins"
+  }
+}
+
 resource "helm_release" "argo_cd" {
   name       = "argo-cd"
   repository = "https://argoproj.github.io/argo-helm"
@@ -706,6 +754,11 @@ resource "helm_release" "argo_cd" {
   version    = "4.5.7"
 
   namespace = "argocd" # "argocd" # check
+
+  values = [templatefile("${path.module}/argocd-template.yaml.tpl", { # instead of using ArgoCD configmap
+    repo_url = "https://github.com/tbalza/kubernetes-cicd"
+    # Add other dynamic values or configurations if needed
+  })]
 
   set {
     name  = "server.service.type"
@@ -757,7 +810,7 @@ resource "helm_release" "argo_cd" {
     value = "admin"
   }
 
-  wait = false # Don't wait for confirmation of successful creation, tf destroy fix
+  wait = true # false = Don't wait for confirmation of successful creation, tf destroy fix
 
   depends_on = [
     module.eks, # needed
@@ -765,6 +818,21 @@ resource "helm_release" "argo_cd" {
   ]
 }
 
+# Apply the combined applications file using Terraform ### check
+resource "kubernetes_manifest" "argo_cd_applications" {
+  manifest = yamldecode(file("${path.module}/argocd-applications.yaml"))
+
+  depends_on = [
+    helm_release.argo_cd
+  ]
+
+}
+
+output "cluster_endpoint" {
+  value = module.eks.cluster_endpoint
+}
+
+# Create ingress
 resource "kubernetes_ingress_v1" "argo_cd" {
   metadata {
     name      = "argocd-ingress"
@@ -776,6 +844,8 @@ resource "kubernetes_ingress_v1" "argo_cd" {
       "alb.ingress.kubernetes.io/listen-ports"     = jsonencode([{ HTTP = 80 }]) # jsonencode([{ HTTP = 80 }, { HTTPS = 443 }])
       "alb.ingress.kubernetes.io/tags"             = "Example=${local.name}"
       "alb.ingress.kubernetes.io/healthcheck-path" = "/healthz"
+      "alb.ingress.kubernetes.io/group.name"       = "argo-cd-cluster" # prevent multiple ALB being created
+      "alb.ingress.kubernetes.io/group.order"      = "1"
     }
   }
 
@@ -797,6 +867,9 @@ resource "kubernetes_ingress_v1" "argo_cd" {
       }
     }
   }
-  # depends on ?
+#  depends_on = [
+#    module.eks,                               # Example: depends on the Argo CD server deployment
+#    helm_release.aws_load_balancer_controller # Example: depends on the Helm release of an AWS Load Balancer Controller
+#  ]
 }
 

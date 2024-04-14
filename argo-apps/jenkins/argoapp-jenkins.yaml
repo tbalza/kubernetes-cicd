@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: jenkins
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/tbalza/kubernetes-cicd' # Replace with your repo URL
+    targetRevision: HEAD # Or a specific tag/branch/commit
+    path: 'argo-apps/jenkins'
+    helm:
+      valueFiles:
+        - helm-values-jenkins.yaml
+  destination:
+    server: 'https://kubernetes.default.svc' # Your cluster's server address
+    namespace: jenkins # Namespace where Jenkins will be deployed
+  syncPolicy:
+    automated: # Enables automatic syncing
+      selfHeal: true # Enables self-healing
+      prune: true # Allows Argo CD to delete resources that are not in the repository
