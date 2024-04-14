@@ -1,6 +1,9 @@
 aws eks update-kubeconfig --name argocd --region us-east-1
 # whenever you create a new eks cluster you must update kurbentes context
 
+argocd
+argocd login k8s-argocdcluster-91a9400b73-1795188053.us-east-1.elb.amazonaws.com --username admin --password iZKLpgZIbkTLqZRD --insecure
+
 you are better off separating your infrastructure from your applications.
 this would be two different statefiles, and you would need to explicitly handle the removal of the applications running on the cluster first, before destroying the cluster
 # Necessary to avoid removing Terraform's permissions too soon before its finished

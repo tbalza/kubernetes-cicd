@@ -5,7 +5,8 @@ controller:
 
   service:
     type: ClusterIP
-    port: 8080
+    port: 8080  # The external service port
+    targetPort: 8181  # The port Jenkins container is actually listening on
 
   # Jenkins plugins
   installPlugins:
