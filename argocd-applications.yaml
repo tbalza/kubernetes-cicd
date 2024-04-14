@@ -6,11 +6,11 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/tbalza/kubernetes-cicd
-    path: argo-apps/jenkins
+    repoURL: 'https://github.com/tbalza/kubernetes-cicd'
+    path: 'argo-apps/jenkins'
     targetRevision: HEAD
   destination:
-    server: https://kubernetes.default.svc
+    server: 'https://kubernetes.default.svc'
     namespace: jenkins
   syncPolicy:
     automated:
