@@ -191,7 +191,7 @@ module "eks" {
       enable_bootstrap_user_data = true # Must be set when using custom AMI i.e. AL2_x86_64
 
       labels = {
-        role = "general" # useful for migrations
+        role = "cicd-node" # used by k8s by argocd. scheduling, resource selection / grouping, policy enforcement
       }
 
       #pre_bootstrap_user_data = <<-EOT
@@ -257,7 +257,7 @@ module "eks" {
       }
 
       tags = {
-        ExtraTag = "argocd EKS managed node group"
+        ExtraTag = "ci-cd-node" # used for cost allocation, resource mgmt, automation
       }
     }
   }

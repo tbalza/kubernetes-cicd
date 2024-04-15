@@ -11,7 +11,7 @@ spec:
     path: 'argo-apps/jenkins'
     helm:
       valueFiles:
-        - helm-values-jenkins.yaml
+        - values-custom.yaml
   destination:
     server: 'https://kubernetes.default.svc' # Your cluster's server address
     namespace: jenkins # Namespace where Jenkins will be deployed

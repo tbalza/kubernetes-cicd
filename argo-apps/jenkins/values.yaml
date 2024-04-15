@@ -1,0 +1,30 @@
+master:
+  image: "jenkins/jenkins"
+  tag: "2.289.1-lts"
+  adminUsername: admin
+  adminPassword: admin
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+    requests:
+      cpu: "500m"
+      memory: "512Mi"
+  serviceType: ClusterIP
+
+persistence:
+  enabled: true
+  storageClass: "standard"
+  size: "10Gi"
+  accessMode: "ReadWriteOnce"
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "role"
+          operator: In
+          values:
+          - "cicd-node"
+
