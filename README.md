@@ -1,6 +1,11 @@
 aws eks update-kubeconfig --name argocd --region us-east-1
 # whenever you create a new eks cluster you must update kurbentes context
 
+for generating tfvars (to pass to argocd) we need tf-docs
+https://github.com/gorpher/hcl2json
+
+
+
 argocd
 argocd login k8s-argocdcluster-91a9400b73-1795188053.us-east-1.elb.amazonaws.com --username admin --password iZKLpgZIbkTLqZRD --insecure
 

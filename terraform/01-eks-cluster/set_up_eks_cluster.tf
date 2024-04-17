@@ -266,11 +266,11 @@ module "eks" {
     argocd = {
       #kubernetes_groups = ["system:masters"]  # This gives Argo CD full admin access; adjust as necessary based on least privilege principles
       kubernetes_groups = []
-      principal_arn     = aws_iam_role.argo_cd.arn  # Ensure you have an IAM role created for Argo CD
+      principal_arn     = aws_iam_role.argo_cd.arn # Ensure you have an IAM role created for Argo CD
 
       policy_associations = {
         admin_policy = {
-          policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
           access_scope = {
             type = "cluster" # use RBAC role for more granular control
           }
@@ -279,12 +279,12 @@ module "eks" {
     }
 
     jenkins = {
-      kubernetes_groups = ["edit"]  # Typically 'edit' role is sufficient for Jenkins within its namespace
-      principal_arn     = aws_iam_role.jenkins.arn  # Ensure you have an IAM role created for Jenkins
+      kubernetes_groups = ["edit"]                 # Typically 'edit' role is sufficient for Jenkins within its namespace
+      principal_arn     = aws_iam_role.jenkins.arn # Ensure you have an IAM role created for Jenkins
 
       policy_associations = {
         edit_policy = {
-          policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSEditPolicy"
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSEditPolicy"
           access_scope = {
             namespaces = ["jenkins"]
             type       = "namespace"
@@ -328,7 +328,7 @@ resource "aws_iam_role" "argo_cd" {
           Service = "eks.amazonaws.com"
         }
         Effect = "Allow"
-        Sid = ""
+        Sid    = ""
       }
     ]
   })
@@ -346,7 +346,7 @@ resource "aws_iam_role" "jenkins" {
           Service = "eks.amazonaws.com"
         }
         Effect = "Allow"
-        Sid = ""
+        Sid    = ""
       }
     ]
   })
@@ -728,148 +728,52 @@ resource "helm_release" "aws_load_balancer_controller" {
   ]
 }
 
-################################################################################
-# Argocd
-################################################################################
-# Jenkins Configuration as Code (JCasC), Job DSL Plugin, Pipeline as Code (Jenkinsfiles)
-# brew install jq (in readme) # check
+###############################################################################
+# tfvars (replaced by remote state)
+###############################################################################
+
+## Pass variables generated in 01-eks-cluster to 02-argocd using .tfvars
+
+# terraform output -json > ../02-argocd/outputs.json
+
+#resource "null_resource" "generate_tfvars" {
+#  triggers = {
+#    always_run = "${timestamp()}"
+#  }
+#
+#  provisioner "local-exec" {
+#    command = <<EOF
+#      terraform output -json > tfvars.json && \
+#      hclwjson -i tfvars.json -reverse > ../02-argocd/cluster.auto.tfvars
+#    EOF
+#    interpreter = ["/bin/bash", "-c"]
+#  }
+#
+#  depends_on = [
+#    module.eks
+#  ]
+#}
+
 
 # Create namespace
 resource "kubernetes_namespace" "argo_cd" {
   metadata {
     name = "argocd"
   }
+
+  depends_on = [
+    module.eks.cluster_endpoint, # needed
+    #helm_release.aws_load_balancer_controller # prevents destroy ingress problems # check
+  ]
 }
 
 resource "kubernetes_namespace" "jenkins" {
   metadata {
     name = "jenkins"
   }
-}
-
-resource "helm_release" "argo_cd" {
-  name       = "argo-cd"
-  repository = "https://argoproj.github.io/argo-helm"
-  chart      = "argo-cd"
-  version    = "4.5.7"
-
-  namespace = "argocd" # "argocd" # check
-
-  values = [templatefile("${path.module}/argocd-template.yaml.tpl", { # instead of using ArgoCD configmap
-    repo_url = "https://github.com/tbalza/kubernetes-cicd"
-    # Add other dynamic values or configurations if needed
-  })]
-
-  set {
-    name  = "server.service.type"
-    value = "ClusterIP" # LoadBalancer also launched a CLB
-  }
-
-  set {
-    name  = "server.service.port"
-    value = "80"
-  }
-
-  set {
-    name  = "server.service.targetPort"
-    value = "8080"
-  }
-
-  set {
-    name  = "server.extraArgs[0]" # check SSL
-    value = "--insecure"
-  }
-
-  set {
-    name  = "server.extraEnv[1].name" # check SLL
-    value = "ARGOCD_INSECURE"
-  }
-
-  set {
-    name  = "server.extraEnv[1].value" # check SSL
-    value = "true"
-  }
-
-  set {
-    name  = "server.extraEnv[2].name"
-    value = "ARGOCD_AUTH_PASSWORD"
-  }
-
-  set {
-    name  = "server.extraEnv[2].value" # doesn't change pw, but needed
-    value = "pass"
-  }
-
-  set {
-    name  = "server.extraEnv[3].name"
-    value = "ARGOCD_AUTH_USERNAME"
-  }
-
-  set {
-    name  = "server.extraEnv[3].value"
-    value = "admin"
-  }
-
-  wait = true # false = Don't wait for confirmation of successful creation, tf destroy fix
 
   depends_on = [
-    module.eks, # needed
+    module.eks.cluster_endpoint, # needed
     #helm_release.aws_load_balancer_controller # prevents destroy ingress problems # check
   ]
 }
-
-# Apply the combined applications file using Terraform ### check
-resource "kubernetes_manifest" "argo_cd_applications" {
-  manifest = yamldecode(file("${path.module}/argocd-applications.yaml"))
-
-  depends_on = [
-    helm_release.argo_cd
-  ]
-
-}
-
-output "cluster_endpoint" {
-  value = module.eks.cluster_endpoint
-}
-
-# Create ingress
-resource "kubernetes_ingress_v1" "argo_cd" {
-  metadata {
-    name      = "argocd-ingress"
-    namespace = "argocd"
-    annotations = {
-      "kubernetes.io/ingress.class"                = "alb"
-      "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
-      "alb.ingress.kubernetes.io/target-type"      = "ip"
-      "alb.ingress.kubernetes.io/listen-ports"     = jsonencode([{ HTTP = 80 }]) # jsonencode([{ HTTP = 80 }, { HTTPS = 443 }])
-      "alb.ingress.kubernetes.io/tags"             = "Example=${local.name}"
-      "alb.ingress.kubernetes.io/healthcheck-path" = "/healthz"
-      "alb.ingress.kubernetes.io/group.name"       = "argo-cd-cluster" # prevent multiple ALB being created
-      "alb.ingress.kubernetes.io/group.order"      = "1"
-    }
-  }
-
-  spec {
-    rule {
-      http {
-        path {
-          path      = "/*"
-          path_type = "ImplementationSpecific"
-          backend {
-            service {
-              name = "argo-cd-argocd-server"
-              port {
-                number = 80
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-#  depends_on = [
-#    module.eks,                               # Example: depends on the Argo CD server deployment
-#    helm_release.aws_load_balancer_controller # Example: depends on the Helm release of an AWS Load Balancer Controller
-#  ]
-}
-
