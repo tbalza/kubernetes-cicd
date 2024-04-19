@@ -169,7 +169,7 @@ resource "kubernetes_ingress_v1" "argo_cd" {
       "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
       "alb.ingress.kubernetes.io/target-type"      = "ip"
       "alb.ingress.kubernetes.io/listen-ports"     = jsonencode([{ HTTP = 80 }]) # jsonencode([{ HTTP = 80 }, { HTTPS = 443 }])
-      "alb.ingress.kubernetes.io/tags"             = "Example=${data.terraform_remote_state.eks.outputs.name}"
+      #"alb.ingress.kubernetes.io/tags"             = "Example=argocd"
       "alb.ingress.kubernetes.io/healthcheck-path" = "/healthz"
       "alb.ingress.kubernetes.io/group.name"       = "argo-cd-cluster" # prevent multiple ALB being created
       "alb.ingress.kubernetes.io/group.order"      = "1"

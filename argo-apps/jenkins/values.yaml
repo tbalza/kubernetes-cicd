@@ -1,16 +1,32 @@
 master:
   image: "jenkins/jenkins"
   tag: "2.289.1-lts"
-  adminUsername: admin
-  adminPassword: admin
   resources:
-    limits:
-      cpu: "500m"
-      memory: "512Mi"
     requests:
       cpu: "500m"
       memory: "512Mi"
-  serviceType: ClusterIP
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+controller:
+  adminUser: "admin"  # Base64 encoded 'admin'
+  adminPassword: "pass"  # Base64 encoded 'pass'
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8181
+  installPlugins:
+    - kubernetes:latest
+    - workflow-aggregator:latest
+    - git:latest
+    - configuration-as-code:latest
+    - ansible:latest
+  JCasC:
+    configScripts:
+      welcome-message: |
+        jenkins:
+          systemMessage: "Welcome to our Jenkins!\nConfigured automatically by Jenkins Configuration as Code plugin\n"
 
 persistence:
   enabled: true
@@ -27,4 +43,3 @@ affinity:
           operator: In
           values:
           - "cicd-node"
-

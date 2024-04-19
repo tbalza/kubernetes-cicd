@@ -62,10 +62,21 @@ export TF_LOG_PATH=terraform.log
 kubectl describe svc argo-cd-argocd-server -n argocd
 kubectl logs -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
 
+--
 #argo default pass
 kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 --decode
 #admin, pass node name complete
 
+kubectl get svc -n argocd
+
+I port-forwarded the argo server to localhost port 8080
+    kubectl port-forward svc/argo-cd-argocd-server -n argocd 8080:443
+
+argocd login localhost:8080 --username admin --password <password>
+WARNING: server certificate had error: x509: “Argo CD” certificate is not trusted. Proceed insecurely (y/n)? y
+'admin:login' logged in successfully
+
+--
 #check ENV
 kubectl describe pod -n argocd -l app.kubernetes.io/name=argocd-server
 
