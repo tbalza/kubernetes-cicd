@@ -90,7 +90,13 @@ resource "helm_release" "argo_cd" {
 
   namespace = "argocd" # "argocd" # check
 
-  values = [templatefile("${path.module}/terraform/02-argocd/argocd-template.yaml.tpl", { # instead of using ArgoCD configmap
+  # Assuming the chart supports CRD installation:
+  set {
+    name  = "installCRDs"
+    value = "true"
+  }
+
+  values = [templatefile("${path.module}/argocd-template.yaml.tpl", { # instead of using ArgoCD configmap
     repo_url = "https://github.com/tbalza/kubernetes-cicd"
     # Add other dynamic values or configurations if needed
   })]
@@ -153,42 +159,6 @@ resource "helm_release" "argo_cd" {
 #  ]
 }
 
-# Fix interdependencies for graceful provisioning and teardown ### check
-
-#Yes absolutely, using depends_on in an output is 100% valid
-#and used for exactly this kind of timing issue where an output for a single resource isn't fully available
-#until some other resource completes. S3 bucket and bucket policy is another common one. Or IAM role and role attachments.
-
-#output "cluster_endpoint" {
-#  description = "Endpoint for your Kubernetes API server"
-#  value       = data.terraform_remote_state.eks.outputs.cluster_endpoint # try(module.eks.cluster_endpoint, null)
-#
-#  depends_on = [
-#    data.terraform_remote_state.eks.outputs.access_entries,
-#    data.terraform_remote_state.eks.outputs.access_policy_associations,
-#  ]
-#}
-#
-#output "cluster_certificate_authority_data" {
-#  description = "Base64 encoded certificate data required to communicate with the cluster"
-#  value       = data.terraform_remote_state.eks.outputs.cluster_certificate_authority_data # try(aws_eks_cluster.this[0].certificate_authority[0].data, null)
-#
-#  depends_on = [
-#    data.terraform_remote_state.eks.outputs.access_entries,
-#    data.terraform_remote_state.eks.outputs.access_policy_associations,
-#  ]
-#}
-
-# Apply the combined applications file using Terraform
-resource "kubernetes_manifest" "argo_cd_applications" {
-  manifest = yamldecode(file("${path.module}/argocd-applications.yaml"))
-
-  depends_on = [
-    #data.terraform_remote_state.eks.outputs.eks, # wait for cluster to be done
-    helm_release.argo_cd # wait for agocd to be deployed by helm before creating ingress. not sure if it works
-  ]
-}
-
 # Create ingress
 resource "kubernetes_ingress_v1" "argo_cd" {
   metadata {
@@ -224,8 +194,45 @@ resource "kubernetes_ingress_v1" "argo_cd" {
       }
     }
   }
+  depends_on = [
+    #data.terraform_remote_state.eks.outputs.eks, # wait for cluster to be done
+    helm_release.argo_cd # wait for agocd to be deployed by helm before creating ingress.
+  ]
+}
+
+# Fix interdependencies for graceful provisioning and teardown ### check
+
+#Yes absolutely, using depends_on in an output is 100% valid
+#and used for exactly this kind of timing issue where an output for a single resource isn't fully available
+#until some other resource completes. S3 bucket and bucket policy is another common one. Or IAM role and role attachments.
+
+#output "cluster_endpoint" {
+#  description = "Endpoint for your Kubernetes API server"
+#  value       = data.terraform_remote_state.eks.outputs.cluster_endpoint # try(module.eks.cluster_endpoint, null)
+#
 #  depends_on = [
-#    data.terraform_remote_state.eks.outputs.eks, # wait for cluster to be done
-#    #helm_release.argo_cd # wait for agocd to be deployed by helm before creating ingress. not sure if it works
+#    data.terraform_remote_state.eks.outputs.access_entries,
+#    data.terraform_remote_state.eks.outputs.access_policy_associations,
 #  ]
+#}
+#
+#output "cluster_certificate_authority_data" {
+#  description = "Base64 encoded certificate data required to communicate with the cluster"
+#  value       = data.terraform_remote_state.eks.outputs.cluster_certificate_authority_data # try(aws_eks_cluster.this[0].certificate_authority[0].data, null)
+#
+#  depends_on = [
+#    data.terraform_remote_state.eks.outputs.access_entries,
+#    data.terraform_remote_state.eks.outputs.access_policy_associations,
+#  ]
+#}
+
+
+# Apply the combined applications file using Terraform
+resource "kubernetes_manifest" "argo_cd_applications" {
+  manifest = yamldecode(file("${path.module}/../../argocd-applications.yaml"))
+
+  depends_on = [
+    #data.terraform_remote_state.eks.outputs.eks, # wait for cluster to be done
+    helm_release.argo_cd, #
+  ]
 }
