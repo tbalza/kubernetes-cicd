@@ -6,9 +6,12 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/tbalza/kubernetes-cicd'
-    path: 'argo-apps/jenkins'
-    targetRevision: HEAD
+    repoURL: 'https://charts.jenkins.io'
+    targetRevision: 'jenkins-5.1.6'
+    chart: jenkins
+    helm:
+      valueFiles:
+        - https://raw.githubusercontent.com/tbalza/kubernetes-cicd/main/argo-apps/jenkins/values.yaml
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: jenkins
@@ -16,6 +19,7 @@ spec:
     automated:
       prune: true
       selfHeal: true
+
 #---
 #apiVersion: argoproj.io/v1alpha1
 #kind: Application
