@@ -6,16 +6,30 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/tbalza/kubernetes-cicd' # Replace with your repo URL
-    targetRevision: HEAD # Or a specific tag/branch/commit
-    path: 'argo-apps/jenkins'
+    repoURL: 'https://charts.jenkins.io'
+    targetRevision: 'jenkins-5.1.6'  # Latest Helm chart version
+    chart: jenkins
     helm:
-      valueFiles:
-        - values.yaml
+      parameters:
+        - name: controller.image
+          value: "jenkins/jenkins"
+        - name: controller.tag
+          value: "2.332.3"  # Specifying the latest non-LTS Jenkins version
+        - name: controller.adminUser
+          value: "admin"
+        - name: controller.adminPassword
+          value: "password"
+        - name: controller.serviceType
+          value: "ClusterIP"
+        - name: persistence.enabled
+          value: "true"
+        - name: persistence.size
+          value: "10Gi"
+        # Add other custom parameters as needed
   destination:
-    server: 'https://kubernetes.default.svc' # Your cluster's server address
-    namespace: jenkins # Namespace where Jenkins will be deployed
+    server: 'https://kubernetes.default.svc'
+    namespace: jenkins
   syncPolicy:
-    automated: # Enables automatic syncing
-      selfHeal: true # Enables self-healing
-      prune: true # Allows Argo CD to delete resources that are not in the repository
+    automated:
+      prune: true
+      selfHeal: true

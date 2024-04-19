@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: jenkins-config
-  namespace: {{ .Release.Namespace }}
-data:
-  JCasC.yaml: |-
-    {{ .Values.controller.JCasC.configScripts.welcome-message | nindent 4 }}

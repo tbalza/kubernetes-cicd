@@ -1,6 +1,9 @@
-master:
+controller:
   image: "jenkins/jenkins"
-  tag: "2.289.1-lts"
+  tag: "2.332.3"  # Latest non-LTS Jenkins version
+  adminUser: "admin"
+  adminPassword: "pass"  # Consider using secrets for production
+  serviceType: "ClusterIP"
   resources:
     requests:
       cpu: "500m"
@@ -8,12 +11,7 @@ master:
     limits:
       cpu: "500m"
       memory: "512Mi"
-
-controller:
-  adminUser: "admin"  # Base64 encoded 'admin'
-  adminPassword: "pass"  # Base64 encoded 'pass'
   service:
-    type: ClusterIP
     port: 8080
     targetPort: 8181
   installPlugins:
@@ -23,6 +21,7 @@ controller:
     - configuration-as-code:latest
     - ansible:latest
   JCasC:
+    enabled: true
     configScripts:
       welcome-message: |
         jenkins:
