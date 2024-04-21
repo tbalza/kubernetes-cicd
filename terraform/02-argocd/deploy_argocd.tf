@@ -223,11 +223,11 @@ resource "kubernetes_ingress_v1" "argo_cd" {
 
 
 # Apply the combined applications file using Terraform, moved to argocd-template.yaml.tpl
-#resource "kubernetes_manifest" "argo_cd_applications" {
-#  manifest = yamldecode(file("${path.module}/../../argocd-applications.yaml"))
-#
-#  depends_on = [
-#    #data.terraform_remote_state.eks.outputs.eks, # wait for cluster to be done
-#    helm_release.argo_cd, #
-#  ]
-#}
+resource "kubernetes_manifest" "argo_cd_applications" {
+  manifest = yamldecode(file("${path.module}/argocd-app-global-index.yaml"))
+
+  depends_on = [
+    #data.terraform_remote_state.eks.outputs.eks, # wait for cluster to be done
+    helm_release.argo_cd, #
+  ]
+}
