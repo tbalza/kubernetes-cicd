@@ -3,4 +3,4 @@ name: jenkins
 description: A Helm chart for Kubernetes to deploy Jenkins CI
 type: application
 version: 1.0.0
-appVersion: "2.289.1"
+appVersion: "2.332.3"

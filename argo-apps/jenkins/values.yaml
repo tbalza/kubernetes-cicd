@@ -31,6 +31,7 @@ persistence:
   storageClass: "standard"
   size: "10Gi"
   accessMode: "ReadWriteOnce"
+
 affinity:
   nodeAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
@@ -40,3 +41,22 @@ affinity:
           operator: In
           values:
           - "cicd-node"
+
+ingress:
+  enabled: true
+  className: "alb"
+  annotations:
+    kubernetes.io/ingress.class: "alb"
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 8080}]'
+    alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"  # Helps manage ALB grouping
+    alb.ingress.kubernetes.io/group.order: "1"
+  paths:
+    - path: "/*"
+      pathType: ImplementationSpecific
+      backend:
+        service:
+          name: "jenkins"
+          port:
+            number: 8080
