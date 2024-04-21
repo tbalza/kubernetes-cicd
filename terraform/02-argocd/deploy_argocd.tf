@@ -96,11 +96,6 @@ resource "helm_release" "argo_cd" {
     value = "true"
   }
 
-  values = [templatefile("${path.module}/argocd-template.yaml.tpl", { # instead of using ArgoCD configmap
-    repo_url = "https://github.com/tbalza/kubernetes-cicd"
-    # Add other dynamic values or configurations if needed
-  })]
-
   set {
     name  = "server.service.type"
     value = "ClusterIP" # LoadBalancer also launched a CLB
