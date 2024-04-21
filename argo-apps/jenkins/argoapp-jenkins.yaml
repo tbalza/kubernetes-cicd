@@ -7,25 +7,11 @@ spec:
   project: default
   source:
     repoURL: 'https://charts.jenkins.io'
-    targetRevision: 'jenkins-5.1.6'  # Latest Helm chart version
+    targetRevision: '5.1.6'  # Define the Helm chart version here
     chart: jenkins
     helm:
-      parameters:
-        - name: controller.image
-          value: "jenkins/jenkins"
-        - name: controller.tag
-          value: "2.332.3"  # Specifying the latest non-LTS Jenkins version
-        - name: controller.adminUser
-          value: "admin"
-        - name: controller.adminPassword
-          value: "password"
-        - name: controller.serviceType
-          value: "ClusterIP"
-        - name: persistence.enabled
-          value: "true"
-        - name: persistence.size
-          value: "10Gi"
-        # Add other custom parameters as needed
+      valueFiles:
+        - 'https://raw.githubusercontent.com/tbalza/kubernetes-cicd/main/argo-apps/jenkins/values.yaml'  # Path to the values file
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: jenkins

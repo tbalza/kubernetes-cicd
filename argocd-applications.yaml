@@ -1,41 +1,41 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: jenkins
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: 'https://charts.jenkins.io'
-    targetRevision: '5.1.6'
-    chart: jenkins
-    helm:
-      valueFiles:
-        - https://raw.githubusercontent.com/tbalza/kubernetes-cicd/main/argo-apps/jenkins/values.yaml
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: jenkins
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+# This file acts as an index or directory for all managed applications.
+# It's useful for quick references or annotations but not for direct configurations.
 
+apiVersion: argoproj.io/v1alpha1
+kind: List
+items:
+  - kind: Application
+    metadata:
+      name: jenkins
+      namespace: argocd
+    spec:
+      project: default
+      source:
+        repoURL: 'https://github.com/tbalza/kubernetes-cicd'
+        path: 'argo-apps/jenkins'
+        targetRevision: HEAD
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: jenkins
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
 #---
-#apiVersion: argoproj.io/v1alpha1
-#kind: Application
-#metadata:
-#  name: wordpress
-#  namespace: argocd
-#spec:
-#  project: default
-#  source:
-#    repoURL: https://github.com/tbalza/kubernetes-cicd
-#    path: argo-apps/wordpress
-#    targetRevision: HEAD
-#  destination:
-#    server: https://kubernetes.default.svc
-#    namespace: wordpress
-#  syncPolicy:
-#    automated:
-#      prune: true
-#      selfHeal: true
+#  - kind: Application
+#    metadata:
+#      name: wordpress
+#      namespace: argocd
+#    spec:
+#      project: default
+#      source:
+#        repoURL: 'https://github.com/tbalza/kubernetes-cicd'
+#        path: 'argo-apps/wordpress'
+#        targetRevision: HEAD
+#      destination:
+#        server: 'https://kubernetes.default.svc'
+#        namespace: wordpress
+#      syncPolicy:
+#        automated:
+#          prune: true
+#          selfHeal: true

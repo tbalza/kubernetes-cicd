@@ -1,8 +1,8 @@
 controller:
   image: "jenkins/jenkins"
-  tag: "2.332.3"  # Latest non-LTS Jenkins version
+  tag: "2.332.3"  # Specified directly if needed here or dynamically through argoapp-jenkins.yaml
   adminUser: "admin"
-  adminPassword: "pass"  # Consider using secrets for production
+  adminPassword: "pass"
   serviceType: "ClusterIP"
   resources:
     requests:
@@ -26,13 +26,11 @@ controller:
       welcome-message: |
         jenkins:
           systemMessage: "Welcome to our Jenkins!\nConfigured automatically by Jenkins Configuration as Code plugin\n"
-
 persistence:
   enabled: true
   storageClass: "standard"
   size: "10Gi"
   accessMode: "ReadWriteOnce"
-
 affinity:
   nodeAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
