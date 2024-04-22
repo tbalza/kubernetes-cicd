@@ -6,79 +6,12 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://charts.jenkins.io'
-    targetRevision: '5.1.6'
-    chart: jenkins
+    repoURL: 'https://github.com/tbalza/kubernetes-cicd'
+    targetRevision: 'HEAD'
+    path: 'argo-apps/jenkins/charts/jenkins' # v 5.1.6
     helm:
-      values: |  # Inline values for Helm chart
-        controller:
-          image:
-            repository: "jenkins/jenkins"
-            tag: "2.332.3"
-          # Configure Java options for the Jenkins JVM
-          javaOpts: >-
-            -Xmx1536m -Xms512m
-          # Environment variables for the main Jenkins container
-          containerEnv:
-            - name: JAVA_OPTS
-              value: "-Xmx1536m -Xms512m"
-          admin.username: "admin"
-          admin.password: "pass"
-          serviceType: "ClusterIP"
-          resources:
-            requests:
-              cpu: "500m"
-              memory: "1Gi"
-            limits:
-              cpu: "1"
-              memory: "2Gi"
-          service:
-            port: 8080
-            targetPort: 8181
-          installPlugins:
-            - kubernetes:latest
-            - workflow-aggregator:latest
-            - git:latest
-            - configuration-as-code:latest
-            - ansible:latest
-          JCasC:
-            enabled: true
-            configScripts:
-              welcome-message: |
-                jenkins:
-                  systemMessage: "Welcome to our Jenkins!\nConfigured automatically by Jenkins Configuration as Code plugin\n"
-          persistence:
-            enabled: true
-            storageClass: "standard"
-            size: "10Gi"
-            accessMode: "ReadWriteOnce"
-          affinity:
-            nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                - matchExpressions:
-                  - key: "role"
-                    operator: In
-                    values:
-                    - "cicd-node"
-          ingress:
-            enabled: true
-            className: "alb"
-            annotations:
-              kubernetes.io/ingress.class: "alb"
-              alb.ingress.kubernetes.io/scheme: "internet-facing"
-              alb.ingress.kubernetes.io/target-type: "ip"
-              alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 8080}]'
-              alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
-              alb.ingress.kubernetes.io/group.order: "1"
-            paths:
-              - path: "/*"
-                pathType: ImplementationSpecific
-                backend:
-                  service:
-                    name: "jenkins"
-                    port:
-                      number: 8080
+      valueFiles:
+        - values-override.yaml
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: jenkins

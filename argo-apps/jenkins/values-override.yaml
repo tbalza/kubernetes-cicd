@@ -1,0 +1,54 @@
+controller:
+  image:
+    repository: "jenkins/jenkins"
+    tag: "2.332.3"
+  javaOpts: "-Xmx1536m -Xms512m"
+  admin:
+    username: "admin"
+    password: "pass"
+  serviceType: "ClusterIP"
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "1"
+      memory: "2Gi"
+  service:
+    port: 8080
+    targetPort: 8181
+  installPlugins:
+    - kubernetes:latest
+    - workflow-aggregator:latest
+    - git:latest
+    - configuration-as-code:latest
+    - ansible:latest
+  JCasC:
+    enabled: true
+    configScripts:
+      welcome-message: |
+        jenkins:
+          systemMessage: "Welcome to our Jenkins! Configured automatically by Jenkins Configuration as Code plugin"
+  persistence:
+    enabled: true
+    storageClass: "standard"
+    size: "10Gi"
+    accessMode: "ReadWriteOnce"
+  ingress:
+    enabled: true
+    className: "alb"
+    annotations:
+      kubernetes.io/ingress.class: "alb"
+      alb.ingress.kubernetes.io/scheme: "internet-facing"
+      alb.ingress.kubernetes.io/target-type: "ip"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 8080}]'
+      alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
+      alb.ingress.kubernetes.io/group.order: "1"
+    paths:
+      - path: "/*"
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: "jenkins"
+            port:
+              number: 8080
