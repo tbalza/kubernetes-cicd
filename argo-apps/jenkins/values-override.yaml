@@ -17,6 +17,12 @@ controller:
   service:
     port: 8080
     targetPort: 8181
+  args:  # Custom arguments to set the Jenkins internal HTTP port
+    - "--httpPort=8181"
+  ports:  # Assuming the chart allows for custom port settings
+    - containerPort: 8181
+      name: http
+      protocol: TCP
   installPlugins:
     - kubernetes:latest
     - workflow-aggregator:latest
