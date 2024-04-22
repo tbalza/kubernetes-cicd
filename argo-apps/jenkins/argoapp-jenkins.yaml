@@ -15,7 +15,13 @@ spec:
           image:
             repository: "jenkins/jenkins"
             tag: "2.332.3"
-          javaOpts: "-Xmx1536m -Xms512m"
+          # Configure Java options for the Jenkins JVM
+          javaOpts: >-
+            -Xmx1536m -Xms512m
+          # Environment variables for the main Jenkins container
+          containerEnv:
+            - name: JAVA_OPTS
+              value: "-Xmx1536m -Xms512m"
           admin.username: "admin"
           admin.password: "pass"
           serviceType: "ClusterIP"
