@@ -107,7 +107,7 @@ resource "helm_release" "argo_cd" {
   }
 
   set {
-    name  = "server.service.targetPort" # this gets overriden by 8080 # check
+    name  = "server.service.targetPort" # this gets overriden by 8080 # check doesn't work
     value = "8282"
   }
 

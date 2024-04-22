@@ -16,13 +16,7 @@ controller:
       memory: "2Gi"
   service:
     port: 8080
-    targetPort: 8181
-  args:  # Custom arguments to set the Jenkins internal HTTP port
-    - "--httpPort=8181"
-  ports:  # Assuming the chart allows for custom port settings
-    - containerPort: 8181
-      name: http
-      protocol: TCP
+    targetPort: 8181 # doesn't work right now
   installPlugins:
     - kubernetes:latest
     - workflow-aggregator:latest
@@ -58,3 +52,8 @@ controller:
             name: "jenkins"
             port:
               number: 8080
+
+  # Path to the Jenkins WAR file and setting the override for HTTP port
+  jenkinsWar: "/usr/share/jenkins/jenkins.war"
+  overrideArgs:
+    - "--httpPort=8181"
