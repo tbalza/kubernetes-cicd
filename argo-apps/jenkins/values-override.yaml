@@ -1,7 +1,7 @@
 controller:
   image:
     repository: "jenkins/jenkins"
-    tag: "2.332.3"
+    tag: 2.440.3
   javaOpts: "-Xmx1536m -Xms512m"
   admin:
     username: "admin"
