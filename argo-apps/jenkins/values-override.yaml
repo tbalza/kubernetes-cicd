@@ -16,12 +16,13 @@ controller:
       memory: "2Gi"
   service:
     port: 8080
+    targetPort: 8181 # doesn't work right now
   installPlugins:
-    - kubernetes: "4203.v1dd44f5b_1cf9"
-    - pipeline: "596.v8c21c963d92d"
-    - git: 5.2.1
-    - configuration-as-code: "1775.v810dc950b_514"
-    - ansible: "307.va_1f3ef06575a_"
+    - kubernetes:latest
+    - workflow-aggregator:latest
+    - git:latest
+    - configuration-as-code:latest
+    - ansible:latest
   JCasC:
     enabled: true
     configScripts:
@@ -43,9 +44,6 @@ controller:
       alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 8080}]'
       alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
       alb.ingress.kubernetes.io/group.order: "1"
-      alb.ingress.kubernetes.io/healthcheck-path: "/login"
-      alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
-      alb.ingress.kubernetes.io/success-codes: "200,302"
     paths:
       - path: "/*"
         pathType: ImplementationSpecific
@@ -54,3 +52,14 @@ controller:
             name: "jenkins"
             port:
               number: 8080
+
+#  # Path to the Jenkins WAR file and setting the override for HTTP port
+#  jenkinsWar: "/usr/share/jenkins/jenkins.war"
+#  overrideArgs:
+#    - "--httpPort=8181"
+#
+#  # Setting up container port which should reflect the internal port Jenkins listens to
+#  containerPorts:
+#    - name: http
+#      containerPort: 8181
+#      protocol: TCP
