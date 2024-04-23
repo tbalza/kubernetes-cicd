@@ -55,14 +55,3 @@ controller:
             name: "jenkins"
             port:
               number: 8080
-
-#  # Path to the Jenkins WAR file and setting the override for HTTP port
-#  jenkinsWar: "/usr/share/jenkins/jenkins.war"
-#  overrideArgs:
-#    - "--httpPort=8181"
-#
-#  # Setting up container port which should reflect the internal port Jenkins listens to
-#  containerPorts:
-#    - name: http
-#      containerPort: 8181
-#      protocol: TCP
