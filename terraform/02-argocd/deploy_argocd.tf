@@ -159,14 +159,14 @@ resource "kubernetes_namespace" "jenkins" {
 }
 
 ## Apply the combined applications file using Terraform, moved to argocd-template.yaml.tpl
-resource "kubernetes_manifest" "argo_cd_applications" {
-  manifest = yamldecode(file("${path.module}/../../argo-apps/jenkins/argoapp-jenkins.yaml")) #"${path.module}/argocd-app-global-index.yaml"
-
-  depends_on = [
-    #data.terraform_remote_state.eks.outputs.eks, # wait for cluster to be done
-    helm_release.argo_cd, #
-  ]
-}
+#resource "kubernetes_manifest" "argo_cd_applications" {
+#  manifest = yamldecode(file("${path.module}/../../argo-apps/jenkins/argoapp-jenkins.yaml")) #"${path.module}/argocd-app-global-index.yaml"
+#
+#  depends_on = [
+#    #data.terraform_remote_state.eks.outputs.eks, # wait for cluster to be done
+#    helm_release.argo_cd, #
+#  ]
+#}
 
 ########################################################################
 
