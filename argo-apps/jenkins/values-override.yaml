@@ -16,7 +16,6 @@ controller:
       memory: "2Gi"
   service:
     port: 8080
-#    targetPort: 8181 # doesn't work right now
   installPlugins:
     - kubernetes:latest
     - workflow-aggregator:latest
@@ -47,7 +46,6 @@ controller:
       alb.ingress.kubernetes.io/healthcheck-path: "/login"
       alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
       alb.ingress.kubernetes.io/success-codes: "200,302"
-
     paths:
       - path: "/*"
         pathType: ImplementationSpecific
@@ -56,14 +54,3 @@ controller:
             name: "jenkins"
             port:
               number: 8080
-
-#  # Path to the Jenkins WAR file and setting the override for HTTP port
-#  jenkinsWar: "/usr/share/jenkins/jenkins.war"
-#  overrideArgs:
-#    - "--httpPort=8181"
-#
-#  # Setting up container port which should reflect the internal port Jenkins listens to
-#  containerPorts:
-#    - name: http
-#      containerPort: 8181
-#      protocol: TCP

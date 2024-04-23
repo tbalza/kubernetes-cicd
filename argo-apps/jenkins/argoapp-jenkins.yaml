@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/tbalza/kubernetes-cicd'
+    repoURL: 'https://github.com/tbalza/kubernetes-cicd' # pending remote repo with local overrides
     targetRevision: 'HEAD'
     path: 'argo-apps/jenkins/charts/jenkins' # v 5.1.6
     helm:
