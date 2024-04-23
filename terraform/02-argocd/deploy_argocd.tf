@@ -107,7 +107,7 @@ resource "helm_release" "argo_cd" {
   }
 
   set {
-    name  = "server.service.targetPort" # this gets overriden by 8080 # check doesn't work
+    name  = "server.containerPorts.server" # this gets overriden by 8080 # check doesn't work
     value = "8282"
   }
 
@@ -126,25 +126,25 @@ resource "helm_release" "argo_cd" {
     value = "true"
   }
 
-  set {
-    name  = "server.extraEnv[2].name"
-    value = "ARGOCD_AUTH_PASSWORD"
-  }
-
-  set {
-    name  = "server.extraEnv[2].value" # doesn't change pw, but needed
-    value = "pass"
-  }
-
-  set {
-    name  = "server.extraEnv[3].name"
-    value = "ARGOCD_AUTH_USERNAME"
-  }
-
-  set {
-    name  = "server.extraEnv[3].value"
-    value = "admin"
-  }
+#  set {
+#    name  = "server.extraEnv[2].name"
+#    value = "ARGOCD_AUTH_PASSWORD"
+#  }
+#
+#  set {
+#    name  = "server.extraEnv[2].value" # doesn't change pw, but needed
+#    value = "pass"
+#  }
+#
+#  set {
+#    name  = "server.extraEnv[3].name"
+#    value = "ARGOCD_AUTH_USERNAME"
+#  }
+#
+#  set {
+#    name  = "server.extraEnv[3].value"
+#    value = "admin"
+#  }
 
   wait = true # false = Don't wait for confirmation of successful creation, tf destroy fix
 

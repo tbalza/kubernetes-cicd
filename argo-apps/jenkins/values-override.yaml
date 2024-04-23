@@ -16,7 +16,7 @@ controller:
       memory: "2Gi"
   service:
     port: 8080
-    targetPort: 8181 # doesn't work right now
+#    targetPort: 8181 # doesn't work right now
   installPlugins:
     - kubernetes:latest
     - workflow-aggregator:latest
@@ -53,13 +53,13 @@ controller:
             port:
               number: 8080
 
-  # Path to the Jenkins WAR file and setting the override for HTTP port
-  jenkinsWar: "/usr/share/jenkins/jenkins.war"
-  overrideArgs:
-    - "--httpPort=8181"
-
-  # Setting up container port which should reflect the internal port Jenkins listens to
-  containerPorts:
-    - name: http
-      containerPort: 8181
-      protocol: TCP
+#  # Path to the Jenkins WAR file and setting the override for HTTP port
+#  jenkinsWar: "/usr/share/jenkins/jenkins.war"
+#  overrideArgs:
+#    - "--httpPort=8181"
+#
+#  # Setting up container port which should reflect the internal port Jenkins listens to
+#  containerPorts:
+#    - name: http
+#      containerPort: 8181
+#      protocol: TCP
