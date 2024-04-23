@@ -18,24 +18,11 @@ data "terraform_remote_state" "eks" {
 # Providers
 ###############################################################################
 
-# kubectl can wait till eks is ready, and then apply yaml
-provider "kubectl" {
-  host                   = data.terraform_remote_state.eks.outputs.cluster_endpoint
-  cluster_ca_certificate = base64decode(data.terraform_remote_state.eks.outputs.cluster_certificate_authority_data) # Get module.eks.cluster_certificate_authority_data through remote state
-  load_config_file       = false
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1" # /v1alpha1"
-    args        = ["eks", "get-token", "--cluster-name", data.terraform_remote_state.eks.outputs.cluster_name]
-    command     = "aws"
-  }
-}
-
-# kubernetes provider cannot wait until eks is provisioned before applying yaml
 provider "kubernetes" {
   host                   = data.terraform_remote_state.eks.outputs.cluster_endpoint                                 # var.cluster_endpoint
   cluster_ca_certificate = base64decode(data.terraform_remote_state.eks.outputs.cluster_certificate_authority_data) # var.cluster_ca_cert
   exec {
-    api_version = "client.authentication.k8s.io/v1beta1"                          # /v1alpha1"
+    api_version = "client.authentication.k8s.io/v1beta1"                                                       # /v1alpha1"
     args        = ["eks", "get-token", "--cluster-name", data.terraform_remote_state.eks.outputs.cluster_name] # var.cluster_name
     command     = "aws"
   }
@@ -56,58 +43,40 @@ provider "helm" {
 ################################################################################
 # Argocd
 ################################################################################
-# Jenkins Configuration as Code (JCasC), Job DSL Plugin, Pipeline as Code (Jenkinsfiles)
-# brew install jq (in readme) # check
 
 ## Create namespace
-#resource "kubernetes_namespace" "argo_cd" {
-#  metadata {
-#    name = "argocd"
-#  }
-#
-#  depends_on = [
-#    data.terraform_remote_state.eks.outputs.eks, # needed
-#    #helm_release.aws_load_balancer_controller # prevents destroy ingress problems # check
-#  ]
-#}
-#
-#resource "kubernetes_namespace" "jenkins" {
-#  metadata {
-#    name = "jenkins"
-#  }
-#
-#  depends_on = [
-#    data.terraform_remote_state.eks.outputs.eks, # needed
-#    #helm_release.aws_load_balancer_controller # prevents destroy ingress problems # check
-#  ]
-#}
+resource "kubernetes_namespace" "argo_cd" {
+  metadata {
+    name = "argocd"
+  }
+}
 
+## Install argocd helm chart
 resource "helm_release" "argo_cd" {
   name       = "argo-cd"
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
-  version    = "4.5.7"
+  version    = "6.7.14" # Chart 6.7.14, app v v2.10.7
 
   namespace = "argocd" # "argocd" # check
 
-  # Assuming the chart supports CRD installation:
   set {
-    name  = "installCRDs"
+    name  = "crds.install"
     value = "true"
   }
 
   set {
+    name  = "crds.keep"
+    value = "true" # true to not cause production problems
+  }
+
+  set {
     name  = "server.service.type"
-    value = "ClusterIP" # LoadBalancer also launched a CLB
+    value = "ClusterIP"
   }
 
   set {
-    name  = "server.service.port"
-    value = "80"
-  }
-
-  set {
-    name  = "server.containerPorts.server" # this gets overriden by 8080 # check doesn't work
+    name  = "server.containerPorts.server" # change container port
     value = "8282"
   }
 
@@ -126,44 +95,23 @@ resource "helm_release" "argo_cd" {
     value = "true"
   }
 
-#  set {
-#    name  = "server.extraEnv[2].name"
-#    value = "ARGOCD_AUTH_PASSWORD"
-#  }
-#
-#  set {
-#    name  = "server.extraEnv[2].value" # doesn't change pw, but needed
-#    value = "pass"
-#  }
-#
-#  set {
-#    name  = "server.extraEnv[3].name"
-#    value = "ARGOCD_AUTH_USERNAME"
-#  }
-#
-#  set {
-#    name  = "server.extraEnv[3].value"
-#    value = "admin"
-#  }
+  wait = true
 
-  wait = true # false = Don't wait for confirmation of successful creation, tf destroy fix
-
-#  depends_on = [
-#    data.terraform_remote_state.eks.outputs.eks, # needed
-#    #helm_release.aws_load_balancer_controller # prevents destroy ingress problems # check
-#  ]
+  depends_on = [
+    kubernetes_namespace.argo_cd
+  ]
 }
 
-# Create ingress
+## Create argocd ALB ingress
 resource "kubernetes_ingress_v1" "argo_cd" {
   metadata {
     name      = "argocd-ingress"
     namespace = "argocd"
     annotations = {
-      "kubernetes.io/ingress.class"                = "alb"
-      "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
-      "alb.ingress.kubernetes.io/target-type"      = "ip"
-      "alb.ingress.kubernetes.io/listen-ports"     = jsonencode([{ HTTP = 80 }]) # jsonencode([{ HTTP = 80 }, { HTTPS = 443 }])
+      "kubernetes.io/ingress.class"            = "alb"
+      "alb.ingress.kubernetes.io/scheme"       = "internet-facing"
+      "alb.ingress.kubernetes.io/target-type"  = "ip"
+      "alb.ingress.kubernetes.io/listen-ports" = jsonencode([{ HTTP = 80 }]) # jsonencode([{ HTTP = 80 }, { HTTPS = 443 }])
       #"alb.ingress.kubernetes.io/tags"             = "Example=argocd"
       "alb.ingress.kubernetes.io/healthcheck-path" = "/healthz"
       "alb.ingress.kubernetes.io/group.name"       = "argo-cd-cluster" # prevent multiple ALB being created
@@ -195,6 +143,33 @@ resource "kubernetes_ingress_v1" "argo_cd" {
   ]
 }
 
+################################################################################
+# Jenkins manifest to trigger argocd deployment
+################################################################################
+
+resource "kubernetes_namespace" "jenkins" {
+  metadata {
+    name = "jenkins"
+  }
+
+#  depends_on = [
+#    #data.terraform_remote_state.eks.outputs.eks, # needed
+#    #helm_release.aws_load_balancer_controller # prevents destroy ingress problems # check
+#  ]
+}
+
+## Apply the combined applications file using Terraform, moved to argocd-template.yaml.tpl
+resource "kubernetes_manifest" "argo_cd_applications" {
+  manifest = yamldecode(file("${path.module}/../../argo-apps/jenkins/argoapp-jenkins.yaml")) #"${path.module}/argocd-app-global-index.yaml"
+
+  depends_on = [
+    #data.terraform_remote_state.eks.outputs.eks, # wait for cluster to be done
+    helm_release.argo_cd, #
+  ]
+}
+
+########################################################################
+
 # Fix interdependencies for graceful provisioning and teardown ### check
 
 #Yes absolutely, using depends_on in an output is 100% valid
@@ -220,14 +195,3 @@ resource "kubernetes_ingress_v1" "argo_cd" {
 #    data.terraform_remote_state.eks.outputs.access_policy_associations,
 #  ]
 #}
-
-
-# Apply the combined applications file using Terraform, moved to argocd-template.yaml.tpl
-resource "kubernetes_manifest" "argo_cd_applications" {
-  manifest = yamldecode(file("${path.module}/../../argo-apps/jenkins/argoapp-jenkins.yaml")) #"${path.module}/argocd-app-global-index.yaml"
-
-  depends_on = [
-    #data.terraform_remote_state.eks.outputs.eks, # wait for cluster to be done
-    helm_release.argo_cd, #
-  ]
-}

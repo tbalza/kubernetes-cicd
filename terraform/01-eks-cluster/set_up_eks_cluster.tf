@@ -753,27 +753,3 @@ resource "helm_release" "aws_load_balancer_controller" {
 #    module.eks
 #  ]
 #}
-
-
-# Create namespace
-resource "kubernetes_namespace" "argo_cd" {
-  metadata {
-    name = "argocd"
-  }
-
-  depends_on = [
-    module.eks, # needed
-    #helm_release.aws_load_balancer_controller # prevents destroy ingress problems # check
-  ]
-}
-
-resource "kubernetes_namespace" "jenkins" {
-  metadata {
-    name = "jenkins"
-  }
-
-  depends_on = [
-    module.eks, # needed # module.eks.cluster_endpoint,
-    #helm_release.aws_load_balancer_controller # prevents destroy ingress problems # check
-  ]
-}
