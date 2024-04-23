@@ -17,11 +17,11 @@ controller:
   service:
     port: 8080
   installPlugins:
-    - kubernetes:latest
-    - workflow-aggregator:latest
-    - git:latest
-    - configuration-as-code:latest
-    - ansible:latest
+    - kubernetes: "4203.v1dd44f5b_1cf9"
+    - pipeline: "596.v8c21c963d92d"
+    - git: 5.2.1
+    - configuration-as-code: "1775.v810dc950b_514"
+    - ansible: "307.va_1f3ef06575a_"
   JCasC:
     enabled: true
     configScripts:

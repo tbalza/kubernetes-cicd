@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/tbalza/kubernetes-cicd' # pending remote repo with local overrides
     targetRevision: 'HEAD'
-    path: 'argo-apps/jenkins/charts/jenkins' # v 5.1.6
+    path: 'argo-apps/jenkins/charts/jenkins' # Chart v5.1.6, App v2.440.3
     helm:
       valueFiles:
         - ../../values-override.yaml # Relative path from the chart directory to the values-override file
