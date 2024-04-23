@@ -16,7 +16,6 @@ controller:
       memory: "2Gi"
   service:
     port: 8080
-    targetPort: 8181 # doesn't work right now
   installPlugins:
     - kubernetes:4203.v1dd44f5b_1cf9
     - workflow-aggregator:596.v8c21c963d92d
