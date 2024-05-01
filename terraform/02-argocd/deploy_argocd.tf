@@ -96,14 +96,14 @@ resource "helm_release" "argo_cd" {
   }
 
   # Repository configuration
-  set_sensitive {
-    name  = "configs.repositories.my-git-repo"
-    value = <<EOF
-url: https://github.com/tbalza/kubernetes-cicd
-type: git
-name: kubernetes-cicd
+  values = [<<EOF
+configs:
+  repositories: |-
+    - url: https://github.com/tbalza/kubernetes-cicd
+      type: git
+      name: kubernetes-cicd
 EOF
-  }
+  ]
 
   wait = true
 
