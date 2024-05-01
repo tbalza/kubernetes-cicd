@@ -95,6 +95,16 @@ resource "helm_release" "argo_cd" {
     value = "true"
   }
 
+  # Repository configuration
+  set_sensitive {
+    name  = "configs.repositories.my-git-repo"
+    value = <<EOF
+url: https://github.com/tbalza/kubernetes-cicd
+type: git
+name: kubernetes-cicd
+EOF
+  }
+
   wait = true
 
   depends_on = [
@@ -147,26 +157,26 @@ resource "kubernetes_ingress_v1" "argo_cd" {
 # Jenkins manifest to trigger argocd deployment
 ################################################################################
 
-resource "kubernetes_namespace" "jenkins" {
-  metadata {
-    name = "jenkins"
-  }
-
+#resource "kubernetes_namespace" "jenkins" {
+#  metadata {
+#    name = "jenkins"
+#  }
+#
+##  depends_on = [
+##    #data.terraform_remote_state.eks.outputs.eks, # needed
+##    #helm_release.aws_load_balancer_controller # prevents destroy ingress problems # check
+##  ]
+#}
+#
+### Apply the combined applications file using Terraform, moved to argocd-template.yaml.tpl
+#resource "kubernetes_manifest" "argo_cd_applications" {
+#  manifest = yamldecode(file("${path.module}/../../argo-apps/jenkins/argoapp-jenkins.yaml")) #"${path.module}/argocd-app-global-index.yaml"
+#
 #  depends_on = [
-#    #data.terraform_remote_state.eks.outputs.eks, # needed
-#    #helm_release.aws_load_balancer_controller # prevents destroy ingress problems # check
+#    #data.terraform_remote_state.eks.outputs.eks, # wait for cluster to be done
+#    helm_release.argo_cd, #
 #  ]
-}
-
-## Apply the combined applications file using Terraform, moved to argocd-template.yaml.tpl
-resource "kubernetes_manifest" "argo_cd_applications" {
-  manifest = yamldecode(file("${path.module}/../../argo-apps/jenkins/argoapp-jenkins.yaml")) #"${path.module}/argocd-app-global-index.yaml"
-
-  depends_on = [
-    #data.terraform_remote_state.eks.outputs.eks, # wait for cluster to be done
-    helm_release.argo_cd, #
-  ]
-}
+#}
 
 ########################################################################
 
