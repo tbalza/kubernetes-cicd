@@ -29,3 +29,11 @@ spec:
     automated:
       prune: true
       selfHeal: true
+startup:
+  httpGet:
+    path: /login
+    port: http
+  initialDelaySeconds: 120  # Delay startup checks for 2 minutes
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 15
