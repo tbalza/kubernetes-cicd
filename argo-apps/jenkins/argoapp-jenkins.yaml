@@ -17,7 +17,7 @@ spec:
           value: "true"
         - name: "serviceAccount.name"
           value: "jenkins"
-        - name: "serviceAccount.annotations.eks.amazonaws.com/role-arn"
+        - name: "serviceAccount.annotations.eks\\amazonaws\\com/role-arn"
           value: "argocd:arn:aws:iam::350206045032:role/JenkinsRole"
   - repoURL: "https://github.com/tbalza/kubernetes-cicd.git"
     targetRevision: HEAD
