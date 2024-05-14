@@ -219,7 +219,7 @@ resource "kubernetes_ingress_v1" "argo_cd" {
 # # https://github.com/argoproj-labs/terraform-provider-argocd/blob/master/examples/resources/argocd_application_set/resource.tf
 
 resource "kubectl_manifest" "example_applicationset" {
-  yaml_body = file("${path.module}/applicationset.yaml") # /../../argo-apps/argocd/applicationset.yaml
+  yaml_body = file("${path.module}/../../argo-apps/jenkins/argoapp-jenkins.yaml") # /../../argo-apps/argocd/applicationset.yaml
 
   depends_on = [
     helm_release.argo_cd
