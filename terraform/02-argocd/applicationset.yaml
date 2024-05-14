@@ -21,7 +21,7 @@ spec:
         targetRevision: '5.1.6'  # Chart v5.1.6, App v2.440.3
         helm:
           valuesFiles:
-            - 'values-override.yaml'  # Make sure this path is correctly relative to the root of your Git repository
+            - '../../argo-apps/jenkins/values-override.yaml'  # Make sure this path is correctly relative to the root of your Git repository
       destination:
         server: 'https://kubernetes.default.svc'
         namespace: 'jenkins'
