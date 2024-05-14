@@ -81,5 +81,18 @@ kubectl describe pod -n argocd -l app.kubernetes.io/name=argocd-server
 https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2968
 
 #ApplicationSet
+-ArgoCD itself? auto manage
+
+ArgoCD +helm/manifest would create the ServiceAccount with the role in the annotations.
+In your manifest, just annotate your ServiceAccount with the IAM role arn. 
+
+#pending
+-External DNS
+-SSL
+-Secrets
 -finalizers
--ArgoCD itself?
+--move argo ingress outside tf
+
+roles
+-assumed role to run tf
+https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3020

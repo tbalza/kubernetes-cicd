@@ -60,6 +60,30 @@ resource "helm_release" "argo_cd" {
 
   namespace = "argocd" # "argocd" # check
 
+  # ServiceAccount Role
+
+  set {
+    name  = "serviceAccount.create"
+    value = "true"
+  }
+
+  set {
+    name  = "serviceAccount.name"
+    value = "argocd-application-controller"
+  }
+
+  set {
+    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = data.terraform_remote_state.eks.outputs.aws_iam_role.argo_cd.arn # reference cluster state
+  }
+
+  set {
+    name  = "serviceAccount.automountServiceAccountToken"
+    value = "true"
+  }
+
+  # CRDs
+
   set {
     name  = "crds.install"
     value = "true"
@@ -242,6 +266,11 @@ resource "kubernetes_ingress_v1" "argo_cd" {
 }
 
 ################################################################################
+################################################################################
+################################################################################
+################################################################################
+
+################################################################################
 # Jenkins manifest to trigger argocd deployment
 ################################################################################
 
@@ -255,8 +284,8 @@ resource "kubernetes_ingress_v1" "argo_cd" {
 ##    #helm_release.aws_load_balancer_controller # prevents destroy ingress problems # check
 ##  ]
 #}
-#
-### Apply the combined applications file using Terraform, moved to argocd-template.yaml.tpl
+
+### Apply the combined applications file using Terraform
 #resource "kubernetes_manifest" "argo_cd_applications" {
 #  manifest = yamldecode(file("${path.module}/../../argo-apps/jenkins/argoapp-jenkins.yaml")) #"${path.module}/argocd-app-global-index.yaml"
 #
@@ -266,7 +295,10 @@ resource "kubernetes_ingress_v1" "argo_cd" {
 #  ]
 #}
 
-########################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
 
 # Fix interdependencies for graceful provisioning and teardown ### check
 
