@@ -1,13 +1,13 @@
 controller:
   healthProbes:
     liveness:
-      initialDelaySeconds: 60
+      initialDelaySeconds: 300
       periodSeconds: 10
     readiness:
-      initialDelaySeconds: 60
+      initialDelaySeconds: 300
       periodSeconds: 10
     startup:
-      initialDelaySeconds: 120
+      initialDelaySeconds: 300
       periodSeconds: 10
   image:
     repository: "jenkins/jenkins"
