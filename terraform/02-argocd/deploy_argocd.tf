@@ -185,7 +185,10 @@ resource "kubernetes_manifest" "application_set" {
             automated = {
               prune    = true
               selfHeal = true  # Corrected attribute, no 'enable' here
-            }
+            },
+            syncOptions = [
+              "CreateNamespace=true"
+            ]
           }
         }
       }

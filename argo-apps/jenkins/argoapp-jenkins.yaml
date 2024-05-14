@@ -20,4 +20,4 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
+      - CreateNamespace=true # check , not working, likely permissions as ArgoCD ApplicationSet is able to create the namespace
