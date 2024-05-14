@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   sources:
-  - repoURL: 'https://charts.jenkins.io' # pending remote repo with local overrides
+  - repoURL: "https://charts.jenkins.io" # pending remote repo with local overrides
     targetRevision: 5.1.6 # # Chart v5.1.6, App v2.440.3
     chart: jenkins
     helm:
@@ -19,15 +19,13 @@ spec:
           value: "jenkins"
         - name: "serviceAccount.annotations.eks\\amazonaws\\com/role-arn"
           value: "argocd:arn:aws:iam::350206045032:role/JenkinsRole"
-  - repoURL: 'https://github.com/tbalza/kubernetes-cicd.git'
+  - repoURL: "https://github.com/tbalza/kubernetes-cicd.git"
     targetRevision: HEAD
     ref: values
   destination:
-    server: 'https://kubernetes.default.svc'
+    server: "https://kubernetes.default.svc"
     namespace: jenkins
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true # check if working
