@@ -96,14 +96,23 @@ resource "helm_release" "argo_cd" {
   }
 
   # Repository configuration
-  values = [<<EOF
-configs:
-  repositories: |-
-    - url: https://github.com/tbalza/kubernetes-cicd
-      type: git
-      name: kubernetes-cicd
-EOF
-  ]
+  set {
+    name  = "configs.repositories[0].url"
+    value = "https://github.com/tbalza/kubernetes-cicd"
+  }
+
+  set {
+    name  = "configs.repositories[0].type"
+    value = "git"
+  }
+
+  set {
+    name  = "configs.repositories[0].name"
+    value = "kubernetes-cicd"
+  }
+
+  # check, pending: pass values creds/ssl etc
+  # https://stackoverflow.com/questions/73070417/how-to-pass-values-from-the-terraform-to-the-helm-chart-values-yaml-file
 
   wait = true
 
