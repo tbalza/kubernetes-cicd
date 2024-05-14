@@ -40,6 +40,17 @@ provider "helm" {
   }
 }
 
+provider "kubectl" {
+  host                   = data.terraform_remote_state.eks.outputs.cluster_endpoint                                 # var.cluster_endpoint
+  cluster_ca_certificate = base64decode(data.terraform_remote_state.eks.outputs.cluster_certificate_authority_data) # var.cluster_ca_cert
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"                                                       # /v1alpha1"
+    args        = ["eks", "get-token", "--cluster-name", data.terraform_remote_state.eks.outputs.cluster_name] # var.cluster_name
+    command     = "aws"
+  }
+  load_config_file       = false
+}
+
 ################################################################################
 # Argocd
 ################################################################################
@@ -138,7 +149,7 @@ resource "helm_release" "argo_cd" {
   # ApplicationSet
 
   set {
-    name  = "applicationSet.enabled"
+    name  = "applicationSet.enabled" # check
     value = "true"
   }
 
@@ -207,62 +218,66 @@ resource "kubernetes_ingress_v1" "argo_cd" {
 
 # # https://github.com/argoproj-labs/terraform-provider-argocd/blob/master/examples/resources/argocd_application_set/resource.tf
 
-resource "kubernetes_manifest" "application_set" {
-  provider = kubernetes
-
-  manifest = {
-    apiVersion = "argoproj.io/v1alpha1"
-    kind       = "ApplicationSet"
-    metadata = {
-      name      = "my-applications"
-      namespace = "argocd"
-    }
-    spec = {
-      generators = [
-        {
-          git = {
-            repoURL    = "https://github.com/tbalza/kubernetes-cicd"
-            revision   = "HEAD"
-            directories = [
-              {
-                path = "argo-apps/*"
-              }
-            ]
-          }
-        }
-      ]
-      template = {
-        metadata = {
-          name = "generated-app-{{path.basename}}"  # Dynamic name based on directory name
-        }
-        spec = {
-          project = "default"
-          source = {
-            repoURL        = "https://github.com/tbalza/kubernetes-cicd"
-            targetRevision = "HEAD"
-            path           = "{{path}}"
-          }
-          destination = {
-            server    = "https://kubernetes.default.svc"
-            namespace = "{{path.basename}}"
-          }
-          syncPolicy = {
-            automated = {
-              prune    = true
-              selfHeal = true  # Corrected attribute, no 'enable' here
-            },
-            syncOptions = [
-              "CreateNamespace=true"
-            ]
-          }
-        }
-      }
-    }
-  }
-  depends_on = [
-    helm_release.argo_cd
-  ]
+resource "kubectl_manifest" "example_applicationset" {
+  yaml_body = file("${path.module}/../../argo-apps/argocd/applicationset.yaml")
 }
+
+#resource "kubernetes_manifest" "application_set" {
+#  provider = kubernetes
+#
+#  manifest = {
+#    apiVersion = "argoproj.io/v1alpha1"
+#    kind       = "ApplicationSet"
+#    metadata = {
+#      name      = "my-applications"
+#      namespace = "argocd"
+#    }
+#    spec = {
+#      generators = [
+#        {
+#          git = {
+#            repoURL    = "https://github.com/tbalza/kubernetes-cicd"
+#            revision   = "HEAD"
+#            directories = [
+#              {
+#                path = "argo-apps/*"
+#              }
+#            ]
+#          }
+#        }
+#      ]
+#      template = {
+#        metadata = {
+#          name = "generated-app-{{path.basename}}"  # Dynamic name based on directory name
+#        }
+#        spec = {
+#          project = "default"
+#          source = {
+#            repoURL        = "https://github.com/tbalza/kubernetes-cicd"
+#            targetRevision = "HEAD"
+#            path           = "{{path}}"
+#          }
+#          destination = {
+#            server    = "https://kubernetes.default.svc"
+#            namespace = "{{path.basename}}"
+#          }
+#          syncPolicy = {
+#            automated = {
+#              prune    = true
+#              selfHeal = true  # Corrected attribute, no 'enable' here
+#            },
+#            syncOptions = [
+#              "CreateNamespace=true"
+#            ]
+#          }
+#        }
+#      }
+#    }
+#  }
+#  depends_on = [
+#    helm_release.argo_cd
+#  ]
+#}
 
 ################################################################################
 ################################################################################

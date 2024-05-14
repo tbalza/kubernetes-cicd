@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: jenkins-applicationset
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: 'https://github.com/tbalza/kubernetes-cicd'
+        revision: HEAD
+        directories:
+          - path: argo-apps/jenkins
+  template:
+    spec:
+      project: default
+      source:
+        repoURL: 'https://charts.jenkins.io'
+        chart: jenkins
+        targetRevision: '5.1.6' # Chart v5.1.6, App v2.440.3
+        helm:
+          valuesFiles:
+            - 'values-override.yaml' # relative to directories, path, set above
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: 'jenkins'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

@@ -6,12 +6,12 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/tbalza/kubernetes-cicd' # pending remote repo with local overrides
-    targetRevision: 'HEAD'
-    path: 'argo-apps/jenkins/charts/jenkins' # Chart v5.1.6, App v2.440.3
+    repoURL: 'https://charts.jenkins.io' # pending remote repo with local overrides
+    targetRevision: '5.1.6' # # Chart v5.1.6, App v2.440.3
+    chart: jenkins
     helm:
       valueFiles:
-        - "../../values-override.yaml"  # Correct relative path from the chart directory
+        - "argo-apps/jenkins/values-override.yaml"  # Correct relative path from the chart directory
       parameters:
         - name: "serviceAccount.create"
           value: "true"
@@ -27,4 +27,4 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true # check , not working, likely permissions as ArgoCD ApplicationSet is able to create the namespace
+      - CreateNamespace=true # check if working
