@@ -167,21 +167,24 @@ resource "kubernetes_manifest" "application_set" {
         }
       ]
       template = {
+        metadata = {
+          name = "generated-app-{{path.basename}}"  # Dynamic name based on directory name
+        }
         spec = {
           project = "default"
           source = {
             repoURL        = "https://github.com/tbalza/kubernetes-cicd"
             targetRevision = "HEAD"
-            path           = "{{path}}" # This will dynamically substitute the path for each application
+            path           = "{{path}}"
           }
           destination = {
             server    = "https://kubernetes.default.svc"
-            namespace = "{{path.basename}}" # Dynamically create/use a namespace based on the folder name
+            namespace = "{{path.basename}}"
           }
           syncPolicy = {
             automated = {
-              selfHeal = true
               prune    = true
+              selfHeal = true  # Corrected attribute, no 'enable' here
             }
           }
         }
@@ -192,6 +195,7 @@ resource "kubernetes_manifest" "application_set" {
     helm_release.argo_cd
   ]
 }
+
 
 ## Create argocd ALB ingress
 resource "kubernetes_ingress_v1" "argo_cd" {
