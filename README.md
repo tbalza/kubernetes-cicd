@@ -79,3 +79,7 @@ kubectl describe pod -n argocd -l app.kubernetes.io/name=argocd-server
 
 #Access Entry
 https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2968
+
+#ApplicationSet
+-finalizers
+-ArgoCD itself?

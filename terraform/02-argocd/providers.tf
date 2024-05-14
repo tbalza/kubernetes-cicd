@@ -18,6 +18,10 @@ terraform {
       source  = "gavinbunney/kubectl"
       version = ">= 1.14.0"
     }
+#    argocd = {
+#      source = "oboukili/argocd"
+#      version = "6.1.1"
+#    }
   }
 }
 

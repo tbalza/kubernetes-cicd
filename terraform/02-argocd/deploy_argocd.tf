@@ -111,6 +111,23 @@ resource "helm_release" "argo_cd" {
     value = "kubernetes-cicd"
   }
 
+  # ApplicationSet
+
+  set {
+    name  = "applicationSet.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "applicationSet.name"
+    value = "applicationset-controller"
+  }
+
+  set {
+    name  = "applicationSet.replicas"
+    value = "1"
+  }
+
   # check, pending: pass values creds/ssl etc
   # https://stackoverflow.com/questions/73070417/how-to-pass-values-from-the-terraform-to-the-helm-chart-values-yaml-file
 
@@ -118,6 +135,61 @@ resource "helm_release" "argo_cd" {
 
   depends_on = [
     kubernetes_namespace.argo_cd
+  ]
+}
+
+## ArgoCD apply ApplicationSet
+
+# # https://github.com/argoproj-labs/terraform-provider-argocd/blob/master/examples/resources/argocd_application_set/resource.tf
+
+resource "kubernetes_manifest" "application_set" {
+  provider = kubernetes
+
+  manifest = {
+    apiVersion = "argoproj.io/v1alpha1"
+    kind       = "ApplicationSet"
+    metadata = {
+      name      = "my-applications"
+      namespace = "argocd"
+    }
+    spec = {
+      generators = [
+        {
+          git = {
+            repoURL    = "https://github.com/tbalza/kubernetes-cicd"
+            revision   = "HEAD"
+            directories = [
+              {
+                path = "argo-apps/*"
+              }
+            ]
+          }
+        }
+      ]
+      template = {
+        spec = {
+          project = "default"
+          source = {
+            repoURL        = "https://github.com/tbalza/kubernetes-cicd"
+            targetRevision = "HEAD"
+            path           = "{{path}}" # This will dynamically substitute the path for each application
+          }
+          destination = {
+            server    = "https://kubernetes.default.svc"
+            namespace = "{{path.basename}}" # Dynamically create/use a namespace based on the folder name
+          }
+          syncPolicy = {
+            automated = {
+              selfHeal = true
+              prune    = true
+            }
+          }
+        }
+      }
+    }
+  }
+  depends_on = [
+    helm_release.argo_cd
   ]
 }
 
