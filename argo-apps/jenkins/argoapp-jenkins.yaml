@@ -18,7 +18,7 @@ spec:
         - name: "serviceAccount.name"
           value: "jenkins"
         - name: "serviceAccount.annotations.eks\\amazonaws\\com/role-arn"
-          value: "arn:aws:iam::350206045032:role/JenkinsRole"
+          value: "argocd:arn:aws:iam::350206045032:role/ArgoCDRole"
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: jenkins
