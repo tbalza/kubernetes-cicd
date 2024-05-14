@@ -11,7 +11,7 @@ spec:
     chart: jenkins
     helm:
       valueFiles:
-        - $values/argo-apps/jenkins/values-override.yaml"  # Correct relative path from the chart directory
+        - $values/argo-apps/jenkins/values-override.yaml  # Correct relative path from the chart directory
       parameters:
         - name: "serviceAccount.create"
           value: "true"
