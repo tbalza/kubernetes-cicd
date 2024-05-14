@@ -279,21 +279,44 @@ module "eks" {
     }
 
     jenkins = {
-      kubernetes_groups = ["edit"]                 # Typically 'edit' role is sufficient for Jenkins within its namespace
-      principal_arn     = aws_iam_role.jenkins.arn # Ensure you have an IAM role created for Jenkins
+      principal_arn = aws_iam_role.jenkins.arn
+      kubernetes_groups = []
 
       policy_associations = {
-        edit_policy = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSEditPolicy"
+        admin = {
+          policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
           access_scope = {
-            namespaces = ["jenkins"]
-            type       = "namespace"
+            type = "cluster" # use RBAC role for more granular control
           }
         }
       }
     }
   }
 }
+
+#module "jenkins_iam_role" {
+#  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+#  version = "5.39.0"  # Make sure to use the correct version
+#
+#  role_name = "JenkinsAppRole"
+#  role_description = "IAM role for Jenkins with EKS IRSA integration"
+#
+#  # Attach any specific policies you require
+#  role_policy_arns = {
+#    "admin" = aws_iam_role.jenkins.arn
+#  }
+#
+#  # Define the OIDC provider using ARN from your EKS cluster module and link it with your service account
+#  oidc_providers = {
+#    eks = {
+#      provider_arn               = module.eks.oidc_provider_arn
+#      namespace_service_accounts = ["jenkins:jenkins"]
+#    }
+#  }
+#}
+
+
+
 #resource "aws_iam_role" "this" {
 #  for_each = toset(["argocd", "jenkins"])
 #
@@ -358,7 +381,7 @@ resource "aws_iam_role_policy_attachment" "argo_cd_admin" {
 
 resource "aws_iam_role_policy_attachment" "jenkins_basic" {
   role       = aws_iam_role.jenkins.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
 output "argo_cd_iam_role_arn" {
