@@ -5,13 +5,13 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: 'https://charts.jenkins.io' # pending remote repo with local overrides
-    targetRevision: '5.1.6' # # Chart v5.1.6, App v2.440.3
+  sources:
+  - repoURL: 'https://charts.jenkins.io' # pending remote repo with local overrides
+    targetRevision: 5.1.6 # # Chart v5.1.6, App v2.440.3
     chart: jenkins
     helm:
       valueFiles:
-        - "argo-apps/jenkins/values-override.yaml"  # Correct relative path from the chart directory
+        - $values/argo-apps/jenkins/values-override.yaml"  # Correct relative path from the chart directory
       parameters:
         - name: "serviceAccount.create"
           value: "true"
@@ -19,6 +19,9 @@ spec:
           value: "jenkins"
         - name: "serviceAccount.annotations.eks\\amazonaws\\com/role-arn"
           value: "argocd:arn:aws:iam::350206045032:role/JenkinsRole"
+  - repoURL: 'https://github.com/tbalza/kubernetes-cicd.git'
+    targetRevision: HEAD
+    ref: values
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: jenkins
