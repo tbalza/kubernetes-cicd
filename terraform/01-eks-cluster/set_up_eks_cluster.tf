@@ -284,7 +284,7 @@ module "eks" {
 
       policy_associations = {
         admin = {
-          policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
           access_scope = {
             type = "cluster" # use RBAC role for more granular control
           }
@@ -294,26 +294,48 @@ module "eks" {
   }
 }
 
-#module "jenkins_iam_role" {
-#  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-#  version = "5.39.0"  # Make sure to use the correct version
-#
-#  role_name = "JenkinsAppRole"
-#  role_description = "IAM role for Jenkins with EKS IRSA integration"
-#
-#  # Attach any specific policies you require
-#  role_policy_arns = {
-#    "admin" = aws_iam_role.jenkins.arn
-#  }
-#
-#  # Define the OIDC provider using ARN from your EKS cluster module and link it with your service account
-#  oidc_providers = {
-#    eks = {
-#      provider_arn               = module.eks.oidc_provider_arn
-#      namespace_service_accounts = ["jenkins:jenkins"]
-#    }
-#  }
-#}
+module "iam_policy" {
+  source = "terraform-aws-modules/iam/aws//modules/iam-policy"
+
+  name        = "myapp"
+  path        = "/"
+  description = "Example policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "*",
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+
+}
+
+module "jenkins_iam_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "5.39.0"  # Make sure to use the correct version
+
+  role_name = "JenkinsAppRole"
+  role_description = "IAM role for Jenkins with EKS IRSA integration"
+
+  # Attach any specific policies you require
+  role_policy_arns = {
+    "admin" = module.iam_policy.arn
+  }
+
+  # Define the OIDC provider using ARN from your EKS cluster module and link it with your service account
+  oidc_providers = {
+    eks = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["jenkins:jenkins"]
+    }
+  }
+}
 
 
 
