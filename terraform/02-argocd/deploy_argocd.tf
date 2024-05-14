@@ -48,7 +48,7 @@ provider "kubectl" {
     args        = ["eks", "get-token", "--cluster-name", data.terraform_remote_state.eks.outputs.cluster_name] # var.cluster_name
     command     = "aws"
   }
-  load_config_file       = false
+  load_config_file = false
 }
 
 ################################################################################
@@ -220,6 +220,10 @@ resource "kubernetes_ingress_v1" "argo_cd" {
 
 resource "kubectl_manifest" "example_applicationset" {
   yaml_body = file("${path.module}/../../argo-apps/argocd/applicationset.yaml")
+
+  depends_on = [
+    helm_release.argo_cd
+  ]
 }
 
 #resource "kubernetes_manifest" "application_set" {

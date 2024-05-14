@@ -11,15 +11,17 @@ spec:
         directories:
           - path: argo-apps/jenkins
   template:
+    metadata:
+      name: '{{path.basename}}'  # This dynamically sets the name based on the directory name
     spec:
       project: default
       source:
         repoURL: 'https://charts.jenkins.io'
         chart: jenkins
-        targetRevision: '5.1.6' # Chart v5.1.6, App v2.440.3
+        targetRevision: '5.1.6'  # Chart v5.1.6, App v2.440.3
         helm:
           valuesFiles:
-            - 'values-override.yaml' # relative to directories, path, set above
+            - 'values-override.yaml'  # Make sure this path is correctly relative to the root of your Git repository
       destination:
         server: 'https://kubernetes.default.svc'
         namespace: 'jenkins'
@@ -27,3 +29,4 @@ spec:
         automated:
           prune: true
           selfHeal: true
+
