@@ -32,8 +32,3 @@ output "access_entries" {
   value       = module.eks.access_entries
   description = "Security group entries that allow access to the EKS cluster."
 }
-
-output "access_policy_associations" {
-  value       = module.eks.access_policy_associations
-  description = "IAM policy associations required for EKS access."
-}

@@ -11,7 +11,14 @@ spec:
     path: 'argo-apps/jenkins/charts/jenkins' # Chart v5.1.6, App v2.440.3
     helm:
       valueFiles:
-        - ../../values-override.yaml # Relative path from the chart directory to the values-override file
+        - "../../values-override.yaml"  # Correct relative path from the chart directory
+      parameters:
+        - name: "serviceAccount.create"
+          value: "true"
+        - name: "serviceAccount.name"
+          value: "jenkins"
+        - name: "serviceAccount.annotations.eks\\amazonaws\\com/role-arn"
+          value: "arn:aws:iam::350206045032:role/JenkinsRole"
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: jenkins

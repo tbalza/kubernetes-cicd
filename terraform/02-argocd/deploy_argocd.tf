@@ -74,7 +74,7 @@ resource "helm_release" "argo_cd" {
 
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = data.terraform_remote_state.eks.outputs.aws_iam_role.argo_cd.arn # reference cluster state
+    value = data.terraform_remote_state.eks.outputs.argo_cd_iam_role_arn # reference cluster state
   }
 
   set {
@@ -162,6 +162,47 @@ resource "helm_release" "argo_cd" {
   ]
 }
 
+## Create argocd ALB ingress
+resource "kubernetes_ingress_v1" "argo_cd" {
+  metadata {
+    name      = "argocd-ingress"
+    namespace = "argocd"
+    annotations = {
+      "kubernetes.io/ingress.class"            = "alb"
+      "alb.ingress.kubernetes.io/scheme"       = "internet-facing"
+      "alb.ingress.kubernetes.io/target-type"  = "ip"
+      "alb.ingress.kubernetes.io/listen-ports" = jsonencode([{ HTTP = 80 }]) # jsonencode([{ HTTP = 80 }, { HTTPS = 443 }])
+      #"alb.ingress.kubernetes.io/tags"             = "Example=argocd"
+      "alb.ingress.kubernetes.io/healthcheck-path" = "/healthz"
+      "alb.ingress.kubernetes.io/group.name"       = "argo-cd-cluster" # prevent multiple ALB being created
+      "alb.ingress.kubernetes.io/group.order"      = "1"
+    }
+  }
+
+  spec {
+    rule {
+      http {
+        path {
+          path      = "/*"
+          path_type = "ImplementationSpecific"
+          backend {
+            service {
+              name = "argo-cd-argocd-server"
+              port {
+                number = 80
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  depends_on = [
+    #data.terraform_remote_state.eks.outputs.eks, # wait for cluster to be done
+    helm_release.argo_cd # wait for agocd to be deployed by helm before creating ingress.
+  ]
+}
+
 ## ArgoCD apply ApplicationSet
 
 # # https://github.com/argoproj-labs/terraform-provider-argocd/blob/master/examples/resources/argocd_application_set/resource.tf
@@ -220,48 +261,6 @@ resource "kubernetes_manifest" "application_set" {
   }
   depends_on = [
     helm_release.argo_cd
-  ]
-}
-
-
-## Create argocd ALB ingress
-resource "kubernetes_ingress_v1" "argo_cd" {
-  metadata {
-    name      = "argocd-ingress"
-    namespace = "argocd"
-    annotations = {
-      "kubernetes.io/ingress.class"            = "alb"
-      "alb.ingress.kubernetes.io/scheme"       = "internet-facing"
-      "alb.ingress.kubernetes.io/target-type"  = "ip"
-      "alb.ingress.kubernetes.io/listen-ports" = jsonencode([{ HTTP = 80 }]) # jsonencode([{ HTTP = 80 }, { HTTPS = 443 }])
-      #"alb.ingress.kubernetes.io/tags"             = "Example=argocd"
-      "alb.ingress.kubernetes.io/healthcheck-path" = "/healthz"
-      "alb.ingress.kubernetes.io/group.name"       = "argo-cd-cluster" # prevent multiple ALB being created
-      "alb.ingress.kubernetes.io/group.order"      = "1"
-    }
-  }
-
-  spec {
-    rule {
-      http {
-        path {
-          path      = "/*"
-          path_type = "ImplementationSpecific"
-          backend {
-            service {
-              name = "argo-cd-argocd-server"
-              port {
-                number = 80
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  depends_on = [
-    #data.terraform_remote_state.eks.outputs.eks, # wait for cluster to be done
-    helm_release.argo_cd # wait for agocd to be deployed by helm before creating ingress.
   ]
 }
 
