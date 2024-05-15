@@ -12,7 +12,7 @@ spec:
         - path: "argo-apps/**/config.yaml" # dynamically derived from the basename of the path where config.yaml is found
   template:
     metadata:
-      name: '{{name}}'
+      name: '{{path.basename}}'
     spec:
       project: default
       source:
@@ -21,7 +21,7 @@ spec:
         chart: '{{chart}}'
         helm:
           valueFiles:
-            - "{{path.dirname}}/values-override.yaml" # values-override.yaml relative to the directory containing config.yaml
+            - argo-apps/{{path.basename}}/values-override.yaml # values-override.yaml relative to the directory containing config.yaml
       destination:
         server: '{{cluster_server}}'
         namespace: '{{app_namespace}}'
