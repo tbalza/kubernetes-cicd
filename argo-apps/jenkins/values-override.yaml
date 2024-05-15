@@ -54,3 +54,8 @@ controller:
             name: "jenkins"
             port:
               number: 8080
+serviceAccount:
+  create: true
+  name: jenkins
+  annotations:
+    eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/JenkinsRole"

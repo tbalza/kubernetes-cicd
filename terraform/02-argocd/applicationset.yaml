@@ -1,27 +1,30 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: jenkins-applicationset
+  name: unified-apps
   namespace: argocd
 spec:
   generators:
-    - git:
-        repoURL: 'https://github.com/tbalza/kubernetes-cicd'
-        revision: HEAD
-        directories:
-          - path: argo-apps/jenkins
+  - git:
+      repoURL: "https://github.com/tbalza/kubernetes-cicd.git"
+      revision: HEAD
+      files:
+        - path: "argo-apps/**/config.yaml" # dynamically derived from the basename of the path where config.yaml is found
   template:
     metadata:
-      name: '{{path.basename}}'  # This dynamically sets the name based on the directory name
+      name: '{{name}}'
     spec:
       project: default
       source:
-        repoURL: 'https://charts.jenkins.io'
-        chart: jenkins
-        targetRevision: 5.1.6  # Chart v5.1.6, App v2.440.3
+        repoURL: '{{helmchart_url}}'
+        targetRevision: '{{version}}'
+        chart: '{{chart}}'
+        helm:
+          valueFiles:
+            - "{{path.dirname}}/values-override.yaml" # values-override.yaml relative to the directory containing config.yaml
       destination:
-        server: 'https://kubernetes.default.svc'
-        namespace: jenkins
+        server: '{{cluster_server}}'
+        namespace: '{{app_namespace}}'
       syncPolicy:
         automated:
           prune: true

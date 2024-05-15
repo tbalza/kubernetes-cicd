@@ -1,0 +1,9 @@
+# General deployment parameters
+name: jenkins
+app_namespace: jenkins
+cluster_server: https://kubernetes.default.svc
+
+# Helm chart specific parameters
+helmchart_url: https://charts.jenkins.io
+chart: jenkins
+version: 5.1.6  # Chart v5.1.6, App v2.440.3
