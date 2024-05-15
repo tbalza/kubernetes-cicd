@@ -9,7 +9,7 @@ spec:
       repoURL: "https://github.com/tbalza/kubernetes-cicd.git"
       revision: HEAD
       files:
-        - path: "**/config.yaml" # dynamically derived from the basename of the path where config.yaml is found
+        - path: "argo-apps/**/config.yaml" # dynamically derived from the basename of the path where config.yaml is found
   template:
     metadata:
       name: '{{path.basename}}'
