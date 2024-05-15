@@ -9,19 +9,23 @@ spec:
       repoURL: "https://github.com/tbalza/kubernetes-cicd.git"
       revision: HEAD
       files:
-        - path: "argo-apps/**/config.yaml" # dynamically derived from the basename of the path where config.yaml is found
+        - path: "**/config.yaml" # dynamically derived from the basename of the path where config.yaml is found
   template:
     metadata:
       name: '{{path.basename}}'
     spec:
       project: default
-      source:
+      sources:
+      - ref: values
+        repoURL: "https://github.com/tbalza/kubernetes-cicd.git"
+        targetRevision: HEAD
+      - path: ''
         repoURL: '{{helmchart_url}}'
         targetRevision: '{{version}}'
         chart: '{{chart}}'
         helm:
           valueFiles:
-            - argo-apps/{{path.basename}}/values-override.yaml # values-override.yaml relative to the directory containing config.yaml
+            - $values/argo-apps/{{path.basename}}/values-override.yaml # values-override.yaml relative to the directory containing config.yaml
       destination:
         server: '{{cluster_server}}'
         namespace: '{{app_namespace}}'
