@@ -130,22 +130,6 @@ resource "helm_release" "argo_cd" {
     value = "true"
   }
 
-  # Repository configuration
-#  set {
-#    name  = "configs.repositories[0].url"
-#    value = "https://github.com/tbalza/kubernetes-cicd"
-#  }
-#
-#  set {
-#    name  = "configs.repositories[0].type"
-#    value = "git"
-#  }
-#
-#  set {
-#    name  = "configs.repositories[0].name"
-#    value = "kubernetes-cicd"
-#  }
-
   # ApplicationSet
 
   set {
@@ -216,7 +200,8 @@ resource "kubernetes_ingress_v1" "argo_cd" {
 
 ## ArgoCD apply ApplicationSet
 
-# # https://github.com/argoproj-labs/terraform-provider-argocd/blob/master/examples/resources/argocd_application_set/resource.tf
+# Use kubectl to apply an ArgoCD ApplicationSet that dynamically deploys apps in argo-apps/ that contain a config.yaml
+# Applies community managed helm charts with local repo overrides (values-override.yaml)
 
 resource "kubectl_manifest" "example_applicationset" {
   yaml_body = file("${path.module}/applicationset.yaml") # /../../argo-apps/argocd/applicationset.yaml
@@ -226,97 +211,6 @@ resource "kubectl_manifest" "example_applicationset" {
   ]
 }
 
-#resource "kubernetes_manifest" "application_set" {
-#  provider = kubernetes
-#
-#  manifest = {
-#    apiVersion = "argoproj.io/v1alpha1"
-#    kind       = "ApplicationSet"
-#    metadata = {
-#      name      = "my-applications"
-#      namespace = "argocd"
-#    }
-#    spec = {
-#      generators = [
-#        {
-#          git = {
-#            repoURL    = "https://github.com/tbalza/kubernetes-cicd"
-#            revision   = "HEAD"
-#            directories = [
-#              {
-#                path = "argo-apps/*"
-#              }
-#            ]
-#          }
-#        }
-#      ]
-#      template = {
-#        metadata = {
-#          name = "generated-app-{{path.basename}}"  # Dynamic name based on directory name
-#        }
-#        spec = {
-#          project = "default"
-#          source = {
-#            repoURL        = "https://github.com/tbalza/kubernetes-cicd"
-#            targetRevision = "HEAD"
-#            path           = "{{path}}"
-#          }
-#          destination = {
-#            server    = "https://kubernetes.default.svc"
-#            namespace = "{{path.basename}}"
-#          }
-#          syncPolicy = {
-#            automated = {
-#              prune    = true
-#              selfHeal = true  # Corrected attribute, no 'enable' here
-#            },
-#            syncOptions = [
-#              "CreateNamespace=true"
-#            ]
-#          }
-#        }
-#      }
-#    }
-#  }
-#  depends_on = [
-#    helm_release.argo_cd
-#  ]
-#}
-
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-
-################################################################################
-# Jenkins manifest to trigger argocd deployment
-################################################################################
-
-#resource "kubernetes_namespace" "jenkins" {
-#  metadata {
-#    name = "jenkins"
-#  }
-#
-##  depends_on = [
-##    #data.terraform_remote_state.eks.outputs.eks, # needed
-##    #helm_release.aws_load_balancer_controller # prevents destroy ingress problems # check
-##  ]
-#}
-
-### Apply the combined applications file using Terraform
-#resource "kubernetes_manifest" "argo_cd_applications" {
-#  manifest = yamldecode(file("${path.module}/../../argo-apps/jenkins/argoapp-jenkins.yaml")) #"${path.module}/argocd-app-global-index.yaml"
-#
-#  depends_on = [
-#    #data.terraform_remote_state.eks.outputs.eks, # wait for cluster to be done
-#    helm_release.argo_cd, #
-#  ]
-#}
-
-################################################################################
-################################################################################
-################################################################################
-################################################################################
 
 # Fix interdependencies for graceful provisioning and teardown ### check
 

@@ -291,6 +291,8 @@ module "eks" {
         }
       }
     }
+
+
   }
 }
 
@@ -553,7 +555,7 @@ module "ebs_kms_key" {
 #  custom_group_policy_arns          = [module.allow_assume_eks_admin_iam_policy.arn]
 #}
 
-# Node
+# Node SG
 resource "aws_security_group" "remote_access" {
   name_prefix = "${local.name}-remote-access"
   description = "Allow remote SSH access"
@@ -773,28 +775,3 @@ resource "helm_release" "aws_load_balancer_controller" {
   ]
 }
 
-###############################################################################
-# tfvars (replaced by remote state)
-###############################################################################
-
-## Pass variables generated in 01-eks-cluster to 02-argocd using .tfvars
-
-# terraform output -json > ../02-argocd/outputs.json
-
-#resource "null_resource" "generate_tfvars" {
-#  triggers = {
-#    always_run = "${timestamp()}"
-#  }
-#
-#  provisioner "local-exec" {
-#    command = <<EOF
-#      terraform output -json > tfvars.json && \
-#      hclwjson -i tfvars.json -reverse > ../02-argocd/cluster.auto.tfvars
-#    EOF
-#    interpreter = ["/bin/bash", "-c"]
-#  }
-#
-#  depends_on = [
-#    module.eks
-#  ]
-#}
