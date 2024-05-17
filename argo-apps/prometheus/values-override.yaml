@@ -1,19 +1,48 @@
-#defaultRules:
-#  rules:
-#    etcd: false
-#    kubeScheduler: false
-#kubeControllerManager:
-#  enabled: false
-#kubeEtcd:
-#  enabled: false
-#kubeScheduler:
-#  enabled: false
-#prometheus:
-#  prometheusSpec:
-#    serviceMonitorSelector:
-#      matchLabels:
-#        prometheus: devops
-#commonLabels:
-#  prometheus: devops
-#grafana:
-#  adminPassword: test123
+prometheusOperator:
+  createCustomResource: true
+  admissionWebhooks:
+    enabled: true
+
+grafana:
+  adminPassword: test123
+  service:
+    type: ClusterIP
+
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true
+
+alertmanager:
+  enabled: true
+
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelector:
+      matchLabels:
+        prometheus: devops
+    serviceMonitorSelectorNilUsesHelmValues: false
+
+commonLabels:
+  prometheus: devops
+
+defaultRules:
+  rules:
+    etcd: false
+    kubeScheduler: false
+
+kubeControllerManager:
+  enabled: false
+
+kubeEtcd:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
+serviceAccount:
+  create: true
+  name: prometheus
+  annotations:
+    eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/JenkinsRole"
