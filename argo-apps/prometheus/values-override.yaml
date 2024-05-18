@@ -1,7 +1,6 @@
 alertmanager:
   serviceAccount:
     create: true
-    name: alertmanager
     annotations:
       eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
 
@@ -12,14 +11,12 @@ kubeStateMetrics:
     - --port=8989 # Custom port to avoid conflicts with Jenkins
   serviceAccount:
     create: true
-    name: kube-state-metrics
     annotations:
       eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
 
 nodeExporter:
   serviceAccount:
     create: true
-    name: node-exporter
     annotations:
       eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
 
@@ -27,7 +24,6 @@ grafana:
   adminPassword: test123
   serviceAccount:
     create: true
-    name: grafana
     annotations:
       eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
 
@@ -49,14 +45,12 @@ prometheus:
     serviceMonitorSelectorNilUsesHelmValues: false
   serviceAccount:
     create: true
-    name: prometheus
     annotations:
       eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
 
 prometheusOperator:
   serviceAccount:
     create: true
-    name: prometheus-operator
     annotations:
       eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
   admissionWebhooks:
