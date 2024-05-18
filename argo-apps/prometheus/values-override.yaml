@@ -1,52 +1,52 @@
-kubeStateMetrics:
-  enabled: true
-  extraArgs:
-    - --telemetry-port=8081
-    - --port=8989 # Custom port to avoid conflicts with Jenkins
-
-grafana:
-  adminPassword: test123
-  serviceAccount:
-    create: true
-    name: grafana
-    annotations:
-      eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/JenkinsRole"
-
-prometheus:
-  prometheusSpec:
-    extraArgs:
-      # Set the metrics bind address. by default kube proxy metrics are only accessible by localhost
-      --web.listen-address=0.0.0.0:9090
-      --web.telemetry-path=/metrics
-    containers:
-      - name: prometheus
-        ports:
-          - containerPort: 9090
-            name: web
-            protocol: TCP
-    serviceMonitorSelector:
-      matchLabels:
-        prometheus: devops # custom label used by prometheus operator to link to select service monitor object (postgresql)
-    serviceMonitorSelectorNilUsesHelmValues: false
-  serviceAccount:
-    create: true
-    name: prometheus
-    annotations:
-      eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/JenkinsRole"
-
-# Control plane is managed by EKS hence the following are disabled
-defaultRules:
-  rules:
-    etcd: false
-    kubeScheduler: false
-kubeControllerManager:
-  enabled: false
-kubeEtcd:
-  enabled: false
-kubeScheduler:
-  enabled: false
-
-commonLabels:
-  prometheus: devops # custom label so that prometheus operator doesn't ignore default service monitors created by this helm chart (empty targets)
+#kubeStateMetrics:
+#  enabled: true
+#  extraArgs:
+#    - --telemetry-port=8081
+#    - --port=8989 # Custom port to avoid conflicts with Jenkins
+#
+#grafana:
+#  adminPassword: test123
+#  serviceAccount:
+#    create: true
+#    name: grafana
+#    annotations:
+#      eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/JenkinsRole"
+#
+#prometheus:
+#  prometheusSpec:
+#    extraArgs:
+#      # Set the metrics bind address. by default kube proxy metrics are only accessible by localhost
+#      --web.listen-address=0.0.0.0:9090
+#      --web.telemetry-path=/metrics
+#    containers:
+#      - name: prometheus
+#        ports:
+#          - containerPort: 9090
+#            name: web
+#            protocol: TCP
+#    serviceMonitorSelector:
+#      matchLabels:
+#        prometheus: devops # custom label used by prometheus operator to link to select service monitor object (postgresql)
+#    serviceMonitorSelectorNilUsesHelmValues: false
+#  serviceAccount:
+#    create: true
+#    name: prometheus
+#    annotations:
+#      eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/JenkinsRole"
+#
+## Control plane is managed by EKS hence the following are disabled
+#defaultRules:
+#  rules:
+#    etcd: false
+#    kubeScheduler: false
+#kubeControllerManager:
+#  enabled: false
+#kubeEtcd:
+#  enabled: false
+#kubeScheduler:
+#  enabled: false
+#
+#commonLabels:
+#  prometheus: devops # custom label so that prometheus operator doesn't ignore default service monitors created by this helm chart (empty targets)
 
 
