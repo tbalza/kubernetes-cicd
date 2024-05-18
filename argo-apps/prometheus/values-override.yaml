@@ -54,7 +54,7 @@ prometheusOperator:
     annotations:
       eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
   admissionWebhooks:
-    enabled: true
+    failurePolicy: Ignore
 
 # Control plane is managed by EKS hence the following are disabled
 defaultRules:
