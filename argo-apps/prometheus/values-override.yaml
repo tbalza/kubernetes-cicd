@@ -1,6 +1,3 @@
-prometheusOperator:
-  createCustomResource: true
-
 kubeStateMetrics:
   enabled: true
   extraArgs:
