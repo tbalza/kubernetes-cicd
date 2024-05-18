@@ -1,6 +1,6 @@
 # General deployment parameters
 name: kube-prometheus-stack
-app_namespace: monitoring # monitoring # kube-prometheus-stack
+app_namespace: kube-prometheus-stack # monitoring # kube-prometheus-stack
 cluster_server: https://kubernetes.default.svc
 
 # Helm chart specific parameters
