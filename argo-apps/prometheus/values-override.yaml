@@ -6,29 +6,6 @@ kubeStateMetrics:
 
 grafana:
   adminPassword: test123
-  service:
-    type: ClusterIP
-  ingress:
-    enabled: true
-    className: "alb"
-    annotations:
-      kubernetes.io/ingress.class: "alb"
-      alb.ingress.kubernetes.io/scheme: "internet-facing"
-      alb.ingress.kubernetes.io/target-type: "ip"
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 3000}]'
-      alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
-      alb.ingress.kubernetes.io/group.order: "3"
-      alb.ingress.kubernetes.io/healthcheck-path: "/"
-      alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
-      alb.ingress.kubernetes.io/success-codes: "200,302"
-    paths:
-      - path: "/*"
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: "grafana"
-            port:
-              number: 3000
   serviceAccount:
     create: true
     name: grafana
@@ -51,27 +28,6 @@ prometheus:
       matchLabels:
         prometheus: devops # custom label used by prometheus operator to link to select service monitor object (postgresql)
     serviceMonitorSelectorNilUsesHelmValues: false
-  ingress:
-    enabled: true
-    className: "alb"
-    annotations:
-      kubernetes.io/ingress.class: "alb"
-      alb.ingress.kubernetes.io/scheme: "internet-facing"
-      alb.ingress.kubernetes.io/target-type: "ip"
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 9090}]'
-      alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
-      alb.ingress.kubernetes.io/group.order: "4"
-      alb.ingress.kubernetes.io/healthcheck-path: "/"
-      alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
-      alb.ingress.kubernetes.io/success-codes: "200"
-    paths:
-      - path: "/*"
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: "prometheus"
-            port:
-              number: 9090
 
 # Control plane is managed by EKS hence the following are disabled
 defaultRules:
