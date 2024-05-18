@@ -3,7 +3,7 @@ alertmanager:
     create: true
     name: alertmanager
     annotations:
-      eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/AlertmanagerRole" # check , make cluster and account id dynamic
+      eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
 
 kubeStateMetrics:
   enabled: true
@@ -14,14 +14,14 @@ kubeStateMetrics:
     create: true
     name: kube-state-metrics
     annotations:
-      eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/KubeStateMetricsRole" # check , make cluster and account id dynamic
+      eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
 
 nodeExporter:
   serviceAccount:
     create: true
     name: node-exporter
     annotations:
-      eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/NodeExporterRole" # check , make cluster and account id dynamic
+      eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
 
 grafana:
   adminPassword: test123
@@ -29,7 +29,7 @@ grafana:
     create: true
     name: grafana
     annotations:
-      eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/GrafanaRole" # check , make cluster and account id dynamic
+      eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
 
 prometheus:
   prometheusSpec:
@@ -58,7 +58,7 @@ prometheusOperator:
     create: true
     name: prometheus-operator
     annotations:
-      eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusOperatorRole" # check , make cluster and account id dynamic
+      eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
   admissionWebhooks:
     enabled: true
 
