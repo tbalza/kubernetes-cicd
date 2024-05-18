@@ -1,45 +1,95 @@
 prometheusOperator:
   createCustomResource: true
-  admissionWebhooks:
-    enabled: true
+
+kubeStateMetrics:
+  enabled: true
+  extraArgs:
+    - --telemetry-port=8081
+    - --port=8989 # Custom port to avoid conflicts with Jenkins
 
 grafana:
   adminPassword: test123
   service:
     type: ClusterIP
-
-kubeStateMetrics:
-  enabled: true
-
-nodeExporter:
-  enabled: true
-
-alertmanager:
-  enabled: true
+  ingress:
+    enabled: true
+    className: "alb"
+    annotations:
+      kubernetes.io/ingress.class: "alb"
+      alb.ingress.kubernetes.io/scheme: "internet-facing"
+      alb.ingress.kubernetes.io/target-type: "ip"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 3000}]'
+      alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
+      alb.ingress.kubernetes.io/group.order: "3"
+      alb.ingress.kubernetes.io/healthcheck-path: "/"
+      alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
+      alb.ingress.kubernetes.io/success-codes: "200,302"
+    paths:
+      - path: "/*"
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: "grafana"
+            port:
+              number: 3000
+  serviceAccount:
+    create: true
+    name: grafana
+    annotations:
+      eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/JenkinsRole"
 
 prometheus:
   prometheusSpec:
+    extraArgs:
+      # Set the metrics bind address. by default kube proxy metrics are only accessible by localhost
+      --web.listen-address=0.0.0.0:9090
+      --web.telemetry-path=/metrics
+    containers:
+      - name: prometheus
+        ports:
+          - containerPort: 9090
+            name: web
+            protocol: TCP
     serviceMonitorSelector:
       matchLabels:
-        prometheus: devops
+        prometheus: devops # custom label used by prometheus operator to link to select service monitor object (postgresql)
     serviceMonitorSelectorNilUsesHelmValues: false
+  ingress:
+    enabled: true
+    className: "alb"
+    annotations:
+      kubernetes.io/ingress.class: "alb"
+      alb.ingress.kubernetes.io/scheme: "internet-facing"
+      alb.ingress.kubernetes.io/target-type: "ip"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 9090}]'
+      alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
+      alb.ingress.kubernetes.io/group.order: "4"
+      alb.ingress.kubernetes.io/healthcheck-path: "/"
+      alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
+      alb.ingress.kubernetes.io/success-codes: "200"
+    paths:
+      - path: "/*"
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: "prometheus"
+            port:
+              number: 9090
 
-commonLabels:
-  prometheus: devops
-
+# Control plane is managed by EKS hence the following are disabled
 defaultRules:
   rules:
     etcd: false
     kubeScheduler: false
-
 kubeControllerManager:
   enabled: false
-
 kubeEtcd:
   enabled: false
-
 kubeScheduler:
   enabled: false
+
+commonLabels:
+  prometheus: devops # custom label so that prometheus operator doesn't ignore default service monitors created by this helm chart (empty targets)
 
 serviceAccount:
   create: true
