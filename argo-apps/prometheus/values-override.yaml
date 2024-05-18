@@ -28,6 +28,11 @@ prometheus:
       matchLabels:
         prometheus: devops # custom label used by prometheus operator to link to select service monitor object (postgresql)
     serviceMonitorSelectorNilUsesHelmValues: false
+  serviceAccount:
+    create: true
+    name: prometheus
+    annotations:
+      eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/JenkinsRole"
 
 # Control plane is managed by EKS hence the following are disabled
 defaultRules:
@@ -44,8 +49,4 @@ kubeScheduler:
 commonLabels:
   prometheus: devops # custom label so that prometheus operator doesn't ignore default service monitors created by this helm chart (empty targets)
 
-serviceAccount:
-  create: true
-  name: prometheus
-  annotations:
-    eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/JenkinsRole"
+
