@@ -84,7 +84,7 @@ resource "helm_release" "argo_cd" {
   }
 
   set {
-    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn" #check
     value = data.terraform_remote_state.eks.outputs.argo_cd_iam_role_arn # reference cluster state
   }
 

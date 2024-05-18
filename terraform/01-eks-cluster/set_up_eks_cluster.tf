@@ -264,7 +264,6 @@ module "eks" {
 
   access_entries = {
     argocd = {
-      #kubernetes_groups = ["system:masters"]  # This gives Argo CD full admin access; adjust as necessary based on least privilege principles
       kubernetes_groups = []
       principal_arn     = aws_iam_role.argo_cd.arn # Ensure you have an IAM role created for Argo CD
 
@@ -272,7 +271,7 @@ module "eks" {
         admin_policy = {
           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
           access_scope = {
-            type = "cluster" # use RBAC role for more granular control
+            type = "cluster"
           }
         }
       }
@@ -286,7 +285,21 @@ module "eks" {
         admin = {
           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
           access_scope = {
-            type = "cluster" # use RBAC role for more granular control
+            type = "cluster"
+          }
+        }
+      }
+    }
+
+    prometheus = {
+      principal_arn = aws_iam_role.prometheus.arn
+      kubernetes_groups = []
+
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
           }
         }
       }
@@ -296,57 +309,56 @@ module "eks" {
   }
 }
 
-module "iam_policy" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-policy"
-
-  name        = "myapp"
-  path        = "/"
-  description = "Example policy"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "*",
-        ]
-        Resource = "*"
-      }
-    ]
-  })
-
-}
-
-module "jenkins_iam_role" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "5.39.0"  # Make sure to use the correct version
-
-  role_name = "JenkinsAppRole"
-  role_description = "IAM role for Jenkins with EKS IRSA integration"
-
-  # Attach any specific policies you require
-  role_policy_arns = {
-    "admin" = module.iam_policy.arn
-  }
-
-  # Define the OIDC provider using ARN from your EKS cluster module and link it with your service account
-  oidc_providers = {
-    eks = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["jenkins:jenkins"]
-    }
-  }
-}
+#module "jenkins_iam_policy" {
+#  source = "terraform-aws-modules/iam/aws//modules/iam-policy"
+#
+#  name        = "myapp"
+#  path        = "/"
+#  description = "Example policy"
+#
+#  policy = jsonencode({
+#    Version = "2012-10-17"
+#    Statement = [
+#      {
+#        Effect = "Allow"
+#        Action = [
+#          "*",
+#        ]
+#        Resource = "*"
+#      }
+#    ]
+#  })
+#
+#}
+#
+#module "jenkins_iam_role" {
+#  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+#  version = "5.39.0"  # Make sure to use the correct version
+#
+#  role_name = "JenkinsAppRole"
+#  role_description = "IAM role for Jenkins with EKS IRSA integration"
+#
+#  # Attach any specific policies you require
+#  role_policy_arns = {
+#    "admin" = module.jenkins_iam_policy.arn
+#  }
+#
+#  # Define the OIDC provider using ARN from your EKS cluster module and link it with your service account
+#  oidc_providers = {
+#    eks = {
+#      provider_arn               = module.eks.oidc_provider_arn
+#      namespace_service_accounts = ["jenkins:jenkins"]
+#    }
+#  }
+#}
 
 
 
 #resource "aws_iam_role" "this" {
-#  for_each = toset(["argocd", "jenkins"])
+#  for_each = toset(["argocd", "jenkins", "alertmanager", "kubestatemetrics", "nodexporter", "grafana", "prometheus", "prometheusoperator"])
 #
-#  name = "ex-${each.key}"
+#  name = each.key
 #
-#  # Just using for this example
 #  assume_role_policy = jsonencode({
 #    Version = "2012-10-17"
 #    Statement = [
@@ -363,6 +375,9 @@ module "jenkins_iam_role" {
 #
 #  tags = local.tags
 #}
+
+
+
 resource "aws_iam_role" "argo_cd" {
   name = "ArgoCDRole"
 
@@ -398,15 +413,39 @@ resource "aws_iam_role" "jenkins" {
     ]
   })
 }
-resource "aws_iam_role_policy_attachment" "argo_cd_admin" {
-  role       = aws_iam_role.argo_cd.name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+
+resource "aws_iam_role" "prometheus" {
+  name = "PrometheusRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Principal = {
+          Service = "eks.amazonaws.com"
+        }
+        Effect = "Allow"
+        Sid    = ""
+      }
+    ]
+  })
 }
 
-resource "aws_iam_role_policy_attachment" "jenkins_basic" {
-  role       = aws_iam_role.jenkins.name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
-}
+#resource "aws_iam_role_policy_attachment" "argo_cd_admin" {
+#  role       = aws_iam_role.argo_cd.name
+#  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+#}
+#
+#resource "aws_iam_role_policy_attachment" "jenkins_basic" {
+#  role       = aws_iam_role.jenkins.name
+#  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+#}
+#
+#resource "aws_iam_role_policy_attachment" "argo_cd_admin" {
+#  role       = aws_iam_role.prometheus.name
+#  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+#}
 
 output "argo_cd_iam_role_arn" {
   value = aws_iam_role.argo_cd.arn
