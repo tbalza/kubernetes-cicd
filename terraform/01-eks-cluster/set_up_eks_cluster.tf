@@ -85,10 +85,11 @@ module "eks" {
       resolve_conflicts_on_update = "OVERWRITE"
       resolve_conflicts_on_create = "OVERWRITE"
       most_recent = true # pin to working version
-      before_compute = true # flag might no be applicable for this addon
+      before_compute = true # ensure the VPC CNI can be created before the associated nodegroups
       configuration_values = jsonencode({
         env = {
-          ENABLE_PREFIX_DELEGATION = "true" # increase max pods per node
+          ENABLE_PREFIX_DELEGATION = "true" # increase max pods per node, managed node group bootstrap also needed(?)
+          # VPC CNI is configured before nodegroups are created and nodes launched, EKS managed nodegroups will infer from the VPC CNI configuration the proper value for max pods
           WARM_PREFIX_TARGET       = "1"
         }
       })
@@ -198,6 +199,19 @@ module "eks" {
 
       ami_id                     = data.aws_ami.eks_default.image_id
       enable_bootstrap_user_data = true # Must be set when using custom AMI i.e. AL2_x86_64
+
+#      bootstrap_extra_args       = "--kubelet-extra-args '--max-pods=50'"
+#
+#      pre_bootstrap_user_data = <<-EOT
+#        export USE_MAX_PODS=false
+#      EOT
+
+#      bootstrap_extra_args = <<-EOT
+#      "max-pods" = 50
+#      EOT
+
+      # VPC CNI
+      # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2551
 
       labels = {
         role = "cicd-node" # used by k8s by argocd. scheduling, resource selection / grouping, policy enforcement
