@@ -35,4 +35,7 @@ spec:
         automated:
           prune: true
           selfHeal: true
-        syncOptions: '{{syncOptions}}'
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
+          - Replace=true

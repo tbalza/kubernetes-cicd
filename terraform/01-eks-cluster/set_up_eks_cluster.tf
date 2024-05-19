@@ -76,18 +76,27 @@ module "eks" {
 
   cluster_addons = {
     coredns = {
-      most_recent = true
+      most_recent = true # pin to working version
     }
     kube-proxy = {
-      most_recent = true
+      most_recent = true # pin to working version
     }
-    vpc-cni = {
-      most_recent = true
+    vpc-cni = { # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2968
+      resolve_conflicts_on_update = "OVERWRITE"
+      resolve_conflicts_on_create = "OVERWRITE"
+      most_recent = true # pin to working version
+      before_compute = true # flag might no be applicable for this addon
+      configuration_values = jsonencode({
+        env = {
+          ENABLE_PREFIX_DELEGATION = "true" # increase max pods per node
+          WARM_PREFIX_TARGET       = "1"
+        }
+      })
     }
     aws-ebs-csi-driver = {
       service_account_role_arn = module.ebs_csi_driver_irsa.iam_role_arn
       #addon_version            = "v1.29.1-eksbuild.1"
-      most_recent = true # false
+      most_recent = true # pin to working version
     }
   }
 
