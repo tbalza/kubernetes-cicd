@@ -12,7 +12,9 @@ spec:
         - path: "argo-apps/**/config.yaml" # dynamically derived from the basename of the path where config.yaml is found
   template:
     metadata:
-      name: '{{path.basename}}'
+      name: '{{name}}'
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
     spec:
       project: default
       sources:
@@ -33,8 +35,4 @@ spec:
         automated:
           prune: true
           selfHeal: true
-        syncOptions:
-          - CreateNamespace=true
-          - ServerSideApply=true
-          - ApplyOutOfSyncOnly=true
-          - Replace=true
+        syncOptions: '{{syncOptions}}'

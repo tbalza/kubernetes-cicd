@@ -7,3 +7,8 @@ cluster_server: https://kubernetes.default.svc
 helmchart_url: https://charts.jenkins.io
 chart: jenkins
 version: 5.1.6  # Chart v5.1.6, App v2.440.3
+
+# Sync options
+syncOptions:
+  - CreateNamespace=true
+  - ServerSideApply=true
