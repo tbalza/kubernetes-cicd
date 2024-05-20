@@ -237,3 +237,4 @@ resource "kubectl_manifest" "example_applicationset" {
 #    data.terraform_remote_state.eks.outputs.access_policy_associations,
 #  ]
 #}
+

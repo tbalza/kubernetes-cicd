@@ -40,4 +40,4 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - ServerSideApply=true
-          - Replace=true
+          #- Replace=true # can lead to issues where the PVCs are deleted and recreated, potentially leading to data loss or issues if the underlying volumes are not handled correctly.

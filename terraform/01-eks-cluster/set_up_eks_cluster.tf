@@ -95,9 +95,9 @@ module "eks" {
       })
     }
     aws-ebs-csi-driver = {
-      #resolve_conflicts_on_update = "OVERWRITE"
-      #resolve_conflicts_on_create = "OVERWRITE"
-      #resolve_conflicts = "OVERWRITE"
+      resolve_conflicts_on_update = "OVERWRITE"
+      resolve_conflicts_on_create = "OVERWRITE"
+      resolve_conflicts = "OVERWRITE"
       service_account_role_arn = module.ebs_csi_driver_irsa.iam_role_arn
       #addon_version            = "v1.29.1-eksbuild.1"
       most_recent = true # pin to working version
@@ -840,3 +840,20 @@ resource "helm_release" "aws_load_balancer_controller" {
   ]
 }
 
+resource "kubectl_manifest" "ebs_sc" {
+  yaml_body = <<-EOT
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ebs-sc
+provisioner: ebs.csi.aws.com
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+EOT
+
+  depends_on = [
+    module.eks
+  ]
+
+}
