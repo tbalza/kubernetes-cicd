@@ -95,6 +95,9 @@ module "eks" {
       })
     }
     aws-ebs-csi-driver = {
+      #resolve_conflicts_on_update = "OVERWRITE"
+      #resolve_conflicts_on_create = "OVERWRITE"
+      #resolve_conflicts = "OVERWRITE"
       service_account_role_arn = module.ebs_csi_driver_irsa.iam_role_arn
       #addon_version            = "v1.29.1-eksbuild.1"
       most_recent = true # pin to working version
