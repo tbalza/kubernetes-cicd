@@ -54,6 +54,23 @@ controller:
             name: "jenkins"
             port:
               number: 8080
+  tolerations:
+    - key: "ci-cd"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+  nodeSelector:
+    role: ci-cd
+
+agent:
+  tolerations:
+    - key: "ci-cd"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+  nodeSelector:
+    role: ci-cd
+
 serviceAccount:
   create: true
   name: jenkins

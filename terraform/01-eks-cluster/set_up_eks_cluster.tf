@@ -168,9 +168,9 @@ module "eks" {
 
   eks_managed_node_groups = {
 
-    argocd-green = { # green
+    ci-cd = { # green
 
-      name = "argocd-eks-nodegroup"
+      name = "ci-cd-node-group"
 
       subnet_ids = module.vpc.private_subnets
 
@@ -182,27 +182,7 @@ module "eks" {
       max_size     = 2
       desired_size = 1
 
-      capacity_type = "SPOT" # "ON_DEMAND"
-
-      #      spot = {
-      #        desired_size = 1
-      #        min_size = 1
-      #        max_size = 1
-      #
-      #        labels = {
-      #          role = "spot"
-      #        }
-      #
-      #        taints = [{
-      #          key = "market"
-      #          value = "spot"
-      #          effect = "NO_SCHEDULE"
-      #        }]
-      #
-      #      instance_types = ["t3.micro"]
-      #      capacity_type = "SPOT"
-      #
-      #      }
+      capacity_type = "SPOT" # "ON_DEMAND" # SPOT instances nodes are created in random AZs without balance
 
       #      bootstrap_extra_args       = "--kubelet-extra-args '--max-pods=50'"
       #
@@ -224,41 +204,37 @@ module "eks" {
       # CNI may well be set, but kubelet_extra_args --max-pods may sometimes not
       # hence bootstrap might be recommendable as a fail safe
       bootstrap_extra_args = <<-EOT
-              "max-pods" = 110
+              "max-pods" = 109
             EOT
 
       # VPC CNI
       # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2551
 
+      # For determining which app goes to what nodegroup
+      taints = [{
+        key    = "ci-cd"
+        value  = "true"
+        effect = "NO_SCHEDULE"
+      }]
       labels = {
-        role = "cicd-node" # used by k8s by argocd. scheduling, resource selection / grouping, policy enforcement
+        role = "ci-cd" # used by k8s by argocd. scheduling, resource selection / grouping, policy enforcement
       }
-
-      #pre_bootstrap_user_data = <<-EOT
-      #  export FOO=bar
-      #EOT
-
-      #post_bootstrap_user_data = <<-EOT
-      #  echo "you are free little kubelet!"
-      #EOT
-
 
       force_update_version = true
       instance_types       = ["t3.medium"] # Overrides default instance defined above
 
-      description = "EKS managed node group example launch template"
+      description = "CI-CD managed node group launch template"
 
       ebs_optimized           = true
       disable_api_termination = false
       enable_monitoring       = true # Check
-      #disk_size               = 40   # Check conflicts with block device? only for non default template?
 
       block_device_mappings = {
         xvda = {
           device_name = "/dev/xvda"
           ebs = {
             volume_size = 30
-            volume_type = "gp2" #gp3?
+            volume_type = "gp3" #gp3?
             #iops                  = 3000 # Pending. this is for provisioned IOPS, disabled for testing
             #throughput            = 150 # Pending. this is for provisioned IOPS, disabled for testing
             encrypted = false # Check
@@ -275,17 +251,15 @@ module "eks" {
         instance_metadata_tags      = "disabled"
       }
 
-      # aws-auth configmap (deprecated?) replaced by "cluster access entries"
-
       create_iam_role          = true
-      iam_role_name            = "argocd-eks-managed-node-group-role"
+      iam_role_name            = "ci-cd-managed-node-group-role"
       iam_role_use_name_prefix = false
-      iam_role_description     = "EKS managed node group complete example role"
+      iam_role_description     = "ci-cd Managed node group role"
       iam_role_tags = {
-        Purpose = "Protector of the kubelet"
+        Purpose = "ci-cd-managed-node-group-role-tag"
       }
       iam_role_additional_policies = {
-        # Check
+        # node wide policies
         AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
         AmazonSSMManagedInstanceCore       = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore" # Enable SSM
       }
@@ -300,7 +274,92 @@ module "eks" {
         ExtraTag = "ci-cd-node" # used for cost allocation, resource mgmt, automation
       }
     }
+
+    wordpress = { # green
+
+      name = "wordpress-node-group"
+
+      subnet_ids = module.vpc.private_subnets
+
+      ami_type = "AL2_x86_64" # AL2_ARM_64 for arm
+
+      min_size     = 1
+      max_size     = 2
+      desired_size = 1
+
+      capacity_type = "SPOT"
+
+      bootstrap_extra_args = <<-EOT
+              "max-pods" = 109
+            EOT
+
+      # For determining which app goes to what nodegroup
+      taints = [{
+        key    = "wordpress"
+        value  = "true"
+        effect = "NO_SCHEDULE"
+      }]
+      labels = {
+        role = "wordpress" # used by k8s by argocd. scheduling, resource selection / grouping, policy enforcement
+      }
+
+      force_update_version = true
+      instance_types       = ["t3.medium"] # Overrides default instance defined above
+
+      description = "Wordpress managed node group launch template"
+
+      ebs_optimized           = true
+      disable_api_termination = false
+      enable_monitoring       = true # Check
+
+      block_device_mappings = {
+        xvda = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size = 30
+            volume_type = "gp3" #gp3?
+            encrypted = false # Check
+            #kms_key_id            = module.ebs_kms_key.key_arn
+            delete_on_termination = true
+          }
+        }
+      }
+
+      metadata_options = {
+        http_endpoint               = "enabled"
+        http_tokens                 = "required"
+        http_put_response_hop_limit = 2
+        instance_metadata_tags      = "disabled"
+      }
+
+      create_iam_role          = true
+      iam_role_name            = "wordpress-managed-node-group-role"
+      iam_role_use_name_prefix = false
+      iam_role_description     = "Wordpress managed node group role"
+      iam_role_tags = {
+        Purpose = "wordpress-managed-node-group-role-tag"
+      }
+      iam_role_additional_policies = {
+        # node wide policies
+        AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+        AmazonSSMManagedInstanceCore       = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore" # Enable SSM
+      }
+
+      launch_template_tags = {
+        # enable discovery of autoscaling groups by cluster-autoscaler
+        "k8s.io/cluster-autoscaler/enabled" : true,
+        "k8s.io/cluster-autoscaler/${local.name}" : "owned",
+      }
+
+      tags = {
+        ExtraTag = "wordpress-node" # used for cost allocation, resource mgmt, automation
+      }
+    }
+
   }
+
+
+
 
   access_entries = {
     argocd = {

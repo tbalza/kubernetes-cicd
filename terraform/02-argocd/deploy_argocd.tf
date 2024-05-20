@@ -147,6 +147,112 @@ resource "helm_release" "argo_cd" {
     value = "1"
   }
 
+  ###### Tolerations and Node Selectors
+
+  # Controller
+  set {
+    name  = "controller.tolerations[0].key"
+    value = "ci-cd"
+  }
+
+  set {
+    name  = "controller.tolerations[0].operator"
+    value = "Equal"
+  }
+
+  set {
+    name  = "controller.tolerations[0].value"
+    value = "true"
+  }
+
+  set {
+    name  = "controller.tolerations[0].effect"
+    value = "NoSchedule"
+  }
+
+  set {
+    name  = "controller.nodeSelector.role"
+    value = "ci-cd"
+  }
+
+  # Server
+  set {
+    name  = "server.tolerations[0].key"
+    value = "ci-cd"
+  }
+
+  set {
+    name  = "server.tolerations[0].operator"
+    value = "Equal"
+  }
+
+  set {
+    name  = "server.tolerations[0].value"
+    value = "true"
+  }
+
+  set {
+    name  = "server.tolerations[0].effect"
+    value = "NoSchedule"
+  }
+
+  set {
+    name  = "server.nodeSelector.role"
+    value = "ci-cd"
+  }
+
+  # RepoServer
+  set {
+    name  = "repoServer.tolerations[0].key"
+    value = "ci-cd"
+  }
+
+  set {
+    name  = "repoServer.tolerations[0].operator"
+    value = "Equal"
+  }
+
+  set {
+    name  = "repoServer.tolerations[0].value"
+    value = "true"
+  }
+
+  set {
+    name  = "repoServer.tolerations[0].effect"
+    value = "NoSchedule"
+  }
+
+  set {
+    name  = "repoServer.nodeSelector.role"
+    value = "ci-cd"
+  }
+
+  # ApplicationSet
+  set {
+    name  = "applicationSet.tolerations[0].key"
+    value = "ci-cd"
+  }
+
+  set {
+    name  = "applicationSet.tolerations[0].operator"
+    value = "Equal"
+  }
+
+  set {
+    name  = "applicationSet.tolerations[0].value"
+    value = "true"
+  }
+
+  set {
+    name  = "applicationSet.tolerations[0].effect"
+    value = "NoSchedule"
+  }
+
+  set {
+    name  = "applicationSet.nodeSelector.role"
+    value = "ci-cd"
+  }
+
   # check, pending: pass values creds/ssl etc
   # https://stackoverflow.com/questions/73070417/how-to-pass-values-from-the-terraform-to-the-helm-chart-values-yaml-file
 
