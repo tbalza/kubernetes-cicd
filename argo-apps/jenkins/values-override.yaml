@@ -31,7 +31,7 @@ controller:
   persistence:
     enabled: true
     storageClass: "gp2"
-    size: "10Gi"
+    size: "8Gi"
     accessMode: "ReadWriteOnce"
   ingress:
     enabled: true
