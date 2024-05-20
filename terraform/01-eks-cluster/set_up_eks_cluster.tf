@@ -84,28 +84,28 @@ module "eks" {
     vpc-cni = { # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2968
       resolve_conflicts_on_update = "OVERWRITE"
       resolve_conflicts_on_create = "OVERWRITE"
-      most_recent = true # pin to working version
-      before_compute = true # ensure the VPC CNI can be created before the associated nodegroups
+      most_recent                 = true # pin to working version
+      before_compute              = true # Attempt VPC CNI can be created before the associated nodegroups, bootstrap still needed
       configuration_values = jsonencode({
         env = {
-          ENABLE_PREFIX_DELEGATION = "true" # increase max pods per node, managed node group bootstrap also needed(?)
-          # VPC CNI is configured before nodegroups are created and nodes launched, EKS managed nodegroups will infer from the VPC CNI configuration the proper value for max pods
+          ENABLE_PREFIX_DELEGATION = "true" # Increase max pods per node, managed node group bootstrap also needed. t3.medium from 17 to 110 pod limit
           WARM_PREFIX_TARGET       = "1"
         }
       })
     }
+
     aws-ebs-csi-driver = {
       resolve_conflicts_on_update = "OVERWRITE"
       resolve_conflicts_on_create = "OVERWRITE"
-      resolve_conflicts = "OVERWRITE"
-      service_account_role_arn = module.ebs_csi_driver_irsa.iam_role_arn
+      resolve_conflicts           = "OVERWRITE"
+      service_account_role_arn    = module.ebs_csi_driver_irsa.iam_role_arn
       #addon_version            = "v1.29.1-eksbuild.1"
       most_recent = true # pin to working version
     }
   }
 
   eks_managed_node_group_defaults = {
-    ami_type       = "AL2_x86_64"  # This is custom AMI, `enable_bootstrap_user_data` must be set to True
+    ami_type       = "AL2_x86_64"  # This is custom AMI, `enable_bootstrap_user_data` must be set to True (ami_id not ami_type)
     instance_types = ["t3.medium"] # "m6i.large", "m5.large", "m5n.large", "m5zn.large"
     #    attach_cluster_primary_security_group = true
     #    vpc_security_group_ids = [aws_security_group.additional] # Check
@@ -174,6 +174,10 @@ module "eks" {
 
       subnet_ids = module.vpc.private_subnets
 
+      ami_type = "AL2_x86_64" # AL2_ARM_64 for arm
+      #ami_id                     = data.aws_ami.eks_default.image_id
+      #enable_bootstrap_user_data = true # Must be set when using custom AMI i.e. AL2_x86_64, but only if you provide ami_id (not ami_type)
+
       min_size     = 1
       max_size     = 2
       desired_size = 1
@@ -200,18 +204,28 @@ module "eks" {
       #
       #      }
 
-      ami_id                     = data.aws_ami.eks_default.image_id
-      enable_bootstrap_user_data = true # Must be set when using custom AMI i.e. AL2_x86_64
+      #      bootstrap_extra_args       = "--kubelet-extra-args '--max-pods=50'"
+      #
+      #      pre_bootstrap_user_data = <<-EOT
+      #        export USE_MAX_PODS=false
+      #      EOT
 
-#      bootstrap_extra_args       = "--kubelet-extra-args '--max-pods=50'"
-#
-#      pre_bootstrap_user_data = <<-EOT
-#        export USE_MAX_PODS=false
-#      EOT
+      # Set max pods to 110 (hardcoded) --max-pods=${var.cluster_max_pods}
 
-#      bootstrap_extra_args = <<-EOT
-#      "max-pods" = 50
-#      EOT
+      #      pre_bootstrap_user_data = <<-EOT
+      #        #!/bin/bash
+      #        LINE_NUMBER=$(grep -n "KUBELET_EXTRA_ARGS=\$2" /etc/eks/bootstrap.sh | cut -f1 -d:)
+      #        REPLACEMENT="\ \ \ \ \ \ KUBELET_EXTRA_ARGS=\$(echo \$2 | sed -s -E 's/--max-pods=[0-9]+/--max-pods=110/g')"
+      #        sed -i '/KUBELET_EXTRA_ARGS=\$2/d' /etc/eks/bootstrap.sh
+      #        sed -i "$${LINE_NUMBER}i $${REPLACEMENT}" /etc/eks/bootstrap.sh
+      #      EOT
+
+      # before_compute in vpc-cni addon, adds 30 second delay so kubelet can assume ENABLE_PREFIX_DELEGATION = "true", but doesn't work reliably
+      # CNI may well be set, but kubelet_extra_args --max-pods may sometimes not
+      # hence bootstrap might be recommendable as a fail safe
+      bootstrap_extra_args = <<-EOT
+              "max-pods" = 110
+            EOT
 
       # VPC CNI
       # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2551
@@ -304,7 +318,7 @@ module "eks" {
     }
 
     jenkins = {
-      principal_arn = aws_iam_role.jenkins.arn
+      principal_arn     = aws_iam_role.jenkins.arn
       kubernetes_groups = []
 
       policy_associations = {
@@ -318,7 +332,7 @@ module "eks" {
     }
 
     prometheus = {
-      principal_arn = aws_iam_role.prometheus.arn
+      principal_arn     = aws_iam_role.prometheus.arn
       kubernetes_groups = []
 
       policy_associations = {
@@ -840,19 +854,19 @@ resource "helm_release" "aws_load_balancer_controller" {
   ]
 }
 
-resource "kubectl_manifest" "ebs_sc" {
-  yaml_body = <<-EOT
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: ebs-sc
-provisioner: ebs.csi.aws.com
-volumeBindingMode: WaitForFirstConsumer
-reclaimPolicy: Delete
-allowVolumeExpansion: true
-EOT
-
-  depends_on = [
-    module.eks
-  ]
-}
+#resource "kubectl_manifest" "ebs_sc" {
+#  yaml_body = <<-EOT
+#apiVersion: storage.k8s.io/v1
+#kind: StorageClass
+#metadata:
+#  name: ebs-sc
+#provisioner: ebs.csi.aws.com
+#volumeBindingMode: WaitForFirstConsumer
+#reclaimPolicy: Delete
+#allowVolumeExpansion: true
+#EOT
+#
+#  depends_on = [
+#    module.eks
+#  ]
+#}
