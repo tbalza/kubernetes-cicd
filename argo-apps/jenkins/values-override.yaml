@@ -30,7 +30,7 @@ controller:
           systemMessage: "Welcome to our Jenkins! Configured automatically by Jenkins Configuration as Code plugin"
   persistence:
     enabled: true
-    storageClass: "gp2"
+    storageClass: "ebs-sc" #gp3
     size: "30Gi"
     accessMode: "ReadWriteOnce"
   ingress:

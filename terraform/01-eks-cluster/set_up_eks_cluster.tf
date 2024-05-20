@@ -850,10 +850,14 @@ provisioner: ebs.csi.aws.com
 volumeBindingMode: WaitForFirstConsumer
 reclaimPolicy: Delete
 allowVolumeExpansion: true
+parameters:
+  type: gp3
+  # Optional parameters for gp3
+  # iops: "3000"           # Example setting, customize as needed
+  # throughput: "125"      # Example setting, customize as needed
 EOT
 
   depends_on = [
     module.eks
   ]
-
 }
