@@ -55,6 +55,15 @@ provider "kubectl" {
 # Argocd
 ################################################################################
 
+## Dynamically load values from argocd's config.yaml
+locals {
+  argocd_config = yamldecode(file("../../${path.module}/argo-apps/argocd/config.yaml"))
+}
+
+output "argocd_config" {
+  value = local.argocd_config
+}
+
 ## Create namespace
 resource "kubernetes_namespace" "argo_cd" {
   metadata {
@@ -63,18 +72,17 @@ resource "kubernetes_namespace" "argo_cd" {
 }
 
 resource "helm_release" "argo_cd" {
-  name       = "argo-cd"
-  repository = "https://argoproj.github.io/argo-helm"
-  chart      = "argo-cd"
-  version    = "6.7.14" # pending reference this dynamically to argo-apps/argocd/config.yaml
+  name       = local.argocd_config.name # "argo-cd"
+  repository = local.argocd_config.helmchart_url # "https://argoproj.github.io/argo-helm"
+  chart      = local.argocd_config.chart # "argo-cd"
+  version    = local.argocd_config.version # "6.7.14" # pending reference this dynamically to argo-apps/argocd/config.yaml
+  namespace = local.argocd_config.app_namespace # "argocd"
 
-  namespace = "argocd"
-
-  values = [file("../../${path.module}/argo-apps/argocd/values-override-initial.yaml")]
+  values = [file("../../${path.module}/argo-apps/argocd/values-override.yaml")]
 
   # Ensure that the Kubernetes namespace exists before deploying
   depends_on = [
-    kubernetes_namespace.argo_cd, # to be removed as helm will create the namespace
+    kubernetes_namespace.argo_cd,
     # data.terraform_remote_state.eks.outputs.eks_managed_node_groups # pending. wait until node groups are provisioned before deploying argocd
     # data.terraform_remote_state.eks.outputs.eks # pending. wait until node groups are provisioned before deploying argocd
   ]

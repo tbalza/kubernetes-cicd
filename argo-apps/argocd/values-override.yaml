@@ -3,7 +3,7 @@ serviceAccount:
     eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole"
 
 global:
-  domain: "" # Used for ingresses, certificates, SSO, notifications, etc.
+  domain: "" # Used for ingresses, certificates, SSO, notifications, etc. (allow all domains)
 
 server:
   service:
@@ -30,7 +30,7 @@ server:
       alb.ingress.kubernetes.io/success-codes: "200" # check
     path: "/*"
     pathType: "ImplementationSpecific"
-    hostname: "" # references globa: for domain
+    hostname: "" # references global: for domain
 
 applicationSet:
   enabled: true
