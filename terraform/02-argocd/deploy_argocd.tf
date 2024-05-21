@@ -72,6 +72,7 @@ resource "kubernetes_namespace" "argo_cd" {
 }
 
 resource "helm_release" "argo_cd" {
+  # IDE may show "unresolved reference" even though it's linked correctly in tf.
   name       = local.argocd_config.name # "argo-cd"
   repository = local.argocd_config.helmchart_url # "https://argoproj.github.io/argo-helm"
   chart      = local.argocd_config.chart # "argo-cd"
@@ -83,7 +84,8 @@ resource "helm_release" "argo_cd" {
   # Ensure that the Kubernetes namespace exists before deploying
   depends_on = [
     kubernetes_namespace.argo_cd,
-    data.terraform_remote_state.eks.outputs.eks # pending. wait until node groups are provisioned before deploying argocd
+    #data.terraform_remote_state.eks.outputs.eks, # pending. wait until node groups are provisioned before deploying argocd
+    #data.terraform_remote_state.eks.outputs.eks_managed_node_groups # pending. wait until node groups are provisioned before deploying argocd
   ]
 }
 
@@ -93,7 +95,7 @@ resource "helm_release" "argo_cd" {
 # Applies community managed helm charts with local repo overrides (values-override.yaml)
 
 resource "kubectl_manifest" "example_applicationset" {
-  yaml_body = file("${path.module}/applicationset.yaml") # /../../argo-apps/argocd/applicationset.yaml
+  yaml_body = file("../../${path.module}/argo-apps/argocd/manifests/applicationset.yaml") # /../../argo-apps/argocd/applicationset.yaml
 
   depends_on = [
     helm_release.argo_cd
