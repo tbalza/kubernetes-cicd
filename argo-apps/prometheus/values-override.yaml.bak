@@ -3,11 +3,6 @@ alertmanager:
     annotations:
       eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
   alertmanagerSpec:
-    tolerations:
-      - key: "ci-cd"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
     nodeSelector:
       role: ci-cd
 
@@ -16,11 +11,6 @@ kubeStateMetrics:
     annotations:
       eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
 kube-state-metrics:
-  tolerations:
-    - key: "ci-cd"
-      operator: "Equal"
-      value: "true"
-      effect: "NoSchedule"
   nodeSelector:
     role: ci-cd
 
@@ -29,11 +19,6 @@ nodeExporter: # check service account not needed
     annotations:
       eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
 prometheus-node-exporter:
-  tolerations:
-    - key: "ci-cd"
-      operator: "Equal"
-      value: "true"
-      effect: "NoSchedule"
   nodeSelector:
     role: ci-cd
 
@@ -42,11 +27,6 @@ grafana:
   serviceAccount:
     annotations:
       eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
-  tolerations:
-    - key: "ci-cd"
-      operator: "Equal"
-      value: "true"
-      effect: "NoSchedule"
   nodeSelector:
     role: ci-cd
 
@@ -55,11 +35,6 @@ prometheus:
     annotations:
       eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
   prometheusSpec:
-    tolerations:
-      - key: "ci-cd"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
     nodeSelector:
       role: ci-cd
 
@@ -73,11 +48,8 @@ prometheusOperator:
         eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/PrometheusRole" # check , make cluster and account id dynamic
   admissionWebhooks:
     failurePolicy: Ignore # check
-  tolerations:
-    - key: "ci-cd"
-      operator: "Equal"
-      value: "true"
-      effect: "NoSchedule"
+  nodeSelector:
+      role: ci-cd
 
 # Control plane is managed by EKS hence the following are disabled
 defaultRules:
