@@ -1,6 +1,6 @@
 serviceAccount:
   annotations:
-    eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/JenkinsRole"
+    eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole"
 
 server:
   service:
@@ -15,8 +15,6 @@ server:
 
 applicationSet:
   enabled: true
-  name: applicationset-controller
-  replicas: 1
   nodeSelector:
     role: ci-cd
 
