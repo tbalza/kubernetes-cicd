@@ -2,6 +2,9 @@ serviceAccount:
   annotations:
     eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole"
 
+global:
+  domain: "" # Used for ingresses, certificates, SSO, notifications, etc.
+
 server:
   service:
     type: ClusterIP
@@ -12,6 +15,22 @@ server:
   extraEnv:
     - name: ARGOCD_INSECURE
       value: "true"
+  ingress:
+    enabled: true
+    ingressClassName: "alb"
+    annotations:
+      kubernetes.io/ingress.class: "alb"
+      alb.ingress.kubernetes.io/scheme: "internet-facing"
+      alb.ingress.kubernetes.io/target-type: "ip"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'  # Adjust as necessary for HTTPS
+      alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
+      alb.ingress.kubernetes.io/group.order: "1"
+      alb.ingress.kubernetes.io/healthcheck-path: "/healthz"
+      alb.ingress.kubernetes.io/healthcheck-port: "traffic-port" # check
+      alb.ingress.kubernetes.io/success-codes: "200" # check
+    path: "/*"
+    pathType: "ImplementationSpecific"
+    hostname: "" # references globa: for domain
 
 applicationSet:
   enabled: true
@@ -36,20 +55,3 @@ repoServer:
   nodeSelector:
     role: ci-cd
 
-ingress:
-  enabled: true
-  annotations:
-    kubernetes.io/ingress.class: "alb"
-    alb.ingress.kubernetes.io/scheme: "internet-facing"
-    alb.ingress.kubernetes.io/target-type: "ip"
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'  # Adjust as necessary for HTTPS
-    alb.ingress.kubernetes.io/healthcheck-path: "/healthz"
-    alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
-    alb.ingress.kubernetes.io/group.order: "1"
-  paths:
-    - path: "/*"
-      pathType: "ImplementationSpecific"
-  hosts:
-    - "*"  # Adjust if you have specific domain
-  serviceName: "argo-cd-argocd-server"
-  servicePort: 80

@@ -76,6 +76,7 @@ resource "helm_release" "argo_cd" {
   depends_on = [
     kubernetes_namespace.argo_cd, # to be removed as helm will create the namespace
     # data.terraform_remote_state.eks.outputs.eks_managed_node_groups # pending. wait until node groups are provisioned before deploying argocd
+    # data.terraform_remote_state.eks.outputs.eks # pending. wait until node groups are provisioned before deploying argocd
   ]
 }
 
@@ -215,7 +216,7 @@ resource "helm_release" "argo_cd" {
 #  ]
 #}
 
-## Create argocd ALB ingress
+# Create argocd ALB ingress
 #resource "kubernetes_ingress_v1" "argo_cd" {
 #  metadata {
 #    name      = "argocd-ingress"
