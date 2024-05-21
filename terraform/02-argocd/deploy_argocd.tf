@@ -66,15 +66,16 @@ resource "helm_release" "argo_cd" {
   name       = "argo-cd"
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
-  version    = "6.7.14"
+  version    = "6.7.14" # pending reference this dynamically to argo-apps/argocd/config.yaml
 
   namespace = "argocd"
 
-  values = [file("${path.module}/argo-apps/argocd/values-override-initial.yaml")]
+  values = [file("../../${path.module}/argo-apps/argocd/values-override-initial.yaml")]
 
   # Ensure that the Kubernetes namespace exists before deploying
   depends_on = [
-    kubernetes_namespace.argo_cd
+    kubernetes_namespace.argo_cd, # to be removed as helm will create the namespace
+    # data.terraform_remote_state.eks.outputs.eks_managed_node_groups # pending. wait until node groups are provisioned before deploying argocd
   ]
 }
 
@@ -260,6 +261,11 @@ resource "helm_release" "argo_cd" {
 # Use kubectl to apply an ArgoCD ApplicationSet that dynamically deploys apps in argo-apps/ that contain a config.yaml
 # Applies community managed helm charts with local repo overrides (values-override.yaml)
 
+
+
+
+
+
 resource "kubectl_manifest" "example_applicationset" {
   yaml_body = file("${path.module}/applicationset.yaml") # /../../argo-apps/argocd/applicationset.yaml
 
@@ -267,6 +273,10 @@ resource "kubectl_manifest" "example_applicationset" {
     helm_release.argo_cd
   ]
 }
+
+
+
+
 
 
 # Fix interdependencies for graceful provisioning and teardown ### check

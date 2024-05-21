@@ -78,19 +78,19 @@ module "eks" {
     coredns = {
       resolve_conflicts_on_update = "OVERWRITE"
       resolve_conflicts_on_create = "OVERWRITE"
-      #most_recent = true # pin to working version
+      #most_recent = true
       addon_version               = "v1.11.1-eksbuild.9"
     }
     kube-proxy = {
       resolve_conflicts_on_update = "OVERWRITE"
       resolve_conflicts_on_create = "OVERWRITE"
-      #most_recent = true # pin to working version
+      #most_recent = true
       addon_version               = "v1.29.3-eksbuild.2"
     }
     vpc-cni = { # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2968
       resolve_conflicts_on_update = "OVERWRITE"
       resolve_conflicts_on_create = "OVERWRITE"
-      #most_recent                 = true # pin to working version
+      #most_recent                 = true
       addon_version               = "v1.18.1-eksbuild.3"
       before_compute              = true # Attempt VPC CNI can be created before the associated nodegroups, bootstrap still needed
       configuration_values = jsonencode({
@@ -106,7 +106,7 @@ module "eks" {
       resolve_conflicts_on_create = "OVERWRITE"
       #resolve_conflicts           = "OVERWRITE"
       service_account_role_arn    = module.ebs_csi_driver_irsa.iam_role_arn
-      #most_recent = true # pin to working version
+      #most_recent = true
       addon_version            = "v1.30.0-eksbuild.1"
     }
   }
@@ -182,7 +182,7 @@ module "eks" {
       subnet_ids = module.vpc.private_subnets
 
       ami_type = "AL2_x86_64" # AL2_ARM_64 for arm
-      #ami_id                     = data.aws_ami.eks_default.image_id
+      #ami_id                     = data.aws_ami.eks_default.image_id # check pin to specific version
       #enable_bootstrap_user_data = true # Must be set when using custom AMI i.e. AL2_x86_64, but only if you provide ami_id (not ami_type)
 
       min_size     = 1
@@ -228,7 +228,7 @@ module "eks" {
 #        effect = "NO_SCHEDULE"
 #      }]
       labels = {
-        role = "ci-cd" # used by k8s by argocd. scheduling, resource selection / grouping, policy enforcement
+        role = "ci-cd" # used by k8s/argocd. node selection, scheduling, grouping, policy enforcement
       }
 
       #force_update_version = true
@@ -313,7 +313,7 @@ module "eks" {
 #        effect = "NO_SCHEDULE"
 #      }]
       labels = {
-        role = "wordpress" # used by k8s by argocd. scheduling, resource selection / grouping, policy enforcement
+        role = "wordpress" # used by k8s/argocd. node selection, scheduling, grouping, policy enforcement
       }
 
       #force_update_version = true
@@ -587,7 +587,6 @@ module "vpc" {
   enable_nat_gateway     = true
   single_nat_gateway     = true
   one_nat_gateway_per_az = false
-  #create_egress_only_igw = true
 
   enable_dns_hostnames = true # needed for EFS
   enable_dns_support   = true
