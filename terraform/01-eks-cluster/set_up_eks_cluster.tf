@@ -856,82 +856,75 @@ provider "helm" {
 # create cname dns records in hosting provider
 # host name echo, CNAME, k8s-default.etc.amazonaws.com
 
+module "aws_load_balancer_controller_irsa_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = ">= 5.39.0"
 
+  role_name                              = "aws-load-balancer-controller"
+  attach_load_balancer_controller_policy = true
 
+  oidc_providers = {
+    sts = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:aws-load-balancer-controller"]
+    }
+  }
+}
 
-
-
-
-
-#module "aws_load_balancer_controller_irsa_role" {
-#  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-#  version = ">= 5.39.0"
-#
-#  role_name                              = "aws-load-balancer-controller"
-#  attach_load_balancer_controller_policy = true
-#
-#  oidc_providers = {
-#    sts = {
-#      provider_arn               = module.eks.oidc_provider_arn
-#      namespace_service_accounts = ["kube-system:aws-load-balancer-controller"]
-#    }
-#  }
+#resource "aws_iam_role_policy_attachment" "alb_controller_policy_attachment" {
+#  role       = module.aws_load_balancer_controller_irsa_role.iam_role_name
+#  policy_arn = aws_iam_policy.aws_load_balancer_controller.arn
 #}
-#
-##resource "aws_iam_role_policy_attachment" "alb_controller_policy_attachment" {
-##  role       = module.aws_load_balancer_controller_irsa_role.iam_role_name
-##  policy_arn = aws_iam_policy.aws_load_balancer_controller.arn
-##}
-#
-## Load balancer controller uses tags to discover subnets in which it can in which in can create load balancers
-#resource "helm_release" "aws_load_balancer_controller" {
-#  name       = "aws-load-balancer-controller"
-#  repository = "https://aws.github.io/eks-charts"
-#  chart      = "aws-load-balancer-controller"
-#  namespace  = "kube-system"
-#  version    = "1.7.2" # AWS LBC ver v2.7.2, requires Kubernetes 1.22+
-#  #wait = false # might fix destroy issue?
-#
-#  set {
-#    name  = "replicaCount" # by default it creates 2 replicas
-#    value = 1
-#  }
-#
-#  set {
-#    name  = "clusterName" # check important
-#    value = module.eks.cluster_name
-#  }
-#
-#  set {
-#    name  = "serviceAccount.name" # check important
-#    value = "aws-load-balancer-controller"
-#  }
-#
-#  set {
-#    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn" # annotation to allows service account to assume aws role
-#    value = module.aws_load_balancer_controller_irsa_role.iam_role_arn
-#  }
-#
-#  # Resource requests and limits
-#  #  set {
-#  #    name  = "resources.requests.cpu"
-#  #    value = "100m"
-#  #  }
-#  #  set {
-#  #    name  = "resources.requests.memory"
-#  #    value = "128Mi"
-#  #  }
-#  #  set {
-#  #    name  = "resources.limits.memory"
-#  #    value = "128Mi"
-#  #  }
-#
-#  depends_on = [                                   # checkk
-#    module.aws_load_balancer_controller_irsa_role, # important
-#    #aws_iam_role_policy_attachment.alb_controller_policy_attachment,
-#    module.eks # important
-#  ]
-#}
+
+# Load balancer controller uses tags to discover subnets in which it can in which in can create load balancers
+resource "helm_release" "aws_load_balancer_controller" {
+  name       = "aws-load-balancer-controller"
+  repository = "https://aws.github.io/eks-charts"
+  chart      = "aws-load-balancer-controller"
+  namespace  = "kube-system"
+  version    = "1.7.2" # AWS LBC ver v2.7.2, requires Kubernetes 1.22+
+  #wait = false # might fix destroy issue?
+
+  set {
+    name  = "replicaCount" # by default it creates 2 replicas
+    value = 1
+  }
+
+  set {
+    name  = "clusterName" # check important
+    value = module.eks.cluster_name
+  }
+
+  set {
+    name  = "serviceAccount.name" # check important
+    value = "aws-load-balancer-controller"
+  }
+
+  set {
+    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn" # annotation to allows service account to assume aws role
+    value = module.aws_load_balancer_controller_irsa_role.iam_role_arn
+  }
+
+  # Resource requests and limits
+  #  set {
+  #    name  = "resources.requests.cpu"
+  #    value = "100m"
+  #  }
+  #  set {
+  #    name  = "resources.requests.memory"
+  #    value = "128Mi"
+  #  }
+  #  set {
+  #    name  = "resources.limits.memory"
+  #    value = "128Mi"
+  #  }
+
+  depends_on = [                                   # checkk
+    module.aws_load_balancer_controller_irsa_role, # important
+    #aws_iam_role_policy_attachment.alb_controller_policy_attachment,
+    module.eks # important
+  ]
+}
 
 
 
