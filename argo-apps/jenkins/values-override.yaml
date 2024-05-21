@@ -65,4 +65,4 @@ serviceAccount:
   create: true
   name: jenkins
   annotations:
-    eks.amazonaws.com/role-arn: "argocd:arn:aws:iam::350206045032:role/JenkinsRole"
+    eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/JenkinsRole"

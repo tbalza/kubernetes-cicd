@@ -83,8 +83,7 @@ resource "helm_release" "argo_cd" {
   # Ensure that the Kubernetes namespace exists before deploying
   depends_on = [
     kubernetes_namespace.argo_cd,
-    # data.terraform_remote_state.eks.outputs.eks_managed_node_groups # pending. wait until node groups are provisioned before deploying argocd
-    # data.terraform_remote_state.eks.outputs.eks # pending. wait until node groups are provisioned before deploying argocd
+    data.terraform_remote_state.eks.outputs.eks # pending. wait until node groups are provisioned before deploying argocd
   ]
 }
 
