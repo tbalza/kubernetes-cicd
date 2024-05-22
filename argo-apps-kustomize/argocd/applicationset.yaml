@@ -4,8 +4,8 @@ metadata:
   name: cluster-addons
   namespace: argocd
 spec:
-  #goTemplate: true
-  #goTemplateOptions: ["missingkey=error"]
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
   generators:
   - git:
       repoURL: https://github.com/tbalza/kubernetes-cicd.git
