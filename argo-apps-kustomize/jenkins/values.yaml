@@ -1,0 +1,70 @@
+controller:
+  image:
+    repository: "jenkins/jenkins"
+    tag: 2.440.3
+  javaOpts: "-Xmx1536m -Xms512m"
+  admin:
+    username: "admin"
+    password: "pass"
+  serviceType: "ClusterIP"
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "1"
+      memory: "2Gi"
+  service:
+    port: 8080
+  installPlugins:
+    - kubernetes:4203.v1dd44f5b_1cf9
+    - workflow-aggregator:596.v8c21c963d92d
+    - git:5.2.1
+    - configuration-as-code:1775.v810dc950b_514
+    - ansible:307.va_1f3ef06575a_
+    - docker-workflow:580.vc0c340686b_54
+    - credentials:1337.v60b_d7b_c7b_c9f
+  JCasC:
+    enabled: true
+    configScripts:
+      welcome-message: |
+        jenkins:
+          systemMessage: "Welcome to our Jenkins! Configured automatically by Jenkins Configuration as Code plugin"
+  persistence:
+    enabled: true
+    storageClass: "ebs-sc" #gp3
+    size: "30Gi"
+    accessMode: "ReadWriteOnce"
+  ingress:
+    enabled: true
+    className: "alb"
+    annotations:
+      kubernetes.io/ingress.class: "alb"
+      alb.ingress.kubernetes.io/scheme: "internet-facing"
+      alb.ingress.kubernetes.io/target-type: "ip"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 8080}]'
+      alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
+      alb.ingress.kubernetes.io/group.order: "2"
+      alb.ingress.kubernetes.io/healthcheck-path: "/login"
+      alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
+      alb.ingress.kubernetes.io/success-codes: "200,302"
+    paths:
+      - path: "/*"
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: "jenkins"
+            port:
+              number: 8080
+  nodeSelector:
+    role: ci-cd
+
+agent:
+  nodeSelector:
+    role: ci-cd
+
+serviceAccount:
+  create: true
+  name: jenkins
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/JenkinsRole"

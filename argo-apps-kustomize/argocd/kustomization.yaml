@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - applicationset.yaml
+
+helmCharts:
+  - name: argo-cd
+    repo: https://argoproj.github.io/argo-helm
+    version: 6.7.14 # Chart 6.7.14, app v v2.10.7
+    releaseName: argo-cd
+    namespace: argocd
+    includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
+    valuesFile: values.yaml

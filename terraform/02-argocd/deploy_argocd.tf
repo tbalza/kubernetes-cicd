@@ -79,7 +79,7 @@ resource "helm_release" "argo_cd" {
   version    = local.argocd_config.version # "6.7.14" # pending reference this dynamically to argo-apps/argocd/config.yaml
   namespace = local.argocd_config.app_namespace # "argocd"
 
-  values = [file("../../${path.module}/argo-apps/argocd/values-override.yaml")]
+  values = [file("../../${path.module}/argo-apps-kustomize/argocd/values.yaml")]
 
   # Ensure that the Kubernetes namespace exists before deploying
   depends_on = [
@@ -95,7 +95,7 @@ resource "helm_release" "argo_cd" {
 # Applies community managed helm charts with local repo overrides (values-override.yaml)
 
 resource "kubectl_manifest" "example_applicationset" {
-  yaml_body = file("../../${path.module}/argo-apps/argocd/manifests/applicationset.yaml") # /../../argo-apps/argocd/applicationset.yaml
+  yaml_body = file("../../${path.module}/argo-apps-kustomize/argocd/manifests/applicationset.yaml") # /../../argo-apps/argocd/applicationset.yaml
 
   depends_on = [
     helm_release.argo_cd
