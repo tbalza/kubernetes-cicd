@@ -1,4 +1,4 @@
-aws eks update-kubeconfig --name wp-production --region us-east-1
+aws eks update-kubeconfig --name django --region us-east-1
 # whenever you create a new eks cluster you must update kurbentes context
 
 
@@ -46,6 +46,7 @@ helm install app eks/app
 kubectl logs -f -n kube-system \
 -l app.kubernetes.io/name=aws-load-balancer-controller
 
+export KUBERNETES_MASTER=https://FAA89D5CCB710D5F4E6AB4F6408A1D25.gr7.us-east-1.eks.amazonaws.com
 export KUBECONFIG=~/.kube/config
 export KUBE_CONFIG_PATH=~/.kube/config
 export DISABLE_TELEMETRY=true #cloud nuke

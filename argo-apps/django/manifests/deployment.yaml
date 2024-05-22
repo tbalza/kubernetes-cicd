@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-app
+spec:
+  template:
+    spec:
+      containers:
+      - name: django-app
+        image: your-registry/django-app:latest
+      nodeSelector:
+        node-group: prod

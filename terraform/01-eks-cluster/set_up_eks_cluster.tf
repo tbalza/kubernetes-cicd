@@ -10,7 +10,7 @@ data "aws_availability_zones" "available" {}
 # aws kubernetes v1.29
 
 locals {
-  name            = "wp-production" # cluster name
+  name            = "django-production" # cluster name
   cluster_version = "1.29" # 1.29 # check
   region          = "us-east-1"
 
@@ -286,9 +286,9 @@ module "eks" {
       }
     }
 
-    wordpress = { # green
+    django = { # green
 
-      name = "wordpress-node-group"
+      name = "django-node-group"
 
       subnet_ids = module.vpc.private_subnets
 
@@ -308,18 +308,18 @@ module "eks" {
       # taints are not compatible with ebs csi driver out of the box
 
 #      taints = [{
-#        key    = "wordpress"
+#        key    = "django"
 #        value  = "true"
 #        effect = "NO_SCHEDULE"
 #      }]
       labels = {
-        role = "wordpress" # used by k8s/argocd. node selection, scheduling, grouping, policy enforcement
+        role = "django" # used by k8s/argocd. node selection, scheduling, grouping, policy enforcement
       }
 
       #force_update_version = true
       instance_types       = ["t3.medium"] # Overrides default instance defined above
 
-      description = "Wordpress managed node group launch template"
+      description = "Django managed node group launch template"
 
       ebs_optimized           = true
       disable_api_termination = false
@@ -346,11 +346,11 @@ module "eks" {
       }
 
       create_iam_role          = true
-      iam_role_name            = "wordpress-managed-node-group-role"
+      iam_role_name            = "django-managed-node-group-role"
       iam_role_use_name_prefix = false
-      iam_role_description     = "Wordpress managed node group role"
+      iam_role_description     = "django managed node group role"
       iam_role_tags = {
-        Purpose = "wordpress-managed-node-group-role-tag"
+        Purpose = "django-managed-node-group-role-tag"
       }
       iam_role_additional_policies = {
         # node wide policies
@@ -365,7 +365,7 @@ module "eks" {
       }
 
       tags = {
-        ExtraTag = "wordpress-node" # used for cost allocation, resource mgmt, automation
+        ExtraTag = "django-node" # used for cost allocation, resource mgmt, automation
       }
     }
 
