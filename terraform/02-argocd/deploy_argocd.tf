@@ -110,7 +110,7 @@ resource "kubectl_manifest" "kustomize_patch" {
 ## Applies community managed helm charts with local repo overrides (values-override.yaml)
 
 resource "kubectl_manifest" "example_applicationset" {
-  yaml_body = file("../../${path.module}/argo-apps-kustomize/argocd/applicationset.yaml") # /../../argo-apps/argocd/applicationset.yaml
+  yaml_body = file("${path.module}/applicationset.yaml") # /../../argo-apps/argocd/applicationset.yaml
 
   depends_on = [
     kubectl_manifest.kustomize_patch
