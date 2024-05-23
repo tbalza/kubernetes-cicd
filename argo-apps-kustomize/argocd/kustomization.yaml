@@ -9,5 +9,5 @@ helmCharts:
     version: 6.7.14 # Chart 6.7.14, app v v2.10.7
     releaseName: argo-cd
     namespace: argocd
-    #includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
+    includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
     valuesFile: values.yaml

@@ -10,5 +10,5 @@ helmCharts:
     version: 5.1.6  # Chart v5.1.6, App v2.440.3
     releaseName: jenkins
     namespace: jenkins
-    #includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
+    includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
     valuesFile: values.yaml
