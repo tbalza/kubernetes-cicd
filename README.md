@@ -1,4 +1,4 @@
-aws eks update-kubeconfig --name django-production --region us-east-1
+aws eks update-kubeconfig --name django-production2 --region us-east-1
 # whenever you create a new eks cluster you must update kurbentes context
 
 
