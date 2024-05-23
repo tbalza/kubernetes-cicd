@@ -1,7 +1,6 @@
 aws eks update-kubeconfig --name django-production --region us-east-1
 # whenever you create a new eks cluster you must update kurbentes context
 
-
 you are better off separating your infrastructure from your applications.
 this would be two different statefiles, and you would need to explicitly handle the removal of the applications running on the cluster first, before destroying the cluster
 # Necessary to avoid removing Terraform's permissions too soon before its finished

@@ -53,14 +53,14 @@ provider "kubectl" {
 # Argocd
 ################################################################################
 
-## Dynamically load values from argocd's config.yaml
-#locals {
-#  argocd_config = yamldecode(file("../../${path.module}/argo-apps-kustomize/argocd/config.yaml"))
-#}
+# Dynamically load values from argocd's kustomization.yaml
+locals {
+  argocd_config = yamldecode(file("../../${path.module}/argo-apps/argocd/kustomization.yaml"))
+}
 
-#output "argocd_config" {
-#  value = local.argocd_config
-#}
+output "argocd_config" {
+  value = local.argocd_config
+}
 
 # Create namespace
 resource "kubernetes_namespace" "argo_cd" {
@@ -76,6 +76,12 @@ resource "helm_release" "argo_cd" {
   chart      = "argo-cd" #local.argocd_config.chart # "argo-cd"
   version    = "6.7.14" #local.argocd_config.version # "6.7.14" # pending reference this dynamically to argo-apps/argocd/config.yaml
   namespace = "argocd" #local.argocd_config.app_namespace # "argocd"
+
+#  name       = local.argocd_config.helmCharts.name # "argo-cd"
+#  repository = local.argocd_config.helmCharts.repo # "https://argoproj.github.io/argo-helm"
+#  chart      = local.argocd_config.helmCharts.releaseName # "argo-cd"
+#  version    = local.argocd_config.helmCharts.version # "6.7.14" # pending reference this dynamically to argo-apps/argocd/config.yaml
+#  namespace = local.argocd_config.helmCharts.namespace # "argocd"
 
   values = [file("../../${path.module}/argo-apps/argocd/values.yaml")]
 
