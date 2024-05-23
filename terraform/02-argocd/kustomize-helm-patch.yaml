@@ -1,9 +1,9 @@
-spec:
-  template:
-    spec:
-      containers:
-      - name: repo-server
-        args:
-          - --enable-helm
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  kustomize.buildOptions: "--enable-helm"
 
 # setting this through helm override crashed argocd for some reason
