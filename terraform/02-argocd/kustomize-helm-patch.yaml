@@ -4,6 +4,6 @@ metadata:
   name: argocd-cm
   namespace: argocd
 data:
-  kustomize.buildOptions: "--enable-helm" # "--enable-helm"
+  kustomize.buildOptions: "--enable-helm" # "--enable-helm" # --load_restrictor=none
 
 # setting this through helm override crashed argocd for some reason
