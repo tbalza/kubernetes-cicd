@@ -26,6 +26,7 @@ provider "kubernetes" {
     args        = ["eks", "get-token", "--cluster-name", data.terraform_remote_state.eks.outputs.cluster_name] # var.cluster_name
     command     = "aws"
   }
+  #load_config_file = false
 }
 
 provider "helm" {
@@ -38,6 +39,7 @@ provider "helm" {
       command     = "aws"
     }
   }
+  #load_config_file = false
 }
 
 provider "kubectl" {
@@ -48,7 +50,7 @@ provider "kubectl" {
     args        = ["eks", "get-token", "--cluster-name", data.terraform_remote_state.eks.outputs.cluster_name] # var.cluster_name
     command     = "aws"
   }
-  load_config_file = false
+  #load_config_file = false
 }
 
 ################################################################################
@@ -56,15 +58,15 @@ provider "kubectl" {
 ################################################################################
 
 ## Dynamically load values from argocd's config.yaml
-locals {
-  argocd_config = yamldecode(file("../../${path.module}/argo-apps/argocd/config.yaml"))
-}
+#locals {
+#  argocd_config = yamldecode(file("../../${path.module}/argo-apps-kustomize/argocd/config.yaml"))
+#}
 
-output "argocd_config" {
-  value = local.argocd_config
-}
+#output "argocd_config" {
+#  value = local.argocd_config
+#}
 
-## Create namespace
+# Create namespace
 resource "kubernetes_namespace" "argo_cd" {
   metadata {
     name = "argocd"
@@ -73,17 +75,17 @@ resource "kubernetes_namespace" "argo_cd" {
 
 resource "helm_release" "argo_cd" {
   # IDE may show "unresolved reference" even though it's linked correctly in tf.
-  name       = local.argocd_config.name # "argo-cd"
-  repository = local.argocd_config.helmchart_url # "https://argoproj.github.io/argo-helm"
-  chart      = local.argocd_config.chart # "argo-cd"
-  version    = local.argocd_config.version # "6.7.14" # pending reference this dynamically to argo-apps/argocd/config.yaml
-  namespace = local.argocd_config.app_namespace # "argocd"
+  name       = "argo-cd" #local.argocd_config.name # "argo-cd"
+  repository = "https://argoproj.github.io/argo-helm" #local.argocd_config.helmchart_url # "https://argoproj.github.io/argo-helm"
+  chart      = "argo-cd" #local.argocd_config.chart # "argo-cd"
+  version    = "6.7.14" #local.argocd_config.version # "6.7.14" # pending reference this dynamically to argo-apps/argocd/config.yaml
+  namespace = "argocd" #local.argocd_config.app_namespace # "argocd"
 
   values = [file("../../${path.module}/argo-apps-kustomize/argocd/values.yaml")]
 
   # Ensure that the Kubernetes namespace exists before deploying
   depends_on = [
-    kubernetes_namespace.argo_cd,
+    #kubernetes_namespace.argo_cd,
     #data.terraform_remote_state.eks.outputs.eks, # pending. wait until node groups are provisioned before deploying argocd
     #data.terraform_remote_state.eks.outputs.eks_managed_node_groups # pending. wait until node groups are provisioned before deploying argocd
   ]

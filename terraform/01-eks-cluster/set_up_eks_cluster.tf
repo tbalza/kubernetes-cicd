@@ -10,7 +10,7 @@ data "aws_availability_zones" "available" {}
 # aws kubernetes v1.29
 
 locals {
-  name            = "django-production" # cluster name
+  name            = "django-production2" # cluster name
   cluster_version = "1.29" # 1.29 # check
   region          = "us-east-1"
 
@@ -818,6 +818,7 @@ provider "kubernetes" {
     args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name] # var.cluster_name
     command     = "aws"
   }
+  #load_config_file = false
 }
 
 provider "helm" {
@@ -830,6 +831,7 @@ provider "helm" {
       command     = "aws"
     }
   }
+  #load_config_file = false
 }
 
 #data "aws_eks_cluster" "cluster" {
