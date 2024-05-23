@@ -91,18 +91,13 @@ resource "helm_release" "argo_cd" {
   ]
 }
 
-## ArgoCD apply ApplicationSet
-
-## Use kubectl to apply an ArgoCD ApplicationSet that dynamically deploys apps in argo-apps/ that contain a config.yaml
-## Applies community managed helm charts with local repo overrides (values-override.yaml)
-
-resource "kubectl_manifest" "kustomize_patch" {
-  yaml_body = file("${path.module}/kustomize-helm-patch.yaml") # /../../argo-apps/argocd/applicationset.yaml
-
-  depends_on = [
-    helm_release.argo_cd
-  ]
-}
+#resource "kubectl_manifest" "kustomize_patch" {
+#  yaml_body = file("${path.module}/kustomize-helm-patch.yaml") # /../../argo-apps/argocd/applicationset.yaml
+#
+#  depends_on = [
+#    helm_release.argo_cd
+#  ]
+#}
 
 ## ArgoCD apply ApplicationSet
 
@@ -113,7 +108,7 @@ resource "kubectl_manifest" "example_applicationset" {
   yaml_body = file("${path.module}/applicationset.yaml") # /../../argo-apps/argocd/applicationset.yaml
 
   depends_on = [
-    kubectl_manifest.kustomize_patch
+    helm_release.argo_cd # kubectl_manifest.kustomize_patch
   ]
 }
 
