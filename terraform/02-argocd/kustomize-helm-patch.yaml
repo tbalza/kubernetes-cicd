@@ -1,0 +1,9 @@
+spec:
+  template:
+    spec:
+      containers:
+      - name: repo-server
+        args:
+          - --enable-helm
+
+# setting this through helm override crashed argocd for some reason
