@@ -64,7 +64,6 @@ output "argocd_helm_chart" {
   value = local.argocd_helm_chart
 }
 
-
 # Create namespace
 resource "kubernetes_namespace" "argo_cd" {
   metadata {
