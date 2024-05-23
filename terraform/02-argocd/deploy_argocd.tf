@@ -81,7 +81,7 @@ resource "helm_release" "argo_cd" {
   version    = "6.7.14" #local.argocd_config.version # "6.7.14" # pending reference this dynamically to argo-apps/argocd/config.yaml
   namespace = "argocd" #local.argocd_config.app_namespace # "argocd"
 
-  values = [file("../../${path.module}/argo-apps-kustomizeyaml")]
+  values = [file("../../${path.module}/argo-apps-kustomize/.argocd/values.yaml")]
 
   # Ensure that the Kubernetes namespace exists before deploying
   depends_on = [
