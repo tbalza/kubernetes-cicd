@@ -3,7 +3,7 @@ kind: Kustomization
 
 helmCharts:
   - name: prometheus
-    repo: https://github.com/prometheus-community/helm-charts/
+    repo: git@github.com:prometheus-community/helm-charts.git # https://github.com/prometheus-community/helm-charts
     version: 58.5.3
     releaseName: kube-prometheus-stack
     namespace: prometheus

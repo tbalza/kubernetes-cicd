@@ -59,3 +59,4 @@ configs:
   cm:
     kustomize.buildOptions: "--enable-helm --load-restrictor=LoadRestrictionsNone" # kustomize.buildOptions: "--enable-helm --load-restrictor LoadRestrictionsNone" # enable kustomize helm charts
 
+# --load-restrictor none ?
