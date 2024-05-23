@@ -54,7 +54,7 @@ controller:
 repoServer:
   nodeSelector:
     role: ci-cd
-  extraArgs:
-    - "--enable-helm"
+#  extraArgs:
+#    - "--enable-helm"
   # allow Kustomize to install helm charts
 
