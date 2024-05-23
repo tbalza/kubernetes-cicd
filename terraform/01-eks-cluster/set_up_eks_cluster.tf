@@ -10,7 +10,7 @@ data "aws_availability_zones" "available" {}
 # aws kubernetes v1.29
 
 locals {
-  name            = "django-production2" # cluster name
+  name            = "django-production" # cluster name
   cluster_version = "1.29" # 1.29 # check
   region          = "us-east-1"
 
@@ -30,7 +30,7 @@ locals {
 # IAM additional policy https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2826 # check
 module "ebs_csi_driver_irsa" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = ">= 5.39.0"
+  version = "5.39.1"
 
   # create_role      = false
   role_name_prefix = "${module.eks.cluster_name}-ebs-csi"
@@ -53,7 +53,7 @@ module "ebs_csi_driver_irsa" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "20.8.5"
+  version = "20.11.1"
 
   cluster_name             = local.name
   cluster_version          = local.cluster_version
@@ -574,7 +574,7 @@ output "jenkins_iam_role_arn" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
+  version = "5.8.1"
 
   name = local.name
   cidr = local.vpc_cidr
@@ -604,7 +604,7 @@ module "vpc" {
 
 module "ebs_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 2.1"
+  version = "3.0.0"
 
   description = "Customer managed key to encrypt EKS managed node group volumes"
 
@@ -859,7 +859,7 @@ provider "helm" {
 
 module "aws_load_balancer_controller_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = ">= 5.39.0"
+  version = "5.39.1"
 
   role_name                              = "aws-load-balancer-controller"
   attach_load_balancer_controller_policy = true
