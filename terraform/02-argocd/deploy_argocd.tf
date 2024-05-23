@@ -56,11 +56,13 @@ provider "kubectl" {
 # Dynamically load values from argocd's kustomization.yaml
 locals {
   argocd_config = yamldecode(file("../../${path.module}/argo-apps/argocd/kustomization.yaml"))
+  argocd_helm_chart = local.argocd_config.helmCharts[0] # Access the first (or only) element in the list
 }
 
-output "argocd_config" {
-  value = local.argocd_config
+output "argocd_helm_chart" {
+  value = local.argocd_helm_chart
 }
+
 
 # Create namespace
 resource "kubernetes_namespace" "argo_cd" {
@@ -71,17 +73,11 @@ resource "kubernetes_namespace" "argo_cd" {
 
 resource "helm_release" "argo_cd" {
   # IDE may show "unresolved reference" even though it's linked correctly in tf.
-  name       = "argo-cd" #local.argocd_config.name # "argo-cd"
-  repository = "https://argoproj.github.io/argo-helm" #local.argocd_config.helmchart_url # "https://argoproj.github.io/argo-helm"
-  chart      = "argo-cd" #local.argocd_config.chart # "argo-cd"
-  version    = "6.7.14" #local.argocd_config.version # "6.7.14" # pending reference this dynamically to argo-apps/argocd/config.yaml
-  namespace = "argocd" #local.argocd_config.app_namespace # "argocd"
-
-#  name       = local.argocd_config.helmCharts.name # "argo-cd"
-#  repository = local.argocd_config.helmCharts.repo # "https://argoproj.github.io/argo-helm"
-#  chart      = local.argocd_config.helmCharts.releaseName # "argo-cd"
-#  version    = local.argocd_config.helmCharts.version # "6.7.14" # pending reference this dynamically to argo-apps/argocd/config.yaml
-#  namespace = local.argocd_config.helmCharts.namespace # "argocd"
+  name       = local.argocd_helm_chart.name # "argo-cd"
+  repository = local.argocd_helm_chart.repo # "https://argoproj.github.io/argo-helm"
+  chart      = local.argocd_helm_chart.releaseName # "argo-cd"
+  version    = local.argocd_helm_chart.version # "6.7.14" # pending reference this dynamically to argo-apps/argocd/config.yaml
+  namespace = local.argocd_helm_chart.namespace # "argocd"
 
   values = [file("../../${path.module}/argo-apps/argocd/values.yaml")]
 
