@@ -1,8 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-resources:
-  - configmap.yaml
-  - pipeline-job.yaml
+
 
 helmCharts:
   - name: jenkins
@@ -12,3 +10,7 @@ helmCharts:
     namespace: jenkins
     includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
     valuesFile: values.yaml
+
+resources:
+  - configmap.yaml
+  - pipeline-job.yaml
