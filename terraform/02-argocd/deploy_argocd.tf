@@ -8,7 +8,6 @@ provider "aws" {
 
 data "terraform_remote_state" "eks" {
   backend = "local" # Pending remote set up to enable collaboration, state locking etc.
-
   config = {
     path = "../01-eks-cluster/terraform.tfstate"
   }
@@ -26,7 +25,6 @@ provider "kubernetes" {
     args        = ["eks", "get-token", "--cluster-name", data.terraform_remote_state.eks.outputs.cluster_name] # var.cluster_name
     command     = "aws"
   }
-  #load_config_file = false
 }
 
 provider "helm" {
@@ -39,7 +37,6 @@ provider "helm" {
       command     = "aws"
     }
   }
-  #load_config_file = false
 }
 
 provider "kubectl" {
@@ -50,7 +47,6 @@ provider "kubectl" {
     args        = ["eks", "get-token", "--cluster-name", data.terraform_remote_state.eks.outputs.cluster_name] # var.cluster_name
     command     = "aws"
   }
-  #load_config_file = false
 }
 
 ################################################################################
@@ -81,7 +77,7 @@ resource "helm_release" "argo_cd" {
   version    = "6.7.14" #local.argocd_config.version # "6.7.14" # pending reference this dynamically to argo-apps/argocd/config.yaml
   namespace = "argocd" #local.argocd_config.app_namespace # "argocd"
 
-  values = [file("../../${path.module}/argo-apps-kustomize/argocd/values.yaml")]
+  values = [file("../../${path.module}/argo-apps/argocd/values.yaml")]
 
   # Ensure that the Kubernetes namespace exists before deploying
   depends_on = [
@@ -91,31 +87,17 @@ resource "helm_release" "argo_cd" {
   ]
 }
 
-#resource "kubectl_manifest" "kustomize_patch" {
-#  yaml_body = file("${path.module}/kustomize-helm-patch.yaml") # /../../argo-apps/argocd/applicationset.yaml
-#
-#  depends_on = [
-#    helm_release.argo_cd
-#  ]
-#}
-
 ## ArgoCD apply ApplicationSet
-
-## Use kubectl to apply an ArgoCD ApplicationSet that dynamically deploys apps in argo-apps/ that contain a config.yaml
-## Applies community managed helm charts with local repo overrides (values-override.yaml)
+## Uses directory generator to dynamically create argo-apps in subfolders
+## Kustomize uses helmChart for 3rd party charts with local repo overrides (values.yaml) and load additional k8s manifests
 
 resource "kubectl_manifest" "example_applicationset" {
-  yaml_body = file("${path.module}/applicationset.yaml") # /../../argo-apps/argocd/applicationset.yaml
+  yaml_body = file("../../${path.module}/argo-apps/argocd/applicationset.yaml")
 
   depends_on = [
     helm_release.argo_cd # kubectl_manifest.kustomize_patch
   ]
 }
-
-
-
-
-
 
 # Fix interdependencies for graceful provisioning and teardown ### check
 

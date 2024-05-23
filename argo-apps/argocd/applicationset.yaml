@@ -11,7 +11,7 @@ spec:
       repoURL: https://github.com/tbalza/kubernetes-cicd.git
       revision: HEAD
       directories:
-      - path: argo-apps-kustomize/*
+      - path: argo-apps/*
   template:
     metadata:
       name: '{{.path.basename}}'
