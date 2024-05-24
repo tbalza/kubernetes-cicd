@@ -375,9 +375,10 @@ module "eks" {
 
 
   access_entries = {
+
     argocd = {
-      kubernetes_groups = []
       principal_arn     = aws_iam_role.argo_cd.arn # Ensure you have an IAM role created for Argo CD
+      kubernetes_groups = []
 
       policy_associations = {
         admin_policy = {
@@ -421,51 +422,6 @@ module "eks" {
   }
 }
 
-#module "jenkins_iam_policy" {
-#  source = "terraform-aws-modules/iam/aws//modules/iam-policy"
-#
-#  name        = "myapp"
-#  path        = "/"
-#  description = "Example policy"
-#
-#  policy = jsonencode({
-#    Version = "2012-10-17"
-#    Statement = [
-#      {
-#        Effect = "Allow"
-#        Action = [
-#          "*",
-#        ]
-#        Resource = "*"
-#      }
-#    ]
-#  })
-#
-#}
-#
-#module "jenkins_iam_role" {
-#  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-#  version = "5.39.0"  # Make sure to use the correct version
-#
-#  role_name = "JenkinsAppRole"
-#  role_description = "IAM role for Jenkins with EKS IRSA integration"
-#
-#  # Attach any specific policies you require
-#  role_policy_arns = {
-#    "admin" = module.jenkins_iam_policy.arn
-#  }
-#
-#  # Define the OIDC provider using ARN from your EKS cluster module and link it with your service account
-#  oidc_providers = {
-#    eks = {
-#      provider_arn               = module.eks.oidc_provider_arn
-#      namespace_service_accounts = ["jenkins:jenkins"]
-#    }
-#  }
-#}
-
-
-
 #resource "aws_iam_role" "this" {
 #  for_each = toset(["argocd", "jenkins", "alertmanager", "kubestatemetrics", "nodexporter", "grafana", "prometheus", "prometheusoperator"])
 #
@@ -488,7 +444,7 @@ module "eks" {
 #  tags = local.tags
 #}
 
-
+## STS
 
 resource "aws_iam_role" "argo_cd" {
   name = "ArgoCDRole"
@@ -544,21 +500,6 @@ resource "aws_iam_role" "prometheus" {
   })
 }
 
-#resource "aws_iam_role_policy_attachment" "argo_cd_admin" {
-#  role       = aws_iam_role.argo_cd.name
-#  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
-#}
-#
-#resource "aws_iam_role_policy_attachment" "jenkins_basic" {
-#  role       = aws_iam_role.jenkins.name
-#  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
-#}
-#
-#resource "aws_iam_role_policy_attachment" "argo_cd_admin" {
-#  role       = aws_iam_role.prometheus.name
-#  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
-#}
-
 output "argo_cd_iam_role_arn" {
   value = aws_iam_role.argo_cd.arn
 }
@@ -566,6 +507,39 @@ output "argo_cd_iam_role_arn" {
 output "jenkins_iam_role_arn" {
   value = aws_iam_role.jenkins.arn
 }
+
+## Allow Jenkins to push images to ECR
+#resource "aws_iam_policy" "jenkins_ecr_policy" {
+#  name        = "JenkinsECRAccessPolicy"
+#  path        = "/"
+#  description = "Allows Jenkins to push images to ECR"
+#
+#  policy = <<EOF
+#{
+#    "Version": "2012-10-17",
+#    "Statement": [
+#        {
+#            "Effect": "Allow",
+#            "Action": [
+#                "ecr:GetAuthorizationToken",
+#                "ecr:BatchCheckLayerAvailability",
+#                "ecr:InitiateLayerUpload",
+#                "ecr:UploadLayerPart",
+#                "ecr:CompleteLayerUpload",
+#                "ecr:PutImage"
+#            ],
+#            "Resource": "*"
+#        }
+#    ]
+#}
+#EOF
+#}
+#
+## Attach Jenkins ECR policy to role
+#resource "aws_iam_role_policy_attachment" "jenkins_ecr_policy_attachment" {
+#  role       = aws_iam_role.jenkins.name
+#  policy_arn = aws_iam_policy.jenkins_ecr_policy.arn
+#}
 
 
 ################################################################################
@@ -845,17 +819,9 @@ provider "helm" {
 ###############################################################################
 # Load balancer
 ###############################################################################
-# https://www.youtube.com/watch?v=ZfjpWOC5eoE
 
 # by default ALB creates one per ingress, to combine use annotation
-# alb.ingress.kubernetes.io/group.name: argo-cd-cluster
-# alb.ingress.kubernetes.io/group.order: '1'
-
-# echo server
-# kubectl apply -f k8s/echoserver.yaml
-# kubectl get ingress
-# create cname dns records in hosting provider
-# host name echo, CNAME, k8s-default.etc.amazonaws.com
+# alb.ingress.kubernetes.io/group.name: django-production
 
 module "aws_load_balancer_controller_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
@@ -884,7 +850,6 @@ resource "helm_release" "aws_load_balancer_controller" {
   chart      = "aws-load-balancer-controller"
   namespace  = "kube-system"
   version    = "1.7.2" # AWS LBC ver v2.7.2, requires Kubernetes 1.22+
-  #wait = false # might fix destroy issue?
 
   set {
     name  = "replicaCount" # by default it creates 2 replicas
@@ -892,12 +857,12 @@ resource "helm_release" "aws_load_balancer_controller" {
   }
 
   set {
-    name  = "clusterName" # check important
+    name  = "clusterName"
     value = module.eks.cluster_name
   }
 
   set {
-    name  = "serviceAccount.name" # check important
+    name  = "serviceAccount.name"
     value = "aws-load-balancer-controller"
   }
 
@@ -906,47 +871,154 @@ resource "helm_release" "aws_load_balancer_controller" {
     value = module.aws_load_balancer_controller_irsa_role.iam_role_arn
   }
 
-  # Resource requests and limits
-  #  set {
-  #    name  = "resources.requests.cpu"
-  #    value = "100m"
-  #  }
-  #  set {
-  #    name  = "resources.requests.memory"
-  #    value = "128Mi"
-  #  }
-  #  set {
-  #    name  = "resources.limits.memory"
-  #    value = "128Mi"
-  #  }
-
-  depends_on = [                                   # checkk
-    module.aws_load_balancer_controller_irsa_role, # important
-    #aws_iam_role_policy_attachment.alb_controller_policy_attachment,
+  depends_on = [
+    module.aws_load_balancer_controller_irsa_role,
     module.eks # important
   ]
 }
 
+###############################################################################
+# ECR
+###############################################################################
 
-
-
-
-
-
-
-#resource "kubectl_manifest" "ebs_sc" {
-#  yaml_body = <<-EOT
-#apiVersion: storage.k8s.io/v1
-#kind: StorageClass
-#metadata:
-#  name: ebs-sc
-#provisioner: ebs.csi.aws.com
-#volumeBindingMode: WaitForFirstConsumer
-#reclaimPolicy: Delete
-#allowVolumeExpansion: true
-#EOT
+#module "ecr" {
+#  source  = "terraform-aws-modules/ecr/aws"
+#  version = "2.2.1"
 #
-#  depends_on = [
-#    module.eks
-#  ]
+#  repository_name = local.name
+#
+#  repository_read_write_access_arns = [aws_iam_role.jenkins.arn]
+#  create_lifecycle_policy           = true
+#  repository_lifecycle_policy = jsonencode({
+#    rules = [
+#      {
+#        rulePriority = 1,
+#        description  = "Keep last 30 images",
+#        selection = {
+#          tagStatus     = "tagged",
+#          tagPrefixList = ["v"],
+#          countType     = "imageCountMoreThan",
+#          countNumber   = 30
+#        },
+#        action = {
+#          type = "expire"
+#        }
+#      }
+#    ]
+#  })
+#
+#  repository_force_delete = true
+#
+#  tags = local.tags
+#}
+#
+#output "repository_name" {
+#  description = "Name of the repository"
+#  value       = module.ecr.repository_name
+#}
+#
+#output "repository_arn" {
+#  description = "Full ARN of the repository"
+#  value       = module.ecr.repository_arn
+#}
+#
+#output "repository_registry_id" {
+#  description = "The registry ID where the repository was created"
+#  value       = module.ecr.repository_registry_id
+#}
+#
+#output "repository_url" {
+#  description = "The URL of the repository (in the form `aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName`)"
+#  value       = module.ecr.repository_url
+#}
+
+
+###############################################################################
+# SSM Parameter
+###############################################################################
+
+#module "ssm-parameter" {
+#  source  = "terraform-aws-modules/ssm-parameter/aws"
+#  version = "1.1.1"
+#
+#  parameters = {
+#    #########
+#    # String
+#    #########
+#    "string_simple" = {
+#      value = "string_value123"
+#    }
+#    "string" = {
+#      type            = "String"
+#      value           = "string_value123"
+#      tier            = "Intelligent-Tiering"
+#      allowed_pattern = "[a-z0-9_]+"
+#    }
+#    "string_as_ec2_image_data_type" = {
+#      value     = data.aws_ami.amazon_linux.id
+#      data_type = "aws:ec2:image"
+#    }
+#
+#    ###############
+#    # SecureString
+#    ###############
+#    "secure" = {
+#      type        = "SecureString"
+#      value       = "secret123123!!!"
+#      tier        = "Advanced"
+#      description = "My awesome password!"
+#    }
+#    "secure_true" = {
+#      secure_type = true
+#      value       = "secret123123!!!"
+#    }
+#    "secure_encrypted_true" = {
+#      secure_type = true
+#      value       = "secret123123!!!"
+#      key_id      = aws_kms_key.this.id
+#    }
+#    "secure_as_integration_data_type" = {
+#      name      = "/d9d01087-4a3f-49e0-b0b4-d568d7826553/ssm/integrations/webhook/mywebhook"
+#      type      = "SecureString"
+#      data_type = "aws:ssm:integration"
+#      value = jsonencode({
+#        "description" : "My webhook for opsgenie",
+#        "url" : "https://api.eu.opsgenie.com/v2/alerts",
+#        "body" : jsonencode({
+#          "message" : "SSM_ASG_scaledown_test"
+#        }),
+#        "headers" : {
+#          "Content-Type" : "application/json",
+#          "Authorization" : "MY_SECRET_TOKEN",
+#          "Method" : "POST"
+#        }
+#      })
+#    }
+#
+#    #############
+#    # StringList
+#    #############
+#    "list_as_autoguess_type" = {
+#      # List values should be specified as "values" (not "value")
+#      values = ["item1", "item2"]
+#    }
+#    "list_as_jsonencoded_string" = {
+#      type  = "StringList"
+#      value = jsonencode(["item1", "item2"])
+#    }
+#    "list_as_plain_string" = {
+#      type  = "StringList"
+#      value = "item1,item2"
+#    }
+#    "list_as_autoconvert_values" = {
+#      type = "StringList"
+#      # List values should be specified as "values" (not "value")
+#      values = ["item1", "item2"]
+#    }
+#    "list_empty_as_jsonencoded_string" = {
+#      type  = "StringList"
+#      value = jsonencode([])
+#    }
+#  }
+#
 #}

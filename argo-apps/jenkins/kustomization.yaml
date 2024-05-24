@@ -1,7 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-
 helmCharts:
   - name: jenkins
     repo: https://charts.jenkins.io
@@ -12,5 +11,16 @@ helmCharts:
     valuesFile: values.yaml
 
 resources:
-  - configmap.yaml
-  - pipeline-job.yaml
+  - casc-configmap.yaml  # ConfigMap containing the JCasC configuration
+
+# Manage secrets through Kustomize
+#secretGenerator:
+#  - name: jenkins-secrets
+#    files:
+#      - secrets.txt  # Ensure secrets are managed securely
+#    options:
+#      disableNameSuffixHash: true
+
+# Customize labels for tracking resources in your deployment
+commonLabels:
+  app: jenkins
