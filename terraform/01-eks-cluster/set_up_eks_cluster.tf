@@ -11,15 +11,58 @@ data "aws_availability_zones" "available" {}
 
 locals {
   name            = "django-production" # cluster name
-  cluster_version = "1.29" # 1.29 # check
+  cluster_version = "1.29"              # 1.29
   region          = "us-east-1"
 
   vpc_cidr = "10.0.0.0/16" # ~65k IPs
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
+  # SSM Parameter values
+  parameters = {
+    # Service Account IAM Role ARNs to pass to ArgoCD via external secrets. (helm chart substitutions)
+    "argocd_irsa_arn" = {
+      value = aws_iam_role.argo_cd.arn
+    }
+    "jenkins_irsa_arn" = {
+      value = aws_iam_role.jenkins.arn
+    }
+    "prometheus_irsa_arn" = {
+      value = aws_iam_role.prometheus.arn
+    }
+#    "django_irsa_arn" = {
+#      value = aws_iam_role.django.arn
+#    }
+  }
+
+
   tags = {
     Example = local.name
   }
+}
+
+###############################################################################
+# SSM Parameter
+###############################################################################
+
+module "ssm-parameter" {
+  source  = "terraform-aws-modules/ssm-parameter/aws"
+  version = "1.1.1"
+
+  for_each = local.parameters
+
+#  name            = try(each.value.name, each.key)
+  value           = try(each.value.value, null)
+#  values          = try(each.value.values, [])
+#  type            = try(each.value.type, null)
+#  secure_type     = try(each.value.secure_type, null)
+#  description     = try(each.value.description, null)
+#  tier            = try(each.value.tier, null)
+#  key_id          = try(each.value.key_id, null)
+#  allowed_pattern = try(each.value.allowed_pattern, null)
+#  data_type       = try(each.value.data_type, null)
+
+  # use module wrapper for multiple environments dev/qa/prod etc.
+
 }
 
 ################################################################################
@@ -45,12 +88,6 @@ module "ebs_csi_driver_irsa" {
   }
 }
 
-# Print addon versions. ebs-csi-driver addon takes 240MB of memory
-#output "cluster_addons" {
-#  description = "Map of attribute maps for all EKS cluster addons enabled"
-#  value       = module.eks.cluster_addons
-#}
-
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "20.11.1"
@@ -61,7 +98,7 @@ module "eks" {
   iam_role_use_name_prefix = true
   vpc_id                   = module.vpc.vpc_id
   subnet_ids               = module.vpc.private_subnets
-  #control_plane_subnet_ids = module.vpc.intra_subnets # Makes API server reachable from internet?
+  #control_plane_subnet_ids = module.vpc.intra_subnets
 
   cluster_endpoint_public_access  = true
   cluster_endpoint_private_access = true
@@ -78,24 +115,21 @@ module "eks" {
     coredns = {
       resolve_conflicts_on_update = "OVERWRITE"
       resolve_conflicts_on_create = "OVERWRITE"
-      #most_recent = true
-      addon_version               = "v1.11.1-eksbuild.9"
+      addon_version = "v1.11.1-eksbuild.9"
     }
     kube-proxy = {
       resolve_conflicts_on_update = "OVERWRITE"
       resolve_conflicts_on_create = "OVERWRITE"
-      #most_recent = true
-      addon_version               = "v1.29.3-eksbuild.2"
+      addon_version = "v1.29.3-eksbuild.2"
     }
-    vpc-cni = { # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2968
+    vpc-cni = {
       resolve_conflicts_on_update = "OVERWRITE"
       resolve_conflicts_on_create = "OVERWRITE"
-      #most_recent                 = true
-      addon_version               = "v1.18.1-eksbuild.3"
-      before_compute              = true # Attempt VPC CNI can be created before the associated nodegroups, bootstrap still needed
+      addon_version  = "v1.18.1-eksbuild.3"
+      before_compute = true # Attempts to create VPC CNI before the associated nodegroups, EC2 bootstrap may still be needed
       configuration_values = jsonencode({
         env = {
-          ENABLE_PREFIX_DELEGATION = "true" # Increase max pods per node, managed node group bootstrap also needed. t3.medium from 17 to 110 pod limit
+          ENABLE_PREFIX_DELEGATION = "true" # Increase max pods per node, t3.medium from 17 to 110 pod limit
           WARM_PREFIX_TARGET       = "1"
         }
       })
@@ -104,10 +138,8 @@ module "eks" {
     aws-ebs-csi-driver = {
       resolve_conflicts_on_update = "OVERWRITE"
       resolve_conflicts_on_create = "OVERWRITE"
-      #resolve_conflicts           = "OVERWRITE"
-      service_account_role_arn    = module.ebs_csi_driver_irsa.iam_role_arn
-      #most_recent = true
-      addon_version            = "v1.30.0-eksbuild.1"
+      service_account_role_arn = module.ebs_csi_driver_irsa.iam_role_arn
+      addon_version = "v1.30.0-eksbuild.1"
     }
   }
 
@@ -213,26 +245,26 @@ module "eks" {
 
       # !!!!!!
 
-#      bootstrap_extra_args = <<-EOT
-#              "max-pods" = 109
-#            EOT
+      #      bootstrap_extra_args = <<-EOT
+      #              "max-pods" = 109
+      #            EOT
 
       # VPC CNI
       # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2551
 
       # For determining which app goes to what nodegroup
       # taints are not compatible with ebs csi driver out of the box
-#      taints = [{
-#        key    = "ci-cd"
-#        value  = "true"
-#        effect = "NO_SCHEDULE"
-#      }]
+      #      taints = [{
+      #        key    = "ci-cd"
+      #        value  = "true"
+      #        effect = "NO_SCHEDULE"
+      #      }]
       labels = {
         role = "ci-cd" # used by k8s/argocd. node selection, scheduling, grouping, policy enforcement
       }
 
       #force_update_version = true
-      instance_types       = ["t3.medium"] # Overrides default instance defined above
+      instance_types = ["t3.medium"] # Overrides default instance defined above
 
       description = "CI-CD managed node group launch template"
 
@@ -300,24 +332,25 @@ module "eks" {
 
       capacity_type = "SPOT"
 
-#      bootstrap_extra_args = <<-EOT
-#              "max-pods" = 109
-#            EOT
+      #      bootstrap_extra_args = <<-EOT
+      #              "max-pods" = 109
+      #            EOT
 
       # For determining which app goes to what nodegroup
       # taints are not compatible with ebs csi driver out of the box
 
-#      taints = [{
-#        key    = "django"
-#        value  = "true"
-#        effect = "NO_SCHEDULE"
-#      }]
+      # pending . taints can be now set in kustomize
+      #      taints = [{
+      #        key    = "django"
+      #        value  = "true"
+      #        effect = "NO_SCHEDULE"
+      #      }]
       labels = {
         role = "django" # used by k8s/argocd. node selection, scheduling, grouping, policy enforcement
       }
 
       #force_update_version = true
-      instance_types       = ["t3.medium"] # Overrides default instance defined above
+      instance_types = ["t3.medium"] # Overrides default instance defined above
 
       description = "Django managed node group launch template"
 
@@ -331,7 +364,7 @@ module "eks" {
           ebs = {
             volume_size = 30
             volume_type = "gp3" #gp3?
-            encrypted = false # Check
+            encrypted   = false # Check
             #kms_key_id            = module.ebs_kms_key.key_arn
             delete_on_termination = true
           }
@@ -376,15 +409,30 @@ module "eks" {
 
   access_entries = {
 
-    argocd = {
-      principal_arn     = aws_iam_role.argo_cd.arn # Ensure you have an IAM role created for Argo CD
+    external-secrets = {
+      principal_arn     = aws_iam_role.external_secrets.arn
       kubernetes_groups = []
 
       policy_associations = {
         admin_policy = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
           access_scope = {
-            type = "cluster"
+            type = "cluster" # check
+          }
+        }
+      }
+    }
+
+
+    argocd = {
+      principal_arn     = aws_iam_role.argo_cd.arn
+      kubernetes_groups = []
+
+      policy_associations = {
+        admin_policy = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
+          access_scope = {
+            type = "cluster" # check
           }
         }
       }
@@ -396,9 +444,9 @@ module "eks" {
 
       policy_associations = {
         admin = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
           access_scope = {
-            type = "cluster"
+            type = "cluster" # check
           }
         }
       }
@@ -410,9 +458,9 @@ module "eks" {
 
       policy_associations = {
         admin = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
           access_scope = {
-            type = "cluster"
+            type = "cluster" # check
           }
         }
       }
@@ -500,12 +548,38 @@ resource "aws_iam_role" "prometheus" {
   })
 }
 
+resource "aws_iam_role" "external_secrets" {
+  name = "ExternalSecretsRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Principal = {
+          Service = "eks.amazonaws.com"
+        }
+        Effect = "Allow"
+        Sid    = ""
+      }
+    ]
+  })
+}
+
 output "argo_cd_iam_role_arn" {
   value = aws_iam_role.argo_cd.arn
 }
 
 output "jenkins_iam_role_arn" {
   value = aws_iam_role.jenkins.arn
+}
+
+output "prometheus_iam_role_arn" {
+  value = aws_iam_role.prometheus.arn
+}
+
+output "external_secrets_iam_role_arn" {
+  value = aws_iam_role.external_secrets.arn
 }
 
 ## Allow Jenkins to push images to ECR
@@ -934,91 +1008,60 @@ resource "helm_release" "aws_load_balancer_controller" {
 
 
 ###############################################################################
-# SSM Parameter
+# External Secrets Operator
 ###############################################################################
 
-#module "ssm-parameter" {
-#  source  = "terraform-aws-modules/ssm-parameter/aws"
-#  version = "1.1.1"
-#
-#  parameters = {
-#    #########
-#    # String
-#    #########
-#    "string_simple" = {
-#      value = "string_value123"
-#    }
-#    "string" = {
-#      type            = "String"
-#      value           = "string_value123"
-#      tier            = "Intelligent-Tiering"
-#      allowed_pattern = "[a-z0-9_]+"
-#    }
-#    "string_as_ec2_image_data_type" = {
-#      value     = data.aws_ami.amazon_linux.id
-#      data_type = "aws:ec2:image"
-#    }
-#
-#    ###############
-#    # SecureString
-#    ###############
-#    "secure" = {
-#      type        = "SecureString"
-#      value       = "secret123123!!!"
-#      tier        = "Advanced"
-#      description = "My awesome password!"
-#    }
-#    "secure_true" = {
-#      secure_type = true
-#      value       = "secret123123!!!"
-#    }
-#    "secure_encrypted_true" = {
-#      secure_type = true
-#      value       = "secret123123!!!"
-#      key_id      = aws_kms_key.this.id
-#    }
-#    "secure_as_integration_data_type" = {
-#      name      = "/d9d01087-4a3f-49e0-b0b4-d568d7826553/ssm/integrations/webhook/mywebhook"
-#      type      = "SecureString"
-#      data_type = "aws:ssm:integration"
-#      value = jsonencode({
-#        "description" : "My webhook for opsgenie",
-#        "url" : "https://api.eu.opsgenie.com/v2/alerts",
-#        "body" : jsonencode({
-#          "message" : "SSM_ASG_scaledown_test"
-#        }),
-#        "headers" : {
-#          "Content-Type" : "application/json",
-#          "Authorization" : "MY_SECRET_TOKEN",
-#          "Method" : "POST"
-#        }
-#      })
-#    }
-#
-#    #############
-#    # StringList
-#    #############
-#    "list_as_autoguess_type" = {
-#      # List values should be specified as "values" (not "value")
-#      values = ["item1", "item2"]
-#    }
-#    "list_as_jsonencoded_string" = {
-#      type  = "StringList"
-#      value = jsonencode(["item1", "item2"])
-#    }
-#    "list_as_plain_string" = {
-#      type  = "StringList"
-#      value = "item1,item2"
-#    }
-#    "list_as_autoconvert_values" = {
-#      type = "StringList"
-#      # List values should be specified as "values" (not "value")
-#      values = ["item1", "item2"]
-#    }
-#    "list_empty_as_jsonencoded_string" = {
-#      type  = "StringList"
-#      value = jsonencode([])
-#    }
+# external secret management system with a KMS plugin to encrypt Secrets stored in etcd # pending
+
+resource "helm_release" "external_secrets" {
+  name       = "external-secrets"
+  repository = "https://charts.external-secrets.io"
+  chart      = "external-secrets"
+  namespace  = "kube-system" # check
+  version    = "0.9.18"
+
+  set {
+    name  = "clusterName"
+    value = module.eks.cluster_name
+  }
+
+  #If set external secrets are only reconciled in the provided namespace # pending
+#  set {
+#    name  = "scopedNamespace"
+#    value = #?
 #  }
-#
+
+  values = [
+    <<-EOF
+    global:
+      nodeSelector:
+        role: "ci-cd"
+    EOF
+  ]
+
+  set {
+    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn" # annotation to allows service account to assume aws role
+    value = aws_iam_role.external_secrets.arn
+  }
+
+  # certManager: # pending for later
+
+  depends_on = [
+    module.eks # important
+  ]
+}
+
+## The following IAM policy allows a user or role to access parameters matching prod-*.
+
+#{
+#  "Version": "2012-10-17",
+#  "Statement": [
+#    {
+#      "Effect": "Allow",
+#      "Action": "ssm:GetParameter",
+#      "Resource": "arn:aws:ssm:us-west-2:123456789012:parameter/prod-*"
+#    }
+#  ]
 #}
+
+# IAM Roles
