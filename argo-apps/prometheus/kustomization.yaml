@@ -6,6 +6,6 @@ helmCharts:
     repo: https://prometheus-community.github.io/helm-charts
     version: 58.5.3
     releaseName: kube-prometheus-stack
-    namespace: monitoring
+    namespace: prometheus
     includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
     valuesFile: values.yaml
