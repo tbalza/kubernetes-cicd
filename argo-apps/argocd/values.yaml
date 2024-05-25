@@ -1,6 +1,6 @@
-serviceAccount:
-  annotations:
-    eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole"
+#serviceAccount:
+#  annotations:
+#    eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole"
 
 global:
   domain: "" # Used for ingresses, certificates, SSO, notifications, etc. (allow all domains)

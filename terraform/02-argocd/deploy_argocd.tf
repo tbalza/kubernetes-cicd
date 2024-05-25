@@ -81,7 +81,6 @@ resource "helm_release" "argo_cd" {
 
   values = [file("../../${path.module}/argo-apps/argocd/values.yaml")]
 
-  # Set initial serviceAccount annotation (allow it to access SSM via ESO, afterwards it can patch itself with kustomize)
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn" # annotation to allows service account to assume aws role
     value = data.terraform_remote_state.eks.outputs.argo_cd_iam_role_arn

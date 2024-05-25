@@ -9,6 +9,21 @@ data "aws_availability_zones" "available" {}
 # local kubectl v1.29.3
 # aws kubernetes v1.29
 
+resource "null_resource" "update_kubeconfig" {
+  triggers = {
+    cluster_name = module.eks.cluster_name
+    cluster_endpoint = module.eks.cluster_endpoint
+  }
+
+  provisioner "local-exec" {
+    command = "aws eks update-kubeconfig --name ${local.name} --region ${local.region}"
+  }
+
+  depends_on = [
+    module.eks
+  ]
+}
+
 locals {
   name            = "django-production" # cluster name
   cluster_version = "1.29"              # 1.29
