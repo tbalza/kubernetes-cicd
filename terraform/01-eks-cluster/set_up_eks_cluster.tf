@@ -1046,7 +1046,7 @@ resource "helm_release" "external_secrets" {
 #    value = #?
 #  }
 
-  # serviceAccount name must match serviceAccountRef in secret store
+  # serviceAccount name must match serviceAccountRef in secret store. name: "external-secrets"
   values = [
     <<-EOF
     global:
@@ -1074,7 +1074,11 @@ resource "aws_iam_policy" "eso_ssm_read" {
     Version = "2012-10-17",
     Statement = [{
       Effect   = "Allow",
-      Action   = "ssm:GetParameter",
+      "Action": [
+        "ssm:GetParameter",
+        "ssm:ListTagsForResource",
+        "ssm:DescribeParameters"
+      ],
       Resource = "arn:aws:ssm:${local.region}:${data.aws_caller_identity.current.account_id}:parameter/*" # limit scope accordingly. SSM is region specific
     }]
   })

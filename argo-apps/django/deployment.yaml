@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django
+  namespace: django
+spec:
+#  replicas: 2
+  selector:
+    matchLabels:
+      app: django # ?
+  template:
+    metadata:
+      labels:
+        app: django # ?
+    spec:
+      nodeSelector:
+        role: "django"
+      containers:
+      - name: django-container
+        image: "placeholder-for-image"  # This references the image managed by Kustomize in the kustomization.yaml
+        env:
+          - name: ECR_URL
+            valueFrom:
+              secretKeyRef:
+                name: django-ecr-url
+                key: ecrUrl # SSM parameter for dynamic ECR url
+        ports:
+        - containerPort: 8000
