@@ -1064,6 +1064,9 @@ resource "helm_release" "external_secrets" {
   ]
 }
 
+
+
+
 resource "aws_iam_policy" "eso_ssm_read" {
   name   = "SSM-for-external-secrets"
   policy = jsonencode({

@@ -65,8 +65,8 @@ agent:
   nodeSelector:
     role: ci-cd
 
-serviceAccount:
-  create: true
-  name: jenkins
-  annotations:
-    eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/JenkinsRole"
+#serviceAccount:
+#  create: true
+#  name: jenkins
+#  annotations:
+#    eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/JenkinsRole"
