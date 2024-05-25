@@ -9,6 +9,20 @@ helmCharts:
     namespace: argocd
     includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
     valuesFile: values.yaml
+#    valuesInline:
+#      serviceAccount:
+#        annotations:
+#          eks.amazonaws.com/role-arn: $(ARGOCD_ROLE_ARN)
 
 resources:
   - applicationset.yaml
+
+#vars:
+#  - name: ARGOCD_ROLE_ARN
+#    objref:
+#      kind: Secret
+#      name: argocd-service-account-annotations
+#      apiVersion: v1
+#    fieldref:
+#      fieldpath: data.role-arn
+

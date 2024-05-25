@@ -29,11 +29,14 @@ locals {
     "prometheus_irsa_arn" = {
       value = aws_iam_role.prometheus.arn
     }
+    "region" = {
+      value = local.region
+    }
+
 #    "django_irsa_arn" = {
 #      value = aws_iam_role.django.arn
 #    }
   }
-
 
   tags = {
     Example = local.name
@@ -50,16 +53,17 @@ module "ssm-parameter" {
 
   for_each = local.parameters
 
-#  name            = try(each.value.name, each.key)
+  # IDE may show unresolved reference name, it's normal (commenting unused values breaks the module)
+  name            = try(each.value.name, each.key)
   value           = try(each.value.value, null)
-#  values          = try(each.value.values, [])
-#  type            = try(each.value.type, null)
-#  secure_type     = try(each.value.secure_type, null)
-#  description     = try(each.value.description, null)
-#  tier            = try(each.value.tier, null)
-#  key_id          = try(each.value.key_id, null)
-#  allowed_pattern = try(each.value.allowed_pattern, null)
-#  data_type       = try(each.value.data_type, null)
+  values          = try(each.value.values, [])
+  type            = try(each.value.type, null)
+  secure_type     = try(each.value.secure_type, null)
+  description     = try(each.value.description, null)
+  tier            = try(each.value.tier, null)
+  key_id          = try(each.value.key_id, null)
+  allowed_pattern = try(each.value.allowed_pattern, null)
+  data_type       = try(each.value.data_type, null)
 
   # use module wrapper for multiple environments dev/qa/prod etc.
 
@@ -945,6 +949,13 @@ resource "helm_release" "aws_load_balancer_controller" {
     value = module.aws_load_balancer_controller_irsa_role.iam_role_arn
   }
 
+  values = [
+    <<-EOF
+    nodeSelector:
+      role: "ci-cd"
+    EOF
+  ]
+
   depends_on = [
     module.aws_load_balancer_controller_irsa_role,
     module.eks # important
@@ -1031,24 +1042,43 @@ resource "helm_release" "external_secrets" {
 #    value = #?
 #  }
 
+  # serviceAccount name must match serviceAccountRef in secret store
   values = [
     <<-EOF
     global:
       nodeSelector:
         role: "ci-cd"
+    serviceAccount:
+      create: true
+      name: "external-secrets"
+      annotations:
+        eks.amazonaws.com/role-arn: "${aws_iam_role.external_secrets.arn}"
     EOF
   ]
-
-  set {
-    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn" # annotation to allows service account to assume aws role
-    value = aws_iam_role.external_secrets.arn
-  }
 
   # certManager: # pending for later
 
   depends_on = [
+    helm_release.aws_load_balancer_controller,
     module.eks # important
   ]
+}
+
+resource "aws_iam_policy" "eso_ssm_read" {
+  name   = "SSM-for-external-secrets"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect   = "Allow",
+      Action   = "ssm:GetParameter",
+      Resource = "arn:aws:ssm:${local.region}:${data.aws_caller_identity.current.account_id}:parameter/*" # limit scope accordingly. SSM is region specific
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ssm_read_attach" {
+  role       = aws_iam_role.external_secrets.name
+  policy_arn = aws_iam_policy.eso_ssm_read.arn
 }
 
 ## The following IAM policy allows a user or role to access parameters matching prod-*.
@@ -1059,7 +1089,7 @@ resource "helm_release" "external_secrets" {
 #    {
 #      "Effect": "Allow",
 #      "Action": "ssm:GetParameter",
-#      "Resource": "arn:aws:ssm:us-west-2:123456789012:parameter/prod-*"
+#      "Resource": "arn:aws:ssm:us-west-2:123456789012:parameter/*"
 #    }
 #  ]
 #}

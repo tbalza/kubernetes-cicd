@@ -10,17 +10,5 @@ helmCharts:
     includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
     valuesFile: values.yaml
 
-resources:
-  - casc-configmap.yaml  # ConfigMap containing the JCasC configuration
-
-# Manage secrets through Kustomize
-#secretGenerator:
-#  - name: jenkins-secrets
-#    files:
-#      - secrets.txt  # Ensure secrets are managed securely
-#    options:
-#      disableNameSuffixHash: true
-
-# Customize labels for tracking resources in your deployment
-commonLabels:
-  app: jenkins
+#resources:
+#  - casc-configmap.yaml  # ConfigMap containing the JCasC configuration
