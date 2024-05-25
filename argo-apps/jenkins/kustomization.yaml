@@ -10,5 +10,18 @@ helmCharts:
     includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
     valuesFile: values.yaml
 
-#resources:
-#  - casc-configmap.yaml  # ConfigMap containing the JCasC configuration
+resources:
+  - secret-store.yaml # load ECR repo dynamically
+  - secret-external.yaml # load ECR repo dynamically
+
+configMapGenerator:
+  - name: jenkins-jcasc-configmap
+    files:
+      - jcasc-config.yaml
+  - name: docker-config # kaniko required config
+    literals:
+      - |
+        config.json=|
+          {
+            "credsStore": "ecr-login"
+          }

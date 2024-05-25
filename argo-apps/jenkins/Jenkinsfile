@@ -1,0 +1,45 @@
+pipeline {
+  agent any
+  environment {
+    REGISTRY = "${env.REGISTRY}"  # External Secrets Operator sub
+    IMAGE_NAME = 'my-django-app'
+    TAG = "${BUILD_NUMBER}"  // unique tags per build
+  }
+  stages {
+    stage('Prepare Environment') {
+      steps {
+        script {
+          // Optionally prepare environment variables or other prerequisites
+        }
+      }
+    }
+    stage('Build and Push Image') {
+      steps {
+        // Kaniko is used to build and push the Docker image directly from the Jenkins agent running in Kubernetes
+        container('kaniko') {
+          script {
+            sh """
+            /kaniko/executor \
+              --context ${WORKSPACE}/django \ // Assuming '/django' directory is at the root of the workspace
+              --dockerfile ${WORKSPACE}/django/Dockerfile \
+              --destination ${REGISTRY}/${IMAGE_NAME}:${TAG} \
+              --cache
+            """
+          }
+        }
+      }
+    }
+  }
+  post {
+    success {
+      script {
+        echo 'Build and push successful.'
+      }
+    }
+    failure {
+      script {
+        echo 'Build or push failed.'
+      }
+    }
+  }
+}

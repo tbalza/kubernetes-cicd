@@ -14,11 +14,9 @@ resource "null_resource" "update_kubeconfig" {
     cluster_name = module.eks.cluster_name
     cluster_endpoint = module.eks.cluster_endpoint
   }
-
   provisioner "local-exec" {
     command = "aws eks update-kubeconfig --name ${local.name} --region ${local.region}"
   }
-
   depends_on = [
     module.eks
   ]
@@ -35,17 +33,8 @@ locals {
   # SSM Parameter values
   parameters = {
     # Service Account IAM Role ARNs to pass to ArgoCD via external secrets. (helm chart substitutions)
-    "argocd_irsa_arn" = {
-      value = aws_iam_role.argo_cd.arn
-    }
-    "jenkins_irsa_arn" = {
-      value = aws_iam_role.jenkins.arn
-    }
-    "prometheus_irsa_arn" = {
-      value = aws_iam_role.prometheus.arn
-    }
-    "region" = {
-      value = local.region
+    "ecr_repo" = {
+      value = module.ecr.repository_url
     }
 
 #    "django_irsa_arn" = {
@@ -981,56 +970,56 @@ resource "helm_release" "aws_load_balancer_controller" {
 # ECR
 ###############################################################################
 
-#module "ecr" {
-#  source  = "terraform-aws-modules/ecr/aws"
-#  version = "2.2.1"
-#
-#  repository_name = local.name
-#
-#  repository_read_write_access_arns = [aws_iam_role.jenkins.arn]
-#  create_lifecycle_policy           = true
-#  repository_lifecycle_policy = jsonencode({
-#    rules = [
-#      {
-#        rulePriority = 1,
-#        description  = "Keep last 30 images",
-#        selection = {
-#          tagStatus     = "tagged",
-#          tagPrefixList = ["v"],
-#          countType     = "imageCountMoreThan",
-#          countNumber   = 30
-#        },
-#        action = {
-#          type = "expire"
-#        }
-#      }
-#    ]
-#  })
-#
-#  repository_force_delete = true
-#
-#  tags = local.tags
-#}
-#
-#output "repository_name" {
-#  description = "Name of the repository"
-#  value       = module.ecr.repository_name
-#}
-#
-#output "repository_arn" {
-#  description = "Full ARN of the repository"
-#  value       = module.ecr.repository_arn
-#}
-#
-#output "repository_registry_id" {
-#  description = "The registry ID where the repository was created"
-#  value       = module.ecr.repository_registry_id
-#}
-#
-#output "repository_url" {
-#  description = "The URL of the repository (in the form `aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName`)"
-#  value       = module.ecr.repository_url
-#}
+module "ecr" {
+  source  = "terraform-aws-modules/ecr/aws"
+  version = "2.2.1"
+
+  repository_name = local.name
+
+  repository_read_write_access_arns = [aws_iam_role.jenkins.arn]
+  create_lifecycle_policy           = true
+  repository_lifecycle_policy = jsonencode({
+    rules = [
+      {
+        rulePriority = 1,
+        description  = "Keep last 30 images",
+        selection = {
+          tagStatus     = "tagged",
+          tagPrefixList = ["v"],
+          countType     = "imageCountMoreThan",
+          countNumber   = 30
+        },
+        action = {
+          type = "expire"
+        }
+      }
+    ]
+  })
+
+  repository_force_delete = true
+
+  tags = local.tags
+}
+
+output "repository_name" {
+  description = "Name of the repository"
+  value       = module.ecr.repository_name
+}
+
+output "repository_arn" {
+  description = "Full ARN of the repository"
+  value       = module.ecr.repository_arn
+}
+
+output "repository_registry_id" {
+  description = "The registry ID where the repository was created"
+  value       = module.ecr.repository_registry_id
+}
+
+output "repository_url" {
+  description = "The URL of the repository (in the form `aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName`)"
+  value       = module.ecr.repository_url
+}
 
 
 ###############################################################################
@@ -1079,9 +1068,6 @@ resource "helm_release" "external_secrets" {
   ]
 }
 
-
-
-
 resource "aws_iam_policy" "eso_ssm_read" {
   name   = "SSM-for-external-secrets"
   policy = jsonencode({
@@ -1098,18 +1084,3 @@ resource "aws_iam_role_policy_attachment" "ssm_read_attach" {
   role       = aws_iam_role.external_secrets.name
   policy_arn = aws_iam_policy.eso_ssm_read.arn
 }
-
-## The following IAM policy allows a user or role to access parameters matching prod-*.
-
-#{
-#  "Version": "2012-10-17",
-#  "Statement": [
-#    {
-#      "Effect": "Allow",
-#      "Action": "ssm:GetParameter",
-#      "Resource": "arn:aws:ssm:us-west-2:123456789012:parameter/*"
-#    }
-#  ]
-#}
-
-# IAM Roles

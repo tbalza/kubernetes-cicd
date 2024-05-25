@@ -28,10 +28,18 @@ controller:
     - amazon-ecr:1.114.vfd22430621f5
   JCasC:
     enabled: true
-    configScripts:
-      welcome-message: |
-        jenkins:
-          systemMessage: "Welcome to our Jenkins! Configured automatically by Jenkins Configuration as Code plugin"
+    defaultConfig: false # check
+    configScripts: # check
+      main: |- # check
+        /var/jenkins_home/casc_configs/jcasc-config.yaml
+  volumes:
+    - name: jcasc-config-volume
+      configMap:
+        name: jenkins-jcasc-configmap
+  volumeMounts:
+    - mountPath: /var/jenkins_home/casc_configs
+      name: jcasc-config-volume
+      readOnly: true
   persistence:
     enabled: true
     storageClass: "ebs-sc" #gp3
