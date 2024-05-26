@@ -1062,8 +1062,8 @@ resource "helm_release" "external_secrets" {
 }
 
 # Jenkins
-resource "aws_iam_policy" "argo_ssm_read" {
-  name   = "SSM-for-argocd"
+resource "aws_iam_policy" "jenkins_ssm_read" {
+  name   = "SSM-for-jenkins"
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
@@ -1079,8 +1079,8 @@ resource "aws_iam_policy" "argo_ssm_read" {
 }
 
 resource "aws_iam_role_policy_attachment" "ssm_read_attach" {
-  role       = aws_iam_role.argo_cd.name
-  policy_arn = aws_iam_policy.argo_ssm_read.arn
+  role       = aws_iam_role.jenkins.name
+  policy_arn = aws_iam_policy.jenkins_ssm_read.arn
 }
 
 ###############################################################################
