@@ -25,10 +25,10 @@ spec:
       destination:
         server: https://kubernetes.default.svc # pending make dynamic from repo files
         namespace: '{{.path.basename}}' # pending make dynamic from repo files
-      syncPolicy:
-        automated:
-          selfHeal: true
-          prune: true  # Enables the deletion of resources that are no longer in source
+#      syncPolicy:
+#        automated:
+#          selfHeal: true
+#          prune: true  # Enables the deletion of resources that are no longer in source
         syncOptions:
         - CreateNamespace=true
         - ServerSideApply=true
