@@ -35,12 +35,12 @@ controller:
     size: "20Gi" # check
     accessMode: "ReadWriteOnce" # check
     volumes:
-      - name: sc-config-volume # jcasc-config-volume
+      - name: jcasc-config-volume # jcasc-config-volume
         configMap:
           name: jenkins-jcasc-configmap # jenkins-jcasc-configmap
     mounts:
       - mountPath: /var/jenkins_home/casc_configs
-        name: sc-config-volume # jcasc-config-volume
+        name: jcasc-config-volume # jcasc-config-volume
         readOnly: true # ?
   ingress:
     enabled: true
