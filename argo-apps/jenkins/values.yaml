@@ -32,7 +32,7 @@ controller:
   persistence:
     enabled: true
     storageClass: "gp2" # check
-    size: "8Gi" # check
+    size: "20Gi" # check
     accessMode: "ReadWriteOnce" # check
     volumes:
       - name: sc-config-volume # jcasc-config-volume
