@@ -401,7 +401,7 @@ module "eks" {
 
 
 
-
+  # this creates serviceAccounts for each entry (in namespace "default"?)
   access_entries = {
 
     external-secrets = {
