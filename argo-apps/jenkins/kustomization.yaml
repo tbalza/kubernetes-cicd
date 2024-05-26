@@ -19,6 +19,13 @@ configMapGenerator:
     files:
       - jcasc-config.yaml
 
+generatorOptions:
+  disableNameSuffixHash: true # This prevents Kustomize from appending a hash to the ConfigMap name.
+  labels:
+    type: generated # Labels the generated ConfigMaps and Secrets as 'generated'.
+  annotations:
+    note: generated # Annotates the generated ConfigMaps and Secrets as 'generated'
+
 #  - name: docker-config # kaniko required config
 #    literals:
 #      - |
