@@ -4,8 +4,8 @@ controller:
     tag: 2.440.3
   javaOpts: "-Xmx1536m -Xms512m"
   admin:
-    username: "admin"
-    password: "pass"
+    username: "admin" # check
+    password: "pass" # check
   serviceType: "ClusterIP"
   resources:
     requests:
