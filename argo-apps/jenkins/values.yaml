@@ -32,13 +32,13 @@ controller:
   persistence:
     enabled: true
     storageClass: "ebs-sc" # check
-    size: "30Gi" # check
+    size: "8Gi" # check
     accessMode: "ReadWriteOnce" # check
     volumes:
       - name: jcasc-config-volume
         configMap:
           name: jenkins-jcasc-configmap
-    volumeMounts:
+    mounts:
       - mountPath: /var/jenkins_home/casc_configs
         name: jcasc-config-volume
         readOnly: true
