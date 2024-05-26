@@ -24,7 +24,7 @@ controller:
     - ansible:307.va_1f3ef06575a_
     - docker-workflow:580.vc0c340686b_54
     - credentials:1337.v60b_d7b_c7b_c9f
-    - job-dsl:1.87
+#    - job-dsl:1.87
     - amazon-ecr:1.114.vfd22430621f5
   JCasC:
     enabled: true
