@@ -1066,6 +1066,7 @@ resource "helm_release" "external_secrets" {
   ]
 }
 
+# Jenkins
 resource "aws_iam_policy" "jenkins_ssm_read" {
   name   = "SSM-for-argocd"
   policy = jsonencode({
