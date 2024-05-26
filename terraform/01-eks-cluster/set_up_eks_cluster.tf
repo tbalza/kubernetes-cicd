@@ -9,19 +9,6 @@ data "aws_availability_zones" "available" {}
 # local kubectl v1.29.3
 # aws kubernetes v1.29
 
-resource "null_resource" "update_kubeconfig" {
-  triggers = {
-    cluster_name = module.eks.cluster_name
-    cluster_endpoint = module.eks.cluster_endpoint
-  }
-  provisioner "local-exec" {
-    command = "aws eks update-kubeconfig --name ${local.name} --region ${local.region}"
-  }
-  depends_on = [
-    module.eks
-  ]
-}
-
 locals {
   name            = "django-production" # cluster name
   cluster_version = "1.29"              # 1.29
@@ -1087,4 +1074,22 @@ resource "aws_iam_policy" "eso_ssm_read" {
 resource "aws_iam_role_policy_attachment" "ssm_read_attach" {
   role       = aws_iam_role.external_secrets.name
   policy_arn = aws_iam_policy.eso_ssm_read.arn
+}
+
+###############################################################################
+# TF Helpers
+###############################################################################
+
+## Update kubeconfig
+resource "null_resource" "update_kubeconfig" {
+  triggers = {
+    cluster_name = module.eks.cluster_name
+    cluster_endpoint = module.eks.cluster_endpoint
+  }
+  provisioner "local-exec" {
+    command = "aws eks update-kubeconfig --name ${local.name} --region ${local.region}"
+  }
+  depends_on = [
+    module.eks
+  ]
 }

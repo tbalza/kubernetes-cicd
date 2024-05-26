@@ -18,10 +18,10 @@ configMapGenerator:
   - name: jenkins-jcasc-configmap
     files:
       - jcasc-config.yaml
-  - name: docker-config # kaniko required config
-    literals:
-      - |
-        config.json=|
-          {
-            "credsStore": "ecr-login"
-          }
+#  - name: docker-config # kaniko required config
+#    literals:
+#      - |
+#        config.json=|
+#          {
+#            "credsStore": "ecr-login"
+#          }
