@@ -6,24 +6,24 @@ jenkins:
   authorizationStrategy:
     loggedInUsersCanDoAnything:
       allowAnonymousRead: false
-  clouds:
-    - kubernetes:
-        name: "kubernetes"
-        templates:
-          - name: "kaniko-builder"
-            label: "kaniko"
-            namespace: "jenkins"
-            containers:
-              - name: "kaniko"
-                image: "gcr.io/kaniko-project/executor:latest"
-                ttyEnabled: true
-                env:
-                  - name: "DOCKER_CONFIG"
-                    value: "/kaniko/.docker/"
-                volumeMounts:
-                  - name: "docker-config"
-                    mountPath: "/kaniko/.docker/"
-  volumes:
-    - name: "docker-config"
-      configMap:
-        name: "docker-config"
+#  clouds:
+#    - kubernetes:
+#        name: "kubernetes"
+#        templates:
+#          - name: "kaniko-builder"
+#            label: "kaniko"
+#            namespace: "jenkins"
+#            containers:
+#              - name: "kaniko"
+#                image: "gcr.io/kaniko-project/executor:latest"
+#                ttyEnabled: true
+#                env:
+#                  - name: "DOCKER_CONFIG"
+#                    value: "/kaniko/.docker/"
+#                volumeMounts:
+#                  - name: "docker-config"
+#                    mountPath: "/kaniko/.docker/"
+#  volumes:
+#    - name: "docker-config"
+#      configMap:
+#        name: "docker-config"
