@@ -1033,19 +1033,30 @@ resource "helm_release" "external_secrets" {
 #    value = #?
 #  }
 
-  # serviceAccount name must match serviceAccountRef in secret store. name: "external-secrets"
+  # IRSA not necessary? check
   values = [
     <<-EOF
     global:
       nodeSelector:
         role: "ci-cd"
-    serviceAccount:
-      create: true
-      name: "external-secrets"
-      annotations:
-        eks.amazonaws.com/role-arn: "${aws_iam_role.external_secrets.arn}"
     EOF
   ]
+
+#    # IRSA not necessary? check
+#  values = [
+#    <<-EOF
+#    global:
+#      nodeSelector:
+#        role: "ci-cd"
+#    serviceAccount:
+#      create: true
+#      name: "external-secrets"
+#      annotations:
+#        eks.amazonaws.com/role-arn: "${aws_iam_role.external_secrets.arn}"
+#    EOF
+#  ]
+
+
 
   # certManager: # pending for later
 
@@ -1055,25 +1066,23 @@ resource "helm_release" "external_secrets" {
   ]
 }
 
-resource "aws_iam_policy" "eso_ssm_read" {
-  name   = "SSM-for-external-secrets"
+resource "aws_iam_policy" "jenkins_ssm_read" {
+  name   = "SSM-for-argocd"
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
       Effect   = "Allow",
       "Action": [
-        "ssm:GetParameter",
-        "ssm:ListTagsForResource",
-        "ssm:DescribeParameters"
+        "ssm:GetParameter*",
       ],
-      Resource = "arn:aws:ssm:${local.region}:${data.aws_caller_identity.current.account_id}:parameter/*" # limit scope accordingly. SSM is region specific
+      Resource = "arn:aws:ssm:${local.region}:${data.aws_caller_identity.current.account_id}:parameter/*" # check .limit scope accordingly. SSM is region specific
     }]
   })
 }
 
 resource "aws_iam_role_policy_attachment" "ssm_read_attach" {
-  role       = aws_iam_role.external_secrets.name
-  policy_arn = aws_iam_policy.eso_ssm_read.arn
+  role       = aws_iam_role.jenkins.name
+  policy_arn = aws_iam_policy.jenkins_ssm_read.arn
 }
 
 ###############################################################################
