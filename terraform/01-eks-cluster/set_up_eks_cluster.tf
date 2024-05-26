@@ -1045,7 +1045,6 @@ resource "helm_release" "external_secrets" {
 #    value = #?
 #  }
 
-  # IRSA not necessary? check
   values = [
     <<-EOF
     global:
@@ -1053,22 +1052,6 @@ resource "helm_release" "external_secrets" {
         role: "ci-cd"
     EOF
   ]
-
-#    # IRSA not necessary? check
-#  values = [
-#    <<-EOF
-#    global:
-#      nodeSelector:
-#        role: "ci-cd"
-#    serviceAccount:
-#      create: true
-#      name: "external-secrets"
-#      annotations:
-#        eks.amazonaws.com/role-arn: "${aws_iam_role.external_secrets.arn}"
-#    EOF
-#  ]
-
-
 
   # certManager: # pending for later
 
