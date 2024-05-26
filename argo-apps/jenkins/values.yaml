@@ -43,6 +43,16 @@ controller:
         name: sc-config-volume # jcasc-config-volume
       - mountPath: /var/jenkins_home
         name: jenkins-home
+      - mountPath: /var/jenkins_config
+        name: jenkins-config # jcasc-config-volume
+      - mountPath: /usr/share/jenkins/ref/plugins
+        name: plugins
+      - mountPath: /var/jenkins_plugins
+        name: plugin-dir
+      - mountPath: /tmp
+        name: tmp-volume
+      - mountPath: /usr/share/jenkins/ref/plugins
+        name: plugins
   ingress:
     enabled: true
     className: "alb"
