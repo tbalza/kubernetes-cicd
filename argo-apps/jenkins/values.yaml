@@ -31,7 +31,7 @@ controller:
     defaultConfig: false # check
   persistence:
     enabled: true
-    storageClass: "ebs-sc" # check
+    storageClass: "gp2" # check
     size: "8Gi" # check
     accessMode: "ReadWriteOnce" # check
     volumes:
