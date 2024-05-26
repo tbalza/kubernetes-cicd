@@ -511,15 +511,27 @@ resource "aws_iam_role" "jenkins" {
   name = "JenkinsRole"
 
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+    Version = "2012-10-17",
     Statement = [
       {
-        Action = "sts:AssumeRole"
+        Effect = "Allow",
+        Action = "sts:AssumeRole",
         Principal = {
           Service = "eks.amazonaws.com"
+        },
+      },
+      # External Secrets Operator reqs
+      {
+        Effect = "Allow",
+        Action = "sts:AssumeRoleWithWebIdentity",
+        Principal = {
+          Federated = module.eks.oidc_provider_arn
+        },
+        Condition = {
+          StringEquals = {
+            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub": "system:serviceaccount:jenkins:jenkins"
+          }
         }
-        Effect = "Allow"
-        Sid    = ""
       }
     ]
   })
@@ -1075,6 +1087,8 @@ resource "aws_iam_policy" "jenkins_ssm_read" {
       Effect   = "Allow",
       "Action": [
         "ssm:GetParameter*",
+        "ssm:ListTagsForResource", # check
+        "ssm:DescribeParameters" # check
       ],
       Resource = "arn:aws:ssm:${local.region}:${data.aws_caller_identity.current.account_id}:parameter/*" # check .limit scope accordingly. SSM is region specific
     }]
