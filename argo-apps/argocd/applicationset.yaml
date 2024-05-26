@@ -37,4 +37,3 @@ spec:
           kind: ExternalSecret
           jsonPointers:
             - /status
-            - /metadata
