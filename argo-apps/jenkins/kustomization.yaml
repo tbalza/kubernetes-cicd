@@ -14,10 +14,11 @@ resources:
   - secret-store.yaml # load ECR repo dynamically
   - secret-external.yaml # load ECR repo dynamically
 
-configMapGenerator:
-  - name: jenkins-jcasc-configmap
-    files:
-      - jcasc-config.yaml
+#configMapGenerator:
+#  - name: jenkins-jcasc-configmap
+#    files:
+#      - jcasc-config.yaml
+
 #  - name: docker-config # kaniko required config
 #    literals:
 #      - |
