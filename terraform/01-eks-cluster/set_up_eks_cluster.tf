@@ -1079,7 +1079,7 @@ resource "aws_iam_policy" "argo_ssm_read" {
 }
 
 resource "aws_iam_role_policy_attachment" "ssm_read_attach" {
-  role       = aws_iam_role.jenkins.name
+  role       = aws_iam_role.argo_cd.name
   policy_arn = aws_iam_policy.argo_ssm_read.arn
 }
 
