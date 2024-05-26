@@ -1050,6 +1050,9 @@ resource "helm_release" "external_secrets" {
     global:
       nodeSelector:
         role: "ci-cd"
+    serviceAccount:
+      create: true
+      name: "external-secrets"
     EOF
   ]
 
