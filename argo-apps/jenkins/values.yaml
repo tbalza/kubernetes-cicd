@@ -41,7 +41,7 @@ controller:
     mounts:
       - mountPath: /var/jenkins_home/casc_configs
         name: sc-config-volume # jcasc-config-volume
-        #readOnly: true
+        readOnly: true # ?
   ingress:
     enabled: true
     className: "alb"
