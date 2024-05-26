@@ -29,22 +29,19 @@ controller:
   JCasC:
     enabled: true
     defaultConfig: false # check
-    configScripts: # check
-      main: |- # check
-        /var/jenkins_home/casc_configs/jcasc-config.yaml
-  volumes:
-    - name: jcasc-config-volume
-      configMap:
-        name: jenkins-jcasc-configmap
-  volumeMounts:
-    - mountPath: /var/jenkins_home/casc_configs
-      name: jcasc-config-volume
-      readOnly: true
   persistence:
     enabled: true
-    storageClass: "ebs-sc" #gp3
-    size: "30Gi"
-    accessMode: "ReadWriteOnce"
+    storageClass: "ebs-sc" # check
+    size: "30Gi" # check
+    accessMode: "ReadWriteOnce" # check
+    volumes:
+      - name: jcasc-config-volume
+        configMap:
+          name: jenkins-jcasc-configmap
+    volumeMounts:
+      - mountPath: /var/jenkins_home/casc_configs
+        name: jcasc-config-volume
+        readOnly: true
   ingress:
     enabled: true
     className: "alb"

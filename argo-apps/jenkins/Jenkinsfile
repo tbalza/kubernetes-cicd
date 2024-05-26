@@ -1,7 +1,7 @@
 pipeline {
   agent any
   environment {
-    REGISTRY = "${env.REGISTRY}"  # External Secrets Operator sub
+    REGISTRY = "350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"  // "${env.REGISTRY}" External Secrets Operator sub
     IMAGE_NAME = 'my-django-app'
     TAG = "${BUILD_NUMBER}"  // unique tags per build
   }
