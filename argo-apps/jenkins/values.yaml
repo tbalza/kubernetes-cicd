@@ -42,7 +42,7 @@ controller:
     existingClaim: "jenkins-data"
     accessMode: "ReadWriteOnce" # check
     volumes:
-      - name: jcasc-config-volume # jcasc-config-volume
+      - name: sc-config-volume # jcasc-config-volume
         configMap:
           name: jenkins-jcasc-configmap # jenkins-jcasc-configmap
     mounts:
