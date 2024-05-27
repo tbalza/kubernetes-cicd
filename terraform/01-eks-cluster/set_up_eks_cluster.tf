@@ -532,7 +532,7 @@ resource "aws_iam_role" "jenkins" {
             "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub": "system:serviceaccount:jenkins:jenkins"
           }
         }
-      }
+      },
     ]
   })
 }
@@ -1085,6 +1085,28 @@ resource "aws_iam_role_policy_attachment" "jenkins_read_attach" {
   role       = aws_iam_role.jenkins.name
   policy_arn = aws_iam_policy.jenkins_ssm_read.arn
 }
+
+#######
+
+resource "aws_iam_policy" "jenkins_admin" {
+  name   = "JenkinsAdminPolicy"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = "*",
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "jenkins_admin_attach" {
+  role       = aws_iam_role.jenkins.name
+  policy_arn = aws_iam_policy.jenkins_admin.arn
+}
+
 
 ###############################################################################
 # TF Helpers
