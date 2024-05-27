@@ -29,14 +29,10 @@ controller:
   JCasC:
     enabled: true
     defaultConfig: false # check
-    configScripts:
-      jcasc-config: |
-        {{ .Files.Get "jcasc-config.yaml" | nindent 8 }}
   persistence:
     enabled: true
     storageClass: "gp2" # check
-    size: "20Gi" # check
-    existingClaim: "jenkins-data"
+    size: "30Gi" # check
     accessMode: "ReadWriteOnce" # check
     volumes:
       - name: sc-config-volume # jcasc-config-volume
