@@ -1,4 +1,7 @@
 controller:
+  containerEnv: # wtf
+    - name: CASC_JENKINS_CONFIG # wtf
+      value: "/var/jenkins_home/casc_configs" # wtf
   image:
     repository: "jenkins/jenkins"
     tag: 2.440.3
