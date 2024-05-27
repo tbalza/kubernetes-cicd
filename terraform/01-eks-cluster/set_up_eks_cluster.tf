@@ -38,6 +38,8 @@ locals {
 # SSM Parameter
 ###############################################################################
 
+# Store secrets as SSM Parameters, that will be used by Kustomize via External Secrets Operator to dynamically inject secrets into pods
+
 module "ssm-parameter" {
   source  = "terraform-aws-modules/ssm-parameter/aws"
   version = "1.1.1"
@@ -64,25 +66,6 @@ module "ssm-parameter" {
 # EKS Module
 ################################################################################
 
-# Create iam role for service account for the block device
-# IAM additional policy https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2826 # check
-module "ebs_csi_driver_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "5.39.1"
-
-  # create_role      = false
-  role_name_prefix = "${module.eks.cluster_name}-ebs-csi"
-
-  attach_ebs_csi_policy = true
-
-  oidc_providers = {
-    main = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
-    }
-  }
-}
-
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "20.11.1"
@@ -94,6 +77,8 @@ module "eks" {
   vpc_id                   = module.vpc.vpc_id
   subnet_ids               = module.vpc.private_subnets
   #control_plane_subnet_ids = module.vpc.intra_subnets
+
+  #create_delay_dependencies = [for group in module.eks.eks_managed_node_groups : group.node_group_arn] # check eks-blueprints-addons
 
   cluster_endpoint_public_access  = true
   cluster_endpoint_private_access = true
@@ -520,7 +505,7 @@ resource "aws_iam_role" "jenkins" {
           Service = "eks.amazonaws.com"
         },
       },
-      # External Secrets Operator reqs
+      # External Secrets Operator reqs (jwt auth)
       {
         Effect = "Allow",
         Action = "sts:AssumeRoleWithWebIdentity",
@@ -964,6 +949,57 @@ resource "helm_release" "aws_load_balancer_controller" {
     module.eks # important
   ]
 }
+
+################################################################################
+# EBS CSI Driver
+################################################################################
+
+# Create iam role for service account for the block device
+# IAM additional policy https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2826 # check
+module "ebs_csi_driver_irsa" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "5.39.1"
+
+  # create_role      = false
+  role_name_prefix = "${module.eks.cluster_name}-ebs-csi"
+
+  attach_ebs_csi_policy = true
+
+  oidc_providers = {
+    main = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
+    }
+  }
+}
+
+# Enabe gp3 for aws-ebs-csi-driver
+resource "kubernetes_storage_class_v1" "gp3" {
+  metadata {
+    name = "gp3"
+
+    annotations = {
+      # Annotation to set gp3 as default storage class
+      "storageclass.kubernetes.io/is-default-class" = "true"
+    }
+  }
+
+  storage_provisioner    = "ebs.csi.aws.com"
+  allow_volume_expansion = true
+  reclaim_policy         = "Delete"
+  volume_binding_mode    = "WaitForFirstConsumer"
+
+  parameters = {
+    encrypted = false # check
+    fsType    = "ext4"
+    type      = "gp3"
+  }
+
+  depends_on = [
+    module.eks
+  ]
+}
+
 
 ###############################################################################
 # ECR

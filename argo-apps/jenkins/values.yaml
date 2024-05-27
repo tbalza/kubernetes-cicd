@@ -31,28 +31,16 @@ controller:
     defaultConfig: false # check
   persistence:
     enabled: true
-    storageClass: "ebs-sc" # check
-    size: "30Gi" # check
-    accessMode: "ReadWriteOnce" # check
+    storageClass: "gp3" # check # ebs-gp3
+    size: "9Gi" # check
+    accessMode: "ReadWriteOnce" # check.
     volumes:
-      - name: sc-config-volume # jcasc-config-volume
-        configMap:
-          name: jenkins-jcasc-configmap # jenkins-jcasc-configmap
+      - name: jenkins-home
+        persistentVolumeClaim:
+          claimName: jenkins-pvc
     mounts:
-      - mountPath: /var/jenkins_home/casc_configs
-        name: sc-config-volume # jcasc-config-volume
       - mountPath: /var/jenkins_home
         name: jenkins-home
-      - mountPath: /var/jenkins_config
-        name: jenkins-config # jcasc-config-volume
-      - mountPath: /usr/share/jenkins/ref/plugins
-        name: plugins
-      - mountPath: /var/jenkins_plugins
-        name: plugin-dir
-      - mountPath: /tmp
-        name: tmp-volume
-      - mountPath: /usr/share/jenkins/ref/plugins
-        name: plugins
   ingress:
     enabled: true
     className: "alb"
