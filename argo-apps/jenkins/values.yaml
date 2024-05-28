@@ -45,7 +45,7 @@ controller:
       - mountPath: /var/jenkins_home
         name: jenkins-home
       - mountPath: /var/jenkins_home/casc_configs  # JCasC configuration mount
-        name: jcasc-config
+        name: casc_configs
   ingress:
     enabled: true
     className: "alb"
