@@ -41,7 +41,7 @@ controller:
       - name: jenkins-home
         persistentVolumeClaim:
           claimName: jenkins-pvc # stores Jenkins' state, like job history, build artifacts, to persist across pod restarts and deployments
-      - name: jcasc-config
+      - name: casc_configs
         configMap:
           name: jenkins-jcasc-configmap # in memory volume linked to ConfigMap
     mounts:
