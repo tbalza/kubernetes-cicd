@@ -14,6 +14,6 @@ spec:
             subPath: jenkins.yaml
             readOnly: true
       volumes:
-        - name: volume-checkk
+        - name: test-config
           configMap:
             name: test-config
