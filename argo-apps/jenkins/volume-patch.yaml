@@ -9,8 +9,8 @@ spec:
       containers:
       - name: jenkins
         volumeMounts:
-          - name: jenkins-config
-            mountPath: /var/jenkins_home/jenkins.yaml
+          - mountPath: /var/jenkins_home/jenkins.yaml
+            name: jenkins-config
             subPath: jenkins.yaml
             readOnly: true
       volumes:
