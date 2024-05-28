@@ -1,4 +1,7 @@
 controller:
+#  sidecars:
+#    configAutoReload:
+#      enabled: true
   image:
     repository: "jenkins/jenkins"
     tag: 2.440.3
@@ -46,7 +49,6 @@ controller:
         name: jenkins-home
       - mountPath: /var/jenkins_home/casc_configs  # JCasC configuration mount
         name: casc_configs
-        subPath: jenkins.yaml
   ingress:
     enabled: true
     className: "alb"
