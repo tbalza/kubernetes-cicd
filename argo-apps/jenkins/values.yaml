@@ -41,7 +41,23 @@ controller:
     enabled: true
     defaultConfig: false # check
     overwriteConfiguration: false # check
-    configScripts: {}  # To be populated by patch
+    #configScripts: {}  # To be populated by patch
+  customInitContainers:
+    - name: copy-casc-config
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command: ['sh', '-c']
+      args:
+        - |
+          # Ensure the path /var/jenkins_home/casc_configs exists
+          mkdir -p /var/jenkins_home/casc_configs
+          # Copy the configuration file from the mounted ConfigMap to the desired location
+          cp /mnt/casc-config/casc-config.yaml /var/jenkins_home/casc_configs/casc-config.yaml
+      volumeMounts:
+        - name: casc-config
+          mountPath: /mnt/casc-config
+        - name: jenkins-home
+          mountPath: /var/jenkins_home/casc_configs
   persistence:
     enabled: true
     storageClass: "gp3" # check # ebs-gp3
@@ -51,9 +67,14 @@ controller:
       - name: jenkins-home
         persistentVolumeClaim: # stores Jenkins' state, like job history, build artifacts, to persist across pod restarts and deployments
           claimName: jenkins-pvc # check (not applying)
+      - name: casc-config
+        configMap:
+          name: jenkins-casc-config
     mounts:
       - mountPath: /var/jenkins_home
         name: jenkins-home
+      - mountPath: /var/jenkins_home/casc_configs
+        name: casc-config
   ingress:
     enabled: true
     className: "alb"
