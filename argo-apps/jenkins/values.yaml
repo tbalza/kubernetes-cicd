@@ -44,7 +44,7 @@ controller:
     mounts:
       - mountPath: /var/jenkins_home
         name: jenkins-home
-      - mountPath: /var/jenkins_home/casc_configs  # JCasC configuration mount
+      - mountPath: /var/jenkins_home/casc_configs/jenkins.yaml  # JCasC configuration mount
         name: casc_configs
         subPath: jenkins.yaml
   ingress:
