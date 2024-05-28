@@ -12,7 +12,7 @@ spec:
           - mountPath: /var/jenkins_home/jenkins.yaml
             name: jenkins-config
             subPath: jenkins.yaml
-            readOnly: true
+            #readOnly: true
       volumes:
         - name: jenkins-config
           configMap:
