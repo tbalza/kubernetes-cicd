@@ -7,13 +7,13 @@ controller:
 #  sidecars:
 #    configAutoReload:
 #      enabled: true
-#  containerEnv:
-#    - name: CASC_JENKINS_CONFIG
-#      value: "/var/jenkins_home/casc_configs" # if not set will look for /var/jenkins_home/jenkins.yaml
+  containerEnv:
+    - name: CASC_JENKINS_CONFIG
+      value: "/var/jenkins_home/casc_configs,/var/jenkins_home/custom-casc_configs"
   image:
     repository: "jenkins/jenkins"
     tag: 2.440.3
-  javaOpts: "-Xmx1536m -Xms512m -Dcasc.jenkins.config=/var/jenkins_home/casc_configs" # -Dcasc.jenkins.config=/var/jenkins_home/casc_configs prevent memory limit issues, define jcasc config path
+  javaOpts: "-Xmx1536m -Xms512m" # -Dcasc.jenkins.config=/var/jenkins_home/casc_configs prevent memory limit issues, define jcasc config path
   admin:
     username: "admin" # check
     password: "pass" # check
@@ -40,7 +40,7 @@ controller:
   JCasC:
     enabled: true
     defaultConfig: false # check
-    overwriteConfiguration: false # check
+    overwriteConfiguration: true # check
     configScripts:
       welcome-message: |
         jenkins: 
@@ -61,22 +61,17 @@ controller:
 #        - name: casc-config
 #          mountPath: /var/jenkins_home/casc_configs
   persistence:
-    enabled: false #
-    #storageClass: "gp3" # check # ebs-gp3
-    #size: "9Gi" # check (not applying)
-    accessMode: "ReadWriteOnce" # check.
+    #enabled: true #
+    storageClass: "gp3" # check # ebs-gp3
+    size: "9Gi" # check (not applying)
+    accessMode: "ReadWrite" # check. # "ReadWriteOnce"
     volumes:
-      - name: jenkins-home
-        persistentVolumeClaim: # stores Jenkins' state, like job history, build artifacts, to persist across pod restarts and deployments
-          claimName: jenkins-pvc # check (not applying)
-      - name: casc-config
+      - name: jenkins-custom-casc-config
         configMap:
-          name: test-config
+          name: jenkins-custom-casc-config
     mounts:
-      - mountPath: /var/jenkins_home
-        name: jenkins-home
-      - mountPath: /var/jenkins_home
-        name: casc-config
+      - mountPath: /var/jenkins_home/custom-casc_configs
+        name: jenkins-custom-casc-config
   ingress:
     enabled: true
     className: "alb"
