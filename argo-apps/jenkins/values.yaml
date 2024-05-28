@@ -69,7 +69,7 @@ controller:
           claimName: jenkins-pvc # check (not applying)
       - name: casc-config
         configMap:
-          name: jenkins-casc-config
+          name: test-config
     mounts:
       - mountPath: /var/jenkins_home
         name: jenkins-home
