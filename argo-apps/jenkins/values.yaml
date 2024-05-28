@@ -2,10 +2,13 @@ controller:
 #  sidecars:
 #    configAutoReload:
 #      enabled: true
+#  containerEnv:
+#    - name: CASC_JENKINS_CONFIG
+#      value: "/var/jenkins_home/casc_configs" # if not set will look for /var/jenkins_home/jenkins.yaml
   image:
     repository: "jenkins/jenkins"
     tag: 2.440.3
-  javaOpts: "-Xmx1536m -Xms512m -Dcasc.jenkins.config=/var/jenkins_home" # prevent memory limit issues, define jcasc config path
+  javaOpts: "-Xmx1536m -Xms512m" # -Dcasc.jenkins.config=/var/jenkins_home prevent memory limit issues, define jcasc config path
   admin:
     username: "admin" # check
     password: "pass" # check
@@ -27,11 +30,15 @@ controller:
     - ansible:307.va_1f3ef06575a_
     - docker-workflow:580.vc0c340686b_54
     - credentials:1337.v60b_d7b_c7b_c9f
-#    - job-dsl:1.87
+    - job-dsl:1.87
     - amazon-ecr:1.114.vfd22430621f5
   JCasC:
     enabled: true
     defaultConfig: false # check
+    configScripts:
+      welcome-message: |
+        jenkins:
+          systemMessage: values.yaml custom message.
   persistence:
     enabled: true
     storageClass: "gp3" # check # ebs-gp3
@@ -47,9 +54,9 @@ controller:
     mounts:
       - mountPath: /var/jenkins_home
         name: jenkins-home
-      - mountPath: /var/jenkins_home/casc_configs  # JCasC configuration mount
+      - mountPath: /var/jenkins_home/jenkins.yaml  # JCasC configuration mount
         name: jenkinsyaml  # This should exactly match the volume name
-        subpath: jenkins.yaml
+        subPath: jenkins.yaml
   ingress:
     enabled: true
     className: "alb"
