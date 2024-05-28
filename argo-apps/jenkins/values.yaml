@@ -7,9 +7,9 @@ controller:
 #  sidecars:
 #    configAutoReload:
 #      enabled: true
-#  containerEnv:
-#    - name: CASC_JENKINS_CONFIG
-#      value: "/var/jenkins_home/casc_configs" # if not set will look for /var/jenkins_home/jenkins.yaml
+  containerEnv:
+    - name: CASC_JENKINS_CONFIG
+      value: "/var/jenkins_home/casc_configs" # if not set will look for /var/jenkins_home/jenkins.yaml
   image:
     repository: "jenkins/jenkins"
     tag: 2.440.3
@@ -40,10 +40,8 @@ controller:
   JCasC:
     enabled: true
     defaultConfig: false # check
-    configScripts:
-      welcome-message: |
-        jenkins:
-          systemMessage: values.yaml custom message.
+    overwriteConfiguration: false # check
+    configScripts: {}  # To be populated by patch
   persistence:
     enabled: true
     storageClass: "gp3" # check # ebs-gp3
