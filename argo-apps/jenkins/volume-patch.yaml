@@ -10,10 +10,10 @@ spec:
       - name: jenkins
         volumeMounts:
           - mountPath: /var/jenkins_home/jenkins.yaml
-            name: jenkins-config
+            name: test-config
             subPath: jenkins.yaml
             readOnly: true
       volumes:
-        - name: jenkins-config
+        - name: test-vol
           configMap:
-            name: jenkins-config
+            name: test-config
