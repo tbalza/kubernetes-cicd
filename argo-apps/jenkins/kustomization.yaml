@@ -17,7 +17,7 @@ resources:
 configMapGenerator:
   - name: jenkins-jcasc-configmap
     files:
-      - jcasc-config.yaml
+      - jenkins.yaml
 
 generatorOptions:
   disableNameSuffixHash: true # This prevents Kustomize from appending a hash to the ConfigMap name.

@@ -2,7 +2,7 @@ controller:
   image:
     repository: "jenkins/jenkins"
     tag: 2.440.3
-  javaOpts: "-Xmx1536m -Xms512m"
+  javaOpts: "-Xmx1536m -Xms512m -Dcasc.jenkins.config=/var/jenkins_home/casc_configs/jenkins.yaml" # prevent memory limit issues, define jcasc config path
   admin:
     username: "admin" # check
     password: "pass" # check
@@ -28,7 +28,7 @@ controller:
     - amazon-ecr:1.114.vfd22430621f5
   JCasC:
     enabled: true
-    defaultConfig: true # check
+    defaultConfig: false # check
   persistence:
     enabled: true
     storageClass: "gp3" # check # ebs-gp3
