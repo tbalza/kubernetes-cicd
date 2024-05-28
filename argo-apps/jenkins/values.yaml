@@ -57,14 +57,14 @@ controller:
         - name: jenkins-home
           mountPath: /var/jenkins_home/casc_configs
   persistence:
-    enabled: true
-    storageClass: "gp3" # check # ebs-gp3
-    size: "9Gi" # check (not applying)
+    enabled: false #
+    #storageClass: "gp3" # check # ebs-gp3
+    #size: "9Gi" # check (not applying)
     accessMode: "ReadWriteOnce" # check.
     volumes:
       - name: jenkins-home
-        persistentVolumeClaim: # stores Jenkins' state, like job history, build artifacts, to persist across pod restarts and deployments
-          claimName: jenkins-pvc # check (not applying)
+#        persistentVolumeClaim: # stores Jenkins' state, like job history, build artifacts, to persist across pod restarts and deployments
+#          claimName: jenkins-pvc # check (not applying)
       - name: casc-config
         configMap:
           name: test-config
