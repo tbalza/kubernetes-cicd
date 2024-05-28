@@ -9,11 +9,11 @@ spec:
       containers:
       - name: jenkins
         volumeMounts:
-          - mountPath: /var/jenkins_home/jenkins.yaml
-            name: test-config
+          - name: test-config
+            mountPath: /var/jenkins_home/jenkins.yaml
             subPath: jenkins.yaml
             readOnly: true
       volumes:
-        - name: test-vol
+        - name: volume-checkk
           configMap:
             name: test-config
