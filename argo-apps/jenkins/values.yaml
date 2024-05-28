@@ -52,9 +52,9 @@ controller:
           # Copy the configuration file from the mounted ConfigMap to the desired location
           cp /mnt/casc-config/casc-config.yaml /var/jenkins_home/casc_configs/casc-config.yaml
       volumeMounts:
-        - name: casc-config
+        - name: casc-config-temp
           mountPath: /mnt/casc-config
-        - name: jenkins-home
+        - name: casc-config
           mountPath: /var/jenkins_home/casc_configs
   persistence:
     enabled: false #
