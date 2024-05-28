@@ -16,10 +16,10 @@ resources:
   - secret-external.yaml # load ECR repo dynamically
 #  - jenkins-custom-casc-config.yaml #configmap
 
-configMapGenerator:
-  - name: jenkins-custom-casc-config
-    files:
-      - conf/conf.yaml  # Ensure this is correctly pathed
+#configMapGenerator:
+#  - name: jenkins-custom-casc-config
+#    files:
+#      - conf/conf.yaml  # Ensure this is correctly pathed
 
 #configMapGenerator:
 #  - name: test-config

@@ -9,7 +9,7 @@ controller:
 #      enabled: true
   containerEnv:
     - name: CASC_JENKINS_CONFIG
-      value: "/var/jenkins_home/casc_configs/custom-casc_configs"
+      value: "/var/jenkins_home/casc_configs/sub"
   image:
     repository: "jenkins/jenkins"
     tag: 2.440.3
@@ -70,7 +70,7 @@ controller:
         configMap:
           name: jenkins-custom-casc-config
     mounts:
-      - mountPath: /var/jenkins_home/casc_configs/custom-casc_configs
+      - mountPath: /var/jenkins_home/casc_configs/sub
         name: jenkins-custom-casc-config
   ingress:
     enabled: true
