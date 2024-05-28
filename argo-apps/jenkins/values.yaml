@@ -44,8 +44,8 @@ controller:
     #configScripts: {}  # To be populated by patch
   customInitContainers:
     - name: copy-casc-config
-      image: busybox
-      imagePullPolicy: IfNotPresent
+      image: "alpine:3"
+      imagePullPolicy: Always
       command: ['sh', '-c']
       args:
         - |
