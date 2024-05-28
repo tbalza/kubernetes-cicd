@@ -5,7 +5,7 @@ controller:
   image:
     repository: "jenkins/jenkins"
     tag: 2.440.3
-  javaOpts: "-Xmx1536m -Xms512m -Dcasc.jenkins.config=/var/jenkins_home/casc_configs" # prevent memory limit issues, define jcasc config path
+  javaOpts: "-Xmx1536m -Xms512m -Dcasc.jenkins.config=/var/jenkins_home/jenkins.yaml" # prevent memory limit issues, define jcasc config path
   admin:
     username: "admin" # check
     password: "pass" # check
@@ -41,14 +41,15 @@ controller:
       - name: jenkins-home
         persistentVolumeClaim:
           claimName: jenkins-pvc # stores Jenkins' state, like job history, build artifacts, to persist across pod restarts and deployments
-      - name: sc-config-volume  # This name should match exactly in the mount definition
+      - name: jenkinsyaml  # This name should match exactly in the mount definition
         configMap:
           name: jenkins-jcasc-configmap # in memory volume linked to ConfigMap
     mounts:
       - mountPath: /var/jenkins_home
         name: jenkins-home
       - mountPath: /var/jenkins_home/casc_configs  # JCasC configuration mount
-        name: sc-config-volume  # This should exactly match the volume name
+        name: jenkinsyaml  # This should exactly match the volume name
+        subpath: jenkins.yaml
   ingress:
     enabled: true
     className: "alb"
