@@ -41,6 +41,10 @@ controller:
     enabled: true
     defaultConfig: false # check
     overwriteConfiguration: false # check
+    configScripts:
+      welcome-message: |
+        jenkins: 
+          systemMessage: values.yaml custom message.
     #configScripts: {}  # To be populated by patch
 #  customInitContainers:
 #    - name: copy-casc-config
@@ -71,7 +75,7 @@ controller:
     mounts:
       - mountPath: /var/jenkins_home
         name: jenkins-home
-      - mountPath: /var/jenkins_home/
+      - mountPath: /var/jenkins_home
         name: casc-config
   ingress:
     enabled: true
