@@ -3,4 +3,7 @@ kind: ConfigMap
 metadata:
   name: jenkins-custom-casc-config
 data:
-  {{- (.Files.Glob "conf/*").AsConfig | indent 2 }}
+  {{- range $path, $_ := .Files.Glob "conf/*" }}
+  {{ base $path }}: |-
+    {{ $.Files.Get $path | nindent 4 }}
+  {{- end }}
