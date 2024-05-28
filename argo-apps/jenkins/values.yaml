@@ -42,21 +42,15 @@ controller:
   persistence:
     enabled: true
     storageClass: "gp3" # check # ebs-gp3
-    size: "9Gi" # check
+    size: "9Gi" # check (not applying)
     accessMode: "ReadWriteOnce" # check.
     volumes:
       - name: jenkins-home
-        persistentVolumeClaim:
-          claimName: jenkins-pvc # stores Jenkins' state, like job history, build artifacts, to persist across pod restarts and deployments
-      - name: jenkinsyaml  # This name should match exactly in the mount definition
-        configMap:
-          name: jenkins-jcasc-configmap # in memory volume linked to ConfigMap
+        persistentVolumeClaim: # stores Jenkins' state, like job history, build artifacts, to persist across pod restarts and deployments
+          claimName: jenkins-pvc # check (not applying)
     mounts:
       - mountPath: /var/jenkins_home
         name: jenkins-home
-      - mountPath: /var/jenkins_home/jenkins.yaml  # JCasC configuration mount
-        name: jenkinsyaml  # This should exactly match the volume name
-        subPath: jenkins.yaml
   ingress:
     enabled: true
     className: "alb"

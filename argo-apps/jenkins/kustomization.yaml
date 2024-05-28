@@ -15,12 +15,16 @@ resources:
   - secret-external.yaml # load ECR repo dynamically
 
 configMapGenerator:
-  - name: jenkins-jcasc-configmap
+  - name: jenkins-config
     files:
       - jenkins.yaml
 
 generatorOptions:
   disableNameSuffixHash: true # This prevents Kustomize from appending a hash to the ConfigMap name.
+
+patchesStrategicMerge:
+  - volume-patch.yaml
+
 #  labels:
 #    type: generated # Labels the generated ConfigMaps and Secrets as 'generated'.
 #  annotations:
