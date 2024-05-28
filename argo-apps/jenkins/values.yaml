@@ -38,15 +38,17 @@ controller:
       - name: jenkins-home
         persistentVolumeClaim:
           claimName: jenkins-pvc # stores Jenkins' state, like job history, build artifacts, to persist across pod restarts and deployments
-      - name: jcasc-config
-        configMap:
-          name: jenkins-jcasc-configmap # in memory volume linked to ConfigMap
+#      - name: jcasc-config
+#        configMap:
+#          name: jenkins-jcasc-configmap # in memory volume linked to ConfigMap
+      - type: ConfigMap
+        configMapName: jenkins-jcasc-configmap
+        mountPath: /var/jenkins_home/casc_configs
     mounts:
       - mountPath: /var/jenkins_home
         name: jenkins-home
-      - mountPath: /var/jenkins_home/casc_configs/jenkins.yaml  # JCasC configuration mount
+      - mountPath: /var/jenkins_home/casc_configs  # JCasC configuration mount
         name: casc_configs
-        subPath: jenkins.yaml
   ingress:
     enabled: true
     className: "alb"
