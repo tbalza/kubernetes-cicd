@@ -61,17 +61,17 @@ controller:
 #        - name: casc-config
 #          mountPath: /var/jenkins_home/casc_configs
   persistence:
-    #enabled: true #
+#    enabled: true #
     storageClass: "gp3" # check # ebs-gp3
     size: "9Gi" # check (not applying)
     accessMode: "ReadWrite" # check. # "ReadWriteOnce"
-    volumes:
-      - name: jenkins-custom-casc-config
-        configMap:
-          name: jenkins-custom-casc-config
-    mounts:
-      - mountPath: /var/jenkins_home/casc_configs/sub
-        name: jenkins-custom-casc-config
+#    volumes:
+#      - name: jenkins-custom-casc-config
+#        configMap:
+#          name: jenkins-custom-casc-config
+#    mounts:
+#      - mountPath: /var/jenkins_home/casc_configs/sub
+#        name: jenkins-custom-casc-config
   ingress:
     enabled: true
     className: "alb"
