@@ -7,13 +7,13 @@ controller:
 #  sidecars:
 #    configAutoReload:
 #      enabled: true
-  containerEnv:
-    - name: CASC_JENKINS_CONFIG
-      value: "/var/jenkins_home/"
+#  containerEnv:
+#    - name: CASC_JENKINS_CONFIG
+#      value: "/var/jenkins_home/"
   image:
     repository: "jenkins/jenkins"
     tag: 2.440.3
-  javaOpts: "-Xmx1536m -Xms512m" # -Dcasc.jenkins.config=/var/jenkins_home/casc_configs prevent memory limit issues, define jcasc config path
+  javaOpts: "-Xmx1536m -Xms512m -Dcasc.jenkins.config=/var/jenkins_home/" # -Dcasc.jenkins.config=/var/jenkins_home/casc_configs prevent memory limit issues, define jcasc config path
   admin:
     username: "admin" # check
     password: "pass" # check
