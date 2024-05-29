@@ -39,7 +39,7 @@ controller:
     - amazon-ecr:1.114.vfd22430621f5
   JCasC:
     enabled: true
-    defaultConfig: true # check
+    defaultConfig: false # check
     overwriteConfiguration: false # check
 
 #    configScripts:
