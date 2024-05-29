@@ -3,7 +3,7 @@ controller:
     configScripts:
       casc-config: |
         jenkins:
-          systemMessage: "modified jcasc" # https://www.jenkins.io/blog/2021/05/20/configure-plugins-with-jcasc/
+          systemMessage: "modified jcasc"
           agentProtocols:
           - "JNLP4-connect"
           - "Ping"
