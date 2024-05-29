@@ -47,3 +47,7 @@ controller:
                 slaveConnectTimeout: 100
                 slaveConnectTimeoutStr: "100"
                 yamlMergeStrategy: "override"
+
+configs:
+  cm:
+    kustomize.buildOptions: "--load-restrictor LoadRestrictionsNone --enable-helm" # Enable Kustomize to install helm charts
