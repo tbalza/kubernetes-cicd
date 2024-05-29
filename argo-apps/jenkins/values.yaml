@@ -13,7 +13,7 @@ controller:
   image:
     repository: "jenkins/jenkins"
     tag: 2.440.3
-  javaOpts: "-Xmx1536m -Xms512m -Dcasc.jenkins.config=/var/jenkins_home/casc_configs/sub" # -Dcasc.jenkins.config=/var/jenkins_home/casc_configs prevent memory limit issues, define jcasc config path
+  javaOpts: "-Xmx1536m -Xms512m -Dcasc.jenkins.config=/var/jenkins_home/casc_configs,/var/jenkins_home/casc_configs/sub" # -Dcasc.jenkins.config=/var/jenkins_home/casc_configs prevent memory limit issues, define jcasc config path
   admin:
     username: "admin" # check
     password: "pass" # check
@@ -63,7 +63,7 @@ controller:
 #        - name: casc-config
 #          mountPath: /var/jenkins_home/casc_configs
   persistence:
-#    enabled: true #
+    enabled: true #
     storageClass: "gp3" # check # ebs-gp3
     size: "9Gi" # check (not applying)
     accessMode: "ReadWrite" # check. # "ReadWriteOnce"
@@ -73,7 +73,6 @@ controller:
           name: jenkins-custom-casc-config
       - name: jenkins-home
         persistentVolumeClaim:
-
     mounts:
       - mountPath: /var/jenkins_home/casc_configs/sub
         name: jenkins-custom-casc-config
