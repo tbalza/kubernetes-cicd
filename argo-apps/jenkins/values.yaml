@@ -40,11 +40,13 @@ controller:
   JCasC:
     enabled: true
     defaultConfig: false # check
-    overwriteConfiguration: true # check
-    configScripts:
-      welcome-message: |
-        jenkins: 
-          systemMessage: values.yaml custom message.
+#    overwriteConfiguration: true # check
+
+#    configScripts:
+#      welcome-message: |
+#        jenkins:
+#          systemMessage: values.yaml custom message.
+
     #configScripts: {}  # To be populated by patch
 #  customInitContainers:
 #    - name: copy-casc-config
