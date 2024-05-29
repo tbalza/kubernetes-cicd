@@ -39,8 +39,8 @@ controller:
     - amazon-ecr:1.114.vfd22430621f5
   JCasC:
     enabled: true
-    defaultConfig: false # check
-    overwriteConfiguration: false # check
+    defaultConfig: true # check. false break the installation
+    overwriteConfiguration: true # check
 
 #    configScripts:
 #      welcome-message: |
