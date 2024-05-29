@@ -71,9 +71,14 @@ controller:
       - name: jenkins-custom-casc-config
         configMap:
           name: jenkins-custom-casc-config
+      - name: jenkins-home
+        persistentVolumeClaim:
+
     mounts:
       - mountPath: /var/jenkins_home/casc_configs/sub
         name: jenkins-custom-casc-config
+      - mountPath: /var/jenkins_home
+        name: jenkins-home
   ingress:
     enabled: true
     className: "alb"
