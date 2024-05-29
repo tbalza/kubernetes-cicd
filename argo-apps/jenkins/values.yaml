@@ -40,7 +40,7 @@ controller:
   JCasC:
     enabled: true
     defaultConfig: true # check
-    overwriteConfiguration: true # check
+    overwriteConfiguration: false # check
 
 #    configScripts:
 #      welcome-message: |
