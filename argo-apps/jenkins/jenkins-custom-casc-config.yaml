@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: jenkins-custom-casc-config
-data:
-  {{- range $path, $_ := .Files.Glob "conf/*" }}
-  {{ base $path }}: |-
-    {{ $.Files.Get $path | nindent 4 }}
-  {{- end }}
