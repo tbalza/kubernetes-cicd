@@ -10,7 +10,7 @@ helmCharts:
     includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
     valuesFile: values.yaml
     additionalValuesFiles:
-    - casc-config-h.yml
+    - casc-config-h.yaml
 
 
 resources:
