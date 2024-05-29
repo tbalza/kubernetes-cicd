@@ -9,7 +9,7 @@ controller:
 #      enabled: true
   containerEnv:
     - name: CASC_JENKINS_CONFIG
-      value: "/var/jenkins_home/casc_configs/sub"
+      value: "/var/jenkins_home/"
   image:
     repository: "jenkins/jenkins"
     tag: 2.440.3
