@@ -1,4 +1,6 @@
 controller:
+  serviceAnnotations:
+    argocd.argoproj.io/sync-wave: "1"
   probes:
     startupProbe:
       failureThreshold: 12 # -- Set the failure threshold for the startup probe
