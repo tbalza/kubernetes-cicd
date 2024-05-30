@@ -3,9 +3,12 @@ kind: PersistentVolumeClaim
 metadata:
   name: jenkins
   namespace: jenkins
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"  # Deploy PVC first
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 10Gi
+  storageClassName: gp3  # Customize as needed

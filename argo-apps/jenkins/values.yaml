@@ -64,8 +64,10 @@ controller:
   persistence:
     enabled: true #
     existingClaim: jenkins
-    storageClass: "-"
+#    storageClass: "-"
     # annotations: {} # kubectl patch pv <your-pv-name> -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
+    annotations:
+      argocd.argoproj.io/sync-wave: "1"  # Wait until PVC is created first by kustomize
     # https://github.com/jenkinsci/helm-charts/issues/659
     # https://github.com/jenkinsci/helm-charts/issues/64
 #    storageClass: "gp3" # check # ebs-gp3
