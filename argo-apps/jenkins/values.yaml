@@ -1,6 +1,6 @@
 controller:
-#  serviceAnnotations:
-#    argocd.argoproj.io/sync-wave: "1"
+  serviceAnnotations:
+    argocd.argoproj.io/sync-wave: "1"
   probes:
     startupProbe:
       failureThreshold: 12 # -- Set the failure threshold for the startup probe
@@ -41,7 +41,7 @@ controller:
     - amazon-ecr:1.114.vfd22430621f5
   JCasC:
     enabled: false
-    defaultConfig: true # check. false fails install
+    defaultConfig: false # check. false fails install
     overwriteConfiguration: false # requires pod restart (or sidecars: configAutoReload: )
 #    configScripts:
 #      welcome-message: |
@@ -64,12 +64,12 @@ controller:
 #        - name: casc-config
 #          mountPath: /var/jenkins_home/casc_configs
   persistence:
-    enabled: false #
+    enabled: true #
     existingClaim: jenkins
-#    storageClass: "-"
+    storageClass: "-"
     # annotations: {} # kubectl patch pv <your-pv-name> -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
-#    annotations:
-#      argocd.argoproj.io/sync-wave: "1"  # Wait until PVC is created first by kustomize
+    annotations:
+      argocd.argoproj.io/sync-wave: "2"  # Wait until PVC is created first by kustomize
 
     # https://github.com/jenkinsci/helm-charts/issues/659
     # https://github.com/jenkinsci/helm-charts/issues/64
