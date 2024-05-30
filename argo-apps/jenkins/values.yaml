@@ -64,6 +64,7 @@ controller:
   persistence:
     enabled: true #
     existingClaim: jenkins
+    storageClass: "-"
     # annotations: {} # kubectl patch pv <your-pv-name> -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
     # https://github.com/jenkinsci/helm-charts/issues/659
     # https://github.com/jenkinsci/helm-charts/issues/64
