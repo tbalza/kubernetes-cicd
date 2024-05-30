@@ -39,8 +39,8 @@ controller:
     - amazon-ecr:1.114.vfd22430621f5
   JCasC:
     enabled: true
-    defaultConfig: true # check
-    overwriteConfiguration: true # check
+    defaultConfig: false # check
+    overwriteConfiguration: true # requires pod restart (or maybe sidecar auto reload)
 
 #    configScripts:
 #      welcome-message: |
