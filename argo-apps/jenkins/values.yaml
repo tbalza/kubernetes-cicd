@@ -70,12 +70,13 @@ controller:
 #    storageClass: "gp3" # check # ebs-gp3
 #    size: "9Gi" # check (not applying)
 #    accessMode: "ReadWriteOnce" # check. # "ReadWriteOnce"
-    volumes:
-      - name: jenkins-home
-        persistentVolumeClaim:
-    mounts:
-      - mountPath: /var/jenkins_home
-        name: jenkins-home
+
+#    volumes:
+#      - name: jenkins-home
+#        persistentVolumeClaim:
+#    mounts:
+#      - mountPath: /var/jenkins_home
+#        name: jenkins-home
   ingress:
     enabled: true
     className: "alb"
