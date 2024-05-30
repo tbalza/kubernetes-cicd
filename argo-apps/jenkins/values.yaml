@@ -4,9 +4,9 @@ controller:
       failureThreshold: 12 # -- Set the failure threshold for the startup probe
       periodSeconds: 10 # -- Set the time interval between two startup probes executions in seconds
       timeoutSeconds: 60 # -- Set the timeout for the startup probe in seconds
-#  sidecars:
-#    configAutoReload:
-#      enabled: true
+  sidecars:
+    configAutoReload:
+      enabled: true
 #  containerEnv:
 #    - name: CASC_JENKINS_CONFIG
 #      value: "/var/jenkins_home/"
@@ -39,7 +39,7 @@ controller:
     - amazon-ecr:1.114.vfd22430621f5
   JCasC:
     enabled: true
-    defaultConfig: true # check. false fails install
+    defaultConfig: false # check. false fails install
     overwriteConfiguration: false # requires pod restart (or sidecars: configAutoReload: )
 #    configScripts:
 #      welcome-message: |
