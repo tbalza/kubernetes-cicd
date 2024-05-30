@@ -64,7 +64,7 @@ controller:
 #        - name: casc-config
 #          mountPath: /var/jenkins_home/casc_configs
   persistence:
-    enabled: true #
+    enabled: false #
     existingClaim: jenkins
 #    storageClass: "-"
     # annotations: {} # kubectl patch pv <your-pv-name> -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
