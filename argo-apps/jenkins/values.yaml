@@ -63,9 +63,13 @@ controller:
 #          mountPath: /var/jenkins_home/casc_configs
   persistence:
     enabled: true #
-    storageClass: "gp3" # check # ebs-gp3
-    size: "9Gi" # check (not applying)
-    accessMode: "ReadWriteOnce" # check. # "ReadWriteOnce"
+    existingClaim: jenkins
+    # annotations: {} # kubectl patch pv <your-pv-name> -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
+    # https://github.com/jenkinsci/helm-charts/issues/659
+    # https://github.com/jenkinsci/helm-charts/issues/64
+#    storageClass: "gp3" # check # ebs-gp3
+#    size: "9Gi" # check (not applying)
+#    accessMode: "ReadWriteOnce" # check. # "ReadWriteOnce"
     volumes:
       - name: jenkins-home
         persistentVolumeClaim:
