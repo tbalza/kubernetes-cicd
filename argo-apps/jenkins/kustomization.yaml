@@ -16,7 +16,7 @@ helmCharts:
 resources:
   - secret-store.yaml # load ECR repo dynamically
   - secret-external.yaml # load ECR repo dynamically
-  - pvc.yaml # create Jenkins PVC for helm values.yaml to consume
+#  - pvc.yaml # create Jenkins PVC for helm values.yaml to consume
 
 #  labels:
 #    type: generated # Labels the generated ConfigMaps and Secrets as 'generated'.

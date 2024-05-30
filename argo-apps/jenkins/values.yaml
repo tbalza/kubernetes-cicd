@@ -1,6 +1,4 @@
 controller:
-  serviceAnnotations:
-    argocd.argoproj.io/sync-wave: "1"
   probes:
     startupProbe:
       failureThreshold: 12 # -- Set the failure threshold for the startup probe
@@ -40,8 +38,8 @@ controller:
     - job-dsl:1.87
     - amazon-ecr:1.114.vfd22430621f5
   JCasC:
-    enabled: false
-    defaultConfig: false # check. false fails install
+    enabled: true
+    defaultConfig: true # check. false fails install
     overwriteConfiguration: false # requires pod restart (or sidecars: configAutoReload: )
 #    configScripts:
 #      welcome-message: |
@@ -64,19 +62,13 @@ controller:
 #        - name: casc-config
 #          mountPath: /var/jenkins_home/casc_configs
   persistence:
-    enabled: false #
-#    existingClaim: jenkins
-    storageClass: "-"
-    # annotations: {} # kubectl patch pv <your-pv-name> -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
-    annotations:
-      argocd.argoproj.io/sync-wave: "2"  # Wait until PVC is created first by kustomize
-
+    enabled: true #
+    #existingClaim: jenkins
     # https://github.com/jenkinsci/helm-charts/issues/659
     # https://github.com/jenkinsci/helm-charts/issues/64
-#    storageClass: "gp3" # check # ebs-gp3
-#    size: "9Gi" # check (not applying)
-#    accessMode: "ReadWriteOnce" # check. # "ReadWriteOnce"
-
+    storageClass: "gp3" # check # ebs-gp3
+    size: "9Gi" # check (not applying)
+    accessMode: "ReadWriteOnce" # check. # "ReadWriteOnce"
 #    volumes:
 #      - name: jenkins-home
 #        persistentVolumeClaim:
