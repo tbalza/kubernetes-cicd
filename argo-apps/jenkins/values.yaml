@@ -1,5 +1,4 @@
 controller:
-#
 #  # 'name' is a name of an existing secret in the same namespace as jenkins,
 #  # 'keyName' is the name of one of the keys inside the current secret.
 #  # the 'name' and 'keyName' are concatenated with a '-' in between, so for example:
