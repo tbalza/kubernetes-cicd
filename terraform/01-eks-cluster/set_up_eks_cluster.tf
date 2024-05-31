@@ -1000,6 +1000,34 @@ resource "kubernetes_storage_class_v1" "gp3" {
   ]
 }
 
+# GP2. disable having two defaults to prevent conflicts, also change to use csi driver
+# kubectl patch storageclass gp2 -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+
+#resource "kubernetes_storage_class_v1" "gp2" {
+#  metadata {
+#    name = "gp2"
+#
+#    annotations = {
+#      # Annotation to disable gp2 as default storage class
+#      "storageclass.kubernetes.io/is-default-class" = "false"
+#    }
+#  }
+#
+#  storage_provisioner    = "ebs.csi.aws.com"
+#  allow_volume_expansion = true
+#  reclaim_policy         = "Delete"
+#  volume_binding_mode    = "WaitForFirstConsumer"
+#
+#  parameters = {
+#    encrypted = false # check
+#    fsType    = "ext4"
+#    type      = "gp2"
+#  }
+#
+#  depends_on = [
+#    module.eks
+#  ]
+#}
 
 ###############################################################################
 # ECR

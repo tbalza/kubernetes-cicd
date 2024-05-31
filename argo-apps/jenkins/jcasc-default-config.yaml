@@ -1,0 +1,79 @@
+jenkins:
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+  securityRealm:
+    local:
+      allowsSignup: false
+      enableCaptcha: false
+      users:
+      - id: "${chart-admin-username}"
+        name: "Jenkins Admin"
+        password: "${chart-admin-password}"
+  disableRememberMe: false
+  mode: NORMAL
+  numExecutors: 0
+  labelString: ""
+  projectNamingStrategy: "standard"
+  markupFormatter:
+    plainText
+  clouds:
+  - kubernetes:
+      containerCapStr: "10"
+      defaultsProviderTemplate: ""
+      connectTimeout: "5"
+      readTimeout: "15"
+      jenkinsUrl: "http://jenkins.jenkins.svc.cluster.local:8080"
+      jenkinsTunnel: "jenkins-agent.jenkins.svc.cluster.local:50000"
+      maxRequestsPerHostStr: "32"
+      retentionTimeout: "5"
+      waitForPodSec: "600"
+      name: "kubernetes"
+      namespace: "jenkins"
+      restrictedPssSecurityContext: false
+      serverUrl: "https://kubernetes.default"
+      credentialsId: ""
+      podLabels:
+      - key: "jenkins/jenkins-jenkins-agent"
+        value: "true"
+      templates:
+        - name: "default"
+          namespace: "jenkins"
+          id: 0eda76d074bd25cd52a8c435043d2f3dbe3f123cf1ec2c7f5bcdcfe9278c692c
+          containers:
+          - name: "jnlp"
+            alwaysPullImage: false
+            args: "^${computer.jnlpmac} ^${computer.name}"
+            envVars:
+              - envVar:
+                  key: "JENKINS_URL"
+                  value: "http://jenkins.jenkins.svc.cluster.local:8080/"
+            image: "jenkins/inbound-agent:3206.vb_15dcf73f6a_9-3"
+            privileged: "false"
+            resourceLimitCpu: 512m
+            resourceLimitMemory: 512Mi
+            resourceRequestCpu: 512m
+            resourceRequestMemory: 512Mi
+            ttyEnabled: false
+            workingDir: /home/jenkins/agent
+          idleMinutes: 0
+          instanceCap: 2147483647
+          label: "jenkins-jenkins-agent "
+          nodeSelector: role=ci-cd
+          nodeUsageMode: "NORMAL"
+          podRetention: Never
+          showRawYaml: true
+          serviceAccount: "default"
+          slaveConnectTimeoutStr: "100"
+          yamlMergeStrategy: override
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: true
+security:
+  apiToken:
+    creationOfLegacyTokenEnabled: false
+    tokenGenerationOnCreationEnabled: false
+    usageStatisticsEnabled: true
+unclassified:
+  location:
+    url: http://jenkins:8080jenkins@jenkins-0:~/casc_configs$
