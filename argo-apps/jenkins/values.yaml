@@ -99,6 +99,12 @@ controller:
     storageClass: "gp3" # check # ebs-gp3
     size: "9Gi" # check (not applying)
     accessMode: "ReadWriteOnce" # ReadWriteMany for HA/efs
+  volumes:
+    - name: docker-config
+  mounts:
+    - mountPath: /kaniko/.docker
+      name: docker-config
+      readOnly: true
 
   ingress:
     enabled: true

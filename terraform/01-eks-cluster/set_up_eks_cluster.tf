@@ -125,7 +125,7 @@ module "eks" {
 
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"  # This is custom AMI, `enable_bootstrap_user_data` must be set to True (ami_id not ami_type)
-    instance_types = ["t3.medium"] # "m6i.large", "m5.large", "m5n.large", "m5zn.large"
+    instance_types = ["t3.large"] # "m6i.large", "m5.large", "m5n.large", "m5zn.large"
     #    attach_cluster_primary_security_group = true
     #    vpc_security_group_ids = [aws_security_group.additional] # Check
     #    iam_role_additional_policies = {
@@ -244,7 +244,7 @@ module "eks" {
       }
 
       #force_update_version = true
-      instance_types = ["t3.medium"] # Overrides default instance defined above
+      instance_types = ["t3.large"] # Overrides default instance defined above
 
       description = "CI-CD managed node group launch template"
 
