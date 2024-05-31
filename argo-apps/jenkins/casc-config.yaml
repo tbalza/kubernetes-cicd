@@ -6,12 +6,12 @@ jenkins:
     loggedInUsersCanDoAnything:
       allowAnonymousRead: false
   clouds:
-  - kubernetes:
+  - kubernetes2:
       containerCap: 10
       containerCapStr: "10"
       jenkinsTunnel: "jenkins-agent.jenkins.svc.cluster.local:50000"
       jenkinsUrl: "http://jenkins.jenkins.svc.cluster.local:8080"
-      name: "kubernetes"
+      name: "kubernetes2"
       namespace: "jenkins"
       podLabels:
       - key: "jenkins/jenkins-jenkins-agent"
