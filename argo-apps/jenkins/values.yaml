@@ -80,7 +80,7 @@ controller:
         configMap:
           name: jenkins-casc-config
     mounts:
-        - mountPath: /var/jenkins_home/casc_configs/configs
+        - mountPath: /var/jenkins_home/casc_configs/
           name: jenkins-casc-config
           readOnly: true
 #    volumes:
