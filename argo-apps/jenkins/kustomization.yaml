@@ -18,17 +18,11 @@ resources:
   - secret-store.yaml # load ECR repo dynamically
   - secret-external.yaml # load ECR repo dynamically
 
-#configMapGenerator:
-#- name: custom-config
-#  behavior: create # create(default) replace
-#  files:
-#  - configs/casc-config.yaml
-
 configMapGenerator:
-- name: jenkins-casc-config
-  literals:
-    - |
-      jenkins.yaml="jenkins:\n  systemMessage: \"CASC Jenkins is cool\"\n  numExecutors: 1"
+- name: custom-config
+  behavior: create # create(default) replace
+  files:
+  - configs/casc-config.yaml
 
 #patches:
 #  - pvc.yaml # create Jenkins PVC for helm values.yaml to consume

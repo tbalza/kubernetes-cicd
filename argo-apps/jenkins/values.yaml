@@ -74,13 +74,13 @@ controller:
     # https://github.com/jenkinsci/helm-charts/issues/64
     storageClass: "gp3" # check # ebs-gp3
     size: "9Gi" # check (not applying)
-    accessMode: "ReadWriteOnce" # check. # "ReadWriteOnce"
+    accessMode: "ReadWrite" # check. # "ReadWriteOnce" ReadWriteMany
     volumes:
-      - name: casc-config
+      - name: custom-config
         configMap:
-          name: jenkins-casc-config
+          name: custom-config
     mounts:
-        - mountPath: /var/opt/casc_configs/..data/jenkins.yaml
+        - mountPath: /var/opt/casc_configs/
           name: casc-config
           readOnly: true
 #    volumes:
