@@ -42,9 +42,16 @@ controller:
     defaultConfig: true # check. false fails install
     overwriteConfiguration: false # related to PVC. requires pod restart (or sidecars: configAutoReload: )
     configScripts:
-      welcome-message: |
+      example-one: |
         jenkins:
           systemMessage: values.yaml custom message.
+      example-two: |
+        jenkins:
+          tool:
+            hello:
+
+#nameSuffix: -prod
+#You cannot use template calls ({{ .SomeValue }}
 
 #  customInitContainers:
 #    - name: copy-casc-config

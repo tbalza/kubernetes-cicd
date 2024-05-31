@@ -11,18 +11,18 @@ helmCharts:
     namespace: jenkins
     includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
     valuesFile: values.yaml
-#    additionalValuesFiles:
-#    - casc-config-h.yaml
+    additionalValuesFiles:
+    - casc-config-h.yaml
 
 resources:
   - secret-store.yaml # load ECR repo dynamically
   - secret-external.yaml # load ECR repo dynamically
 
-configMapGenerator:
-- name: custom-config
-  behavior: create # create(default) replace
-  files:
-  - casc-config.yaml
+#configMapGenerator:
+#- name: custom-config
+#  behavior: create # create(default) replace
+#  files:
+#  - casc-config.yaml
 
 #patches:
 #  - pvc.yaml # create Jenkins PVC for helm values.yaml to consume
