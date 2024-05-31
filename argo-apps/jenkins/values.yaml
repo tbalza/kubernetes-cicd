@@ -1,4 +1,44 @@
 controller:
+#
+#  # 'name' is a name of an existing secret in the same namespace as jenkins,
+#  # 'keyName' is the name of one of the keys inside the current secret.
+#  # the 'name' and 'keyName' are concatenated with a '-' in between, so for example:
+#  # an existing secret "secret-credentials" and a key inside it named "github-password" should be used in JCasC as ${secret-credentials-github-password}
+#  # 'name' and 'keyName' must be lowercase RFC 1123 label must consist of lower case alphanumeric characters or '-',
+#  # and must start and end with an alphanumeric character (e.g. 'my-name', or '123-abc')
+#  # existingSecret existing secret "secret-credentials" and a key inside it named "github-username" should be used in JCasC as ${github-username}
+#  # When using existingSecret no need to specify the keyName under additionalExistingSecrets.
+#  existingSecret:
+#
+#  # -- List of additional existing secrets to mount
+#  additionalExistingSecrets: [ ]
+#  # ref: https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/docs/features/secrets.adoc#kubernetes-secrets
+#  # additionalExistingSecrets:
+#  #  - name: secret-name-1
+#  #    keyName: username
+#  #  - name: secret-name-1
+#  #    keyName: password
+#
+#  # -- List of additional secrets to create and mount
+#  additionalSecrets: [ ]
+#  # ref: https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/docs/features/secrets.adoc#kubernetes-secrets
+#  # additionalSecrets:
+#  #  - name: nameOfSecret
+#  #    value: secretText
+
+## https://github.com/jenkinsci/helm-charts/issues/678
+#  initScripts:
+#    setup-known-hosts: |
+#      new File("/var/jenkins_home/.ssh").mkdir()
+#      File file = new File("/var/jenkins_home/.ssh/known_hosts")
+#      file.write '${known_hosts}'
+
+#  initConfigMap: jenkins-init-scripts (kustomize confimapgenerator references to a .groovy job)
+#// init.groovy
+#println "Configuring Jenkins during startup..."
+#jenkins.model.Jenkins.instance.securityRealm = new hudson.security.LDAPSecurityRealm(...)
+#jenkins.model.Jenkins.instance.save()
+
   probes:
     startupProbe:
       failureThreshold: 12 # -- Set the failure threshold for the startup probe

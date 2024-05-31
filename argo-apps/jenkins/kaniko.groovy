@@ -1,10 +1,8 @@
-// Uses Declarative syntax to run commands inside a container.
-def COMMIT_ID=''
-
 pipeline {
     agent {
         label 'jenkins-jenkins-agent'
     }
+
     stages {
         stage('Git clone') {
             steps {
@@ -19,11 +17,12 @@ pipeline {
                 }
             }
         }
+
         stage('Kaniko Build Image') {
             steps {
                 container('kaniko') {
                     sh "echo $REGISTRY_CRED > /kaniko/.docker/config.json"
-                    sh "/kaniko/executor --context `pwd` --destination rafimojabi/tools:$COMMIT_ID"
+                    sh "/kaniko/executor --context $(pwd) --destination rafimojabi/tools:$COMMIT_ID"
                 }
             }
         }

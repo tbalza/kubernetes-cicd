@@ -1,45 +1,34 @@
 pipeline {
-  agent any
-  environment {
-    REGISTRY = "${env.REGISTRY}"  // External Secrets Operator sub. "registry" from secret-external.yaml
-    IMAGE_NAME = 'my-django-app'
-    TAG = "${BUILD_NUMBER}"  // unique tags per build
-  }
-  stages {
-    stage('Prepare Environment') {
-      steps {
-        script {
-          // Optionally prepare environment variables or other prerequisites
+    agent {
+        kubernetes {
+            label 'jenkins-jenkins-agent'
+            defaultContainer 'jnlp'
         }
-      }
     }
-    stage('Build and Push Image') {
-      steps {
-        // Kaniko is used to build and push the Docker image directly from the Jenkins agent running in Kubernetes
-        container('kaniko') {
-          script {
-            sh """
-            /kaniko/executor \
-              --context ${WORKSPACE}/django \ // Assuming '/django' directory is at the root of the workspace
-              --dockerfile ${WORKSPACE}/django/Dockerfile \
-              --destination ${REGISTRY}/${IMAGE_NAME}:${TAG} \
-              --cache
-            """
-          }
+    environment {
+        AWS_DEFAULT_REGION = 'your-aws-region' // Specify the AWS region
+        IMAGE_NAME = "${env.ECR_URL}/my-django-app" // Ensure the ECR URL is correctly defined
+    }
+
+    stages {
+        stage('Build and Push Image') {
+            steps {
+                container('kaniko') {
+                    script {
+                        sh """
+                        /kaniko/executor --dockerfile ${WORKSPACE}/Django/Dockerfile \
+                                          --context ${WORKSPACE}/Django/ \
+                                          --destination ${IMAGE_NAME}:${BUILD_NUMBER} \
+                                          --cache=true
+                        """
+                    }
+                }
+            }
         }
-      }
     }
-  }
-  post {
-    success {
-      script {
-        echo 'Build and push successful.'
-      }
+    post {
+        always {
+            echo "Cleaning up post build"
+        }
     }
-    failure {
-      script {
-        echo 'Build or push failed.'
-      }
-    }
-  }
 }
