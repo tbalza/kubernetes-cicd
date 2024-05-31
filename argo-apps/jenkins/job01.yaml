@@ -1,5 +1,5 @@
 controller:
-  # -- Map of groovy init scripts to be executed during Jenkins controller start
+  # -- Map of groovy init scripts to be executed during Jenkins controller start #
   initScripts:
     test: |-
       print 'adding global pipeline libraries, register properties, bootstrap jobs...'
