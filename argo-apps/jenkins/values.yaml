@@ -40,7 +40,7 @@ controller:
   JCasC:
     enabled: true
     defaultConfig: true # check. false fails install
-    overwriteConfiguration: false # requires pod restart (or sidecars: configAutoReload: )
+    overwriteConfiguration: false # related to PVC. requires pod restart (or sidecars: configAutoReload: )
 #    configScripts:
 #      welcome-message: |
 #        jenkins:
@@ -61,6 +61,12 @@ controller:
 #          mountPath: /mnt/casc-config
 #        - name: casc-config
 #          mountPath: /var/jenkins_home/casc_configs
+
+  podSecurityContextOverride:
+    runAsUser: 1000
+    runAsNonRoot: true
+    supplementalGroups: [1000]
+
   persistence:
     enabled: true #
     #existingClaim: jenkins

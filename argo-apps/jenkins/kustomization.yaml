@@ -9,8 +9,8 @@ helmCharts:
     namespace: jenkins
     includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
     valuesFile: values.yaml
-    additionalValuesFiles:
-    - casc-config-h.yaml
+#    additionalValuesFiles:
+#    - casc-config-h.yaml
 
 
 resources:
