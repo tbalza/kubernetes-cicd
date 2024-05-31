@@ -18,7 +18,7 @@ resources:
 
 configMapGenerator:
 - name: jenkins-casc-config
-  behavior: merge # create(default) replace
+  behavior: create # create(default) replace
   files:
   - configs/casc-config.yaml
 
