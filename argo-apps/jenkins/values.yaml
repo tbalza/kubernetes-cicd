@@ -45,7 +45,7 @@ controller:
       timeoutSeconds: 60 # -- Set the timeout for the startup probe in seconds
   sidecars:
     configAutoReload:
-      enabled: true
+      enabled: false
 #  containerEnv:
 #    - name: CASC_JENKINS_CONFIG
 #      value: "/var/jenkins_home/"
