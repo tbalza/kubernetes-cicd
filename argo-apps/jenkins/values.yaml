@@ -62,10 +62,10 @@ controller:
 #        - name: casc-config
 #          mountPath: /var/jenkins_home/casc_configs
 
-  podSecurityContextOverride:
-    runAsUser: 1000
-    runAsNonRoot: true
-    supplementalGroups: [1000]
+#  podSecurityContextOverride:
+#    runAsUser: 1000
+#    runAsNonRoot: true
+#    supplementalGroups: [1000]
 
   persistence:
     enabled: true #
