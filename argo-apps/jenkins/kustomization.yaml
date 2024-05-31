@@ -19,7 +19,7 @@ resources:
   - secret-external.yaml # load ECR repo dynamically
 
 configMapGenerator:
-- name: jenkins-casc-config
+- name: custom-config
   behavior: create # create(default) replace
   files:
   - configs/casc-config.yaml
