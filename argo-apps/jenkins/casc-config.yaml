@@ -6,17 +6,17 @@ jenkins:
     loggedInUsersCanDoAnything:
       allowAnonymousRead: false
   clouds:
-  - kubernetes2:
+  - kubernetes:
       containerCap: 10
       containerCapStr: "10"
       jenkinsTunnel: "jenkins-agent.jenkins.svc.cluster.local:50000"
       jenkinsUrl: "http://jenkins.jenkins.svc.cluster.local:8080"
-      name: "kubernetes2"
+      name: "kubernetes-django-prod"
       namespace: "jenkins"
       podLabels:
       - key: "jenkins/jenkins-jenkins-agent"
         value: "true"
-      serverUrl: "https://kubernetes.default" # "https://kubernetes.default"
+      serverUrl: "https://kubernetes.default"
       templates:
       - containers:
         - args: "^${computer.jnlpmac} ^${computer.name}"
@@ -39,6 +39,10 @@ jenkins:
           workingDir: "/home/jenkins/agent"
         - args: "9999999"
           command: "sleep"
+          envVars:
+          - envVar:
+              key: "JENKINS_URL"
+              value: "http://jenkins.jenkins.svc.cluster.local:8080/"
           image: "gcr.io/kaniko-project/executor:v1.23.0"
           livenessProbe:
             failureThreshold: 0
@@ -50,7 +54,7 @@ jenkins:
           workingDir: "/home/jenkins/agent"
         id: "0eda76d074bd25cd52a8c435043d2f3dbe3f123cf1ec2c7f5bcdcfe9278c692c"
         label: "jenkins-jenkins-agent"
-        name: "default"
+        name: "djang-pod-template"
         namespace: "jenkins"
         nodeSelector: "role=ci-cd"
         nodeUsageMode: "NORMAL"
@@ -106,7 +110,6 @@ jenkins:
         - "timezone"
         - "experimentalFlags"
   slaveAgentPort: 50000
-  systemMessage: "modified jcasc"
   updateCenter:
     sites:
     - id: "default"

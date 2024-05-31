@@ -45,7 +45,7 @@ controller:
       timeoutSeconds: 60 # -- Set the timeout for the startup probe in seconds
   sidecars:
     configAutoReload:
-      enabled: false
+      enabled: false # require pod restart for config change. allows to view current temporary jcasc
 #  containerEnv:
 #    - name: CASC_JENKINS_CONFIG
 #      value: "/var/jenkins_home/"
