@@ -1,8 +1,8 @@
 controller:
   JCasC:
     configScripts:
-      casc-config:
-        jenkins: |
+      casc-config: |
+        jenkins:
           agentProtocols:
             - "JNLP4-connect"
             - "Ping"
