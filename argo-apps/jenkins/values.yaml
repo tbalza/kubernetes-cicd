@@ -41,12 +41,11 @@ controller:
     enabled: true
     defaultConfig: true # check. false fails install
     overwriteConfiguration: false # related to PVC. requires pod restart (or sidecars: configAutoReload: )
-#    configScripts:
-#      welcome-message: |
-#        jenkins:
-#          systemMessage: values.yaml custom message.
+    configScripts:
+      welcome-message: |
+        jenkins:
+          systemMessage: values.yaml custom message.
 
-    #configScripts: {}  # To be populated by patch
 #  customInitContainers:
 #    - name: copy-casc-config
 #      image: "alpine:3"
@@ -74,23 +73,7 @@ controller:
     # https://github.com/jenkinsci/helm-charts/issues/64
     storageClass: "gp3" # check # ebs-gp3
     size: "9Gi" # check (not applying)
-    accessMode: "ReadWrite" # check. # "ReadWriteOnce" ReadWriteMany
-    volumes:
-      - name: custom-config
-        configMap:
-          name: custom-config
-    mounts:
-        - mountPath: /var/opt/casc_configs/
-          name: casc-config
-          readOnly: true
-#    volumes:
-#      - name: jenkins-home
-#        persistentVolumeClaim:
-#    mounts:
-#      - mountPath: /var/jenkins_home
-#        name: jenkins-home
-
-
+    accessMode: "ReadWriteOnce" # ReadWriteMany for HA/efs
 
   ingress:
     enabled: true
