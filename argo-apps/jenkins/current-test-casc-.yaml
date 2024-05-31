@@ -6,7 +6,7 @@ jenkins:
     loggedInUsersCanDoAnything:
       allowAnonymousRead: false
   clouds:
-  - kubernetes:
+  - kubernetes: # duplicate
       containerCap: 10
       containerCapStr: "10"
       jenkinsTunnel: "jenkins-agent.jenkins.svc.cluster.local:50000"
