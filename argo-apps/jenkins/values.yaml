@@ -76,12 +76,12 @@ controller:
     size: "9Gi" # check (not applying)
     accessMode: "ReadWriteOnce" # check. # "ReadWriteOnce"
     volumes:
-      - name: custom-config
+      - name: casc-config
         configMap:
-          name: custom-config
+          name: jenkins-casc-config
     mounts:
-        - mountPath: /var/opt/casc_configs
-          name: custom-config
+        - mountPath: /var/opt/casc_configs/..data/jenkins.yaml
+          name: casc-config
           readOnly: true
 #    volumes:
 #      - name: jenkins-home
