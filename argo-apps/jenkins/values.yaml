@@ -65,7 +65,7 @@ controller:
 #  podSecurityContextOverride:
 #    runAsUser: 1000
 #    runAsNonRoot: true
-#    supplementalGroups: [1000]
+#    supplementalGroups: [1000] #
 
   persistence:
     enabled: true #
