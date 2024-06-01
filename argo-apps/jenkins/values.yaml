@@ -77,7 +77,7 @@ controller:
     - amazon-ecr:1.114.vfd22430621f5
   JCasC:
     enabled: true
-    defaultConfig: true
+    defaultConfig: false
     overwriteConfiguration: false # related to PVC. requires pod restart (or sidecars: configAutoReload: )
 #    configScripts:
 #      example-one: |
