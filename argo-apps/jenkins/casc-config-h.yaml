@@ -20,7 +20,7 @@ controller:
                 podLabels:
                   - key: "jenkins/jenkins-jenkins-agent"
                     value: "true"
-                serverUrl: "https://kubernetes.default"
+                serverUrl: "https://kubernetes.default.svc"
                 templates:
                   - containers:
                       - args: "^${computer.jnlpmac} ^${computer.name}"
