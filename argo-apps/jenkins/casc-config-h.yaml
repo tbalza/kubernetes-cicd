@@ -1,8 +1,8 @@
 controller:
   JCasC:
     configScripts:
-      casc-config: |
-        jenkins:
+      casc-config:
+        jenkins: |
           agentProtocols:
             - "JNLP4-connect"
             - "Ping"
@@ -23,12 +23,18 @@ controller:
                 serverUrl: "https://kubernetes.default"
                 templates:
                   - containers:
-                      - args: "^${computer.jnlpmac} ^${computer.name}"
+                      - args: "^^${computer.jnlpmac} ^^${computer.name}"
                         envVars:
                           - envVar:
                               key: "JENKINS_URL"
                               value: "http://jenkins.jenkins.svc.cluster.local:8080/"
                         image: "jenkins/inbound-agent:3206.vb_15dcf73f6a_9-3"
+                        livenessProbe:
+                          failureThreshold: 0
+                          initialDelaySeconds: 0
+                          periodSeconds: 0
+                          successThreshold: 0
+                          timeoutSeconds: 0
                         name: "jnlp"
                         resourceLimitCpu: "512m"
                         resourceLimitMemory: "512Mi"
