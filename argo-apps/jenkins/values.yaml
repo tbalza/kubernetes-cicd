@@ -114,10 +114,10 @@ controller:
       alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
       alb.ingress.kubernetes.io/success-codes: "200,302"
     paths:
-     - backend:
-         serviceName: jenkins
-         servicePort: 8080
-    path: /jenkins/* # obscure documentation # https://stackoverflow.com/questions/66273304/jenkinsawsloadbalancercontroller-example
+      - backend:
+          serviceName: jenkins
+          servicePort: 8080
+        path: /jenkins/* # obscure documentation https://stackoverflow.com/questions/66273304/jenkinsawsloadbalancercontroller-example
 #  agentListenerServiceType: "NodePort" # "ClusterIP" # JNLP agent service
 #    paths:
 #      - path: "/jenkins/*"
