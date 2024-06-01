@@ -22,7 +22,7 @@ server:
       kubernetes.io/ingress.class: "alb"
       alb.ingress.kubernetes.io/scheme: "internet-facing"
       alb.ingress.kubernetes.io/target-type: "ip"
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'  # Adjust as necessary for HTTPS
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 81}]'  # Adjust as necessary for HTTPS
       alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
       alb.ingress.kubernetes.io/group.order: "1"
       alb.ingress.kubernetes.io/healthcheck-path: "/healthz"
