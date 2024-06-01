@@ -16,8 +16,8 @@ pipeline {
                 container('kaniko') {
                     script {
                         sh """
-                        /kaniko/executor --dockerfile ${WORKSPACE}/Django/Dockerfile \
-                                          --context ${WORKSPACE}/Django/ \
+                        /kaniko/executor --dockerfile /argo-apps/django/Dockerfile \
+                                          --context /argo-apps/django/ \
                                           --destination ${IMAGE_NAME}:${BUILD_NUMBER} \
                                           --cache=true
                         """
