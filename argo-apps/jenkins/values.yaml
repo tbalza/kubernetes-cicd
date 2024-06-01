@@ -116,7 +116,6 @@ controller:
     paths:
       - backend:
           serviceName: jenkins
-          servicePort: 8080
 #    path: /jenkins/* # obscure documentation https://stackoverflow.com/questions/66273304/jenkinsawsloadbalancercontroller-example
 #    agentListenerServiceType: "NodePort" # "ClusterIP" # JNLP agent service
 #    paths:
