@@ -105,7 +105,7 @@ controller:
     className: "alb"
     annotations:
       kubernetes.io/ingress.class: "alb"
-      alb.ingress.kubernetes.io/scheme: "internet-facing"
+      alb.ingress.kubernetes.io/scheme: "internet-facing" # "internet-facing"
       alb.ingress.kubernetes.io/target-type: "ip"
       alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 8080}]'
       alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
@@ -114,13 +114,19 @@ controller:
       alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
       alb.ingress.kubernetes.io/success-codes: "200,302"
     paths:
-      - path: "/jenkins/*"
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: "jenkins"
-            port:
-              number: 8080
+     - backend:
+         serviceName: jenkins
+         servicePort: 8080
+       path: /jenkins/* # obscure documentation # https://stackoverflow.com/questions/66273304/jenkinsawsloadbalancercontroller-example
+  agentListenerServiceType: "NodePort" # "ClusterIP" # JNLP agent service
+#    paths:
+#      - path: "/jenkins/*"
+#        pathType: ImplementationSpecific
+#        backend:
+#          service:
+#            name: "jenkins"
+#            port:
+#              number: 8080
   nodeSelector:
     role: ci-cd
 
