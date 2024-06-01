@@ -107,31 +107,21 @@ controller:
       kubernetes.io/ingress.class: "alb"
       alb.ingress.kubernetes.io/scheme: "internet-facing" # "internet-facing"
       alb.ingress.kubernetes.io/target-type: "ip"
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 8080}]'
       alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
       alb.ingress.kubernetes.io/group.order: "2"
       alb.ingress.kubernetes.io/healthcheck-path: "/login"
       alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
       alb.ingress.kubernetes.io/success-codes: "200,302"
-#    paths:
-#      - backend:
-#          serviceName: "jenkins"  # Assuming the service name follows this simple pattern, adjust as necessary
-#          servicePort: 8080  # Jenkins internal service port
-#
-#    path: /jenkins # obscure documentation https://stackoverflow.com/questions/66273304/jenkinsawsloadbalancercontroller-example
-#    agentListenerServiceType: "ClusterIP" # "ClusterIP" # NodePort # JNLP agent service
+    paths:
+      - path: "/*"
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: "jenkins"
+            port:
+              number: 8080
 
-#  agent:
-#    websocket: true # websocket is needed for agent/slave connection thru ALB
-
-#    paths:
-#      - path: "/jenkins/*"
-#        pathType: ImplementationSpecific
-#        backend:
-#          service:
-#            name: "jenkins"
-#            port:
-#              number: 8080
   nodeSelector:
     role: ci-cd
 
