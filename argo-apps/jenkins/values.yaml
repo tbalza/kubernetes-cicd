@@ -121,10 +121,14 @@ controller:
 #    path: /jenkins # obscure documentation https://stackoverflow.com/questions/66273304/jenkinsawsloadbalancercontroller-example
 #    agentListenerServiceType: "ClusterIP" # "ClusterIP" # NodePort # JNLP agent service
     paths:
-      - backend:
-          serviceName: "jenkins"  # Assuming the service name follows this simple pattern, adjust as necessary
-          servicePort: 8080  # Jenkins internal service port
-    path: /jenkins/*
+      - path: /jenkins/*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: jenkins  # Assuming 'jenkins' is the service name; replace with actual if different
+            port:
+              number: 8080
+
 #  agent:
 #    websocket: true
 
