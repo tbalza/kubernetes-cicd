@@ -1,5 +1,5 @@
-aws eks update-kubeconfig --name django-production --region us-east-1
-# whenever you create a new eks cluster you must update kurbentes context
+# export TF_VAR_CFL_API_TOKEN=123example
+set Cloudflare API token as an environment variable (that will be used by ExternalDNS)
 
 you are better off separating your infrastructure from your applications.
 this would be two different statefiles, and you would need to explicitly handle the removal of the applications running on the cluster first, before destroying the cluster

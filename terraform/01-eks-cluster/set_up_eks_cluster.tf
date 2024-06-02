@@ -13,6 +13,7 @@ locals {
   name            = "django-production" # cluster name
   cluster_version = "1.29"              # 1.29
   region          = "us-east-1"
+  domain          = "tbalza.net"
 
   vpc_cidr = "10.0.0.0/16" # ~65k IPs
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -24,9 +25,9 @@ locals {
       value = module.ecr.repository_url
     }
 
-#    "django_irsa_arn" = {
-#      value = aws_iam_role.django.arn
-#    }
+    #    "django_irsa_arn" = {
+    #      value = aws_iam_role.django.arn
+    #    }
   }
 
   tags = {
@@ -95,18 +96,18 @@ module "eks" {
     coredns = {
       resolve_conflicts_on_update = "OVERWRITE"
       resolve_conflicts_on_create = "OVERWRITE"
-      addon_version = "v1.11.1-eksbuild.9"
+      addon_version               = "v1.11.1-eksbuild.9"
     }
     kube-proxy = {
       resolve_conflicts_on_update = "OVERWRITE"
       resolve_conflicts_on_create = "OVERWRITE"
-      addon_version = "v1.29.3-eksbuild.2"
+      addon_version               = "v1.29.3-eksbuild.2"
     }
     vpc-cni = {
       resolve_conflicts_on_update = "OVERWRITE"
       resolve_conflicts_on_create = "OVERWRITE"
-      addon_version  = "v1.18.1-eksbuild.3"
-      before_compute = true # Attempts to create VPC CNI before the associated nodegroups, EC2 bootstrap may still be needed
+      addon_version               = "v1.18.1-eksbuild.3"
+      before_compute              = true # Attempts to create VPC CNI before the associated nodegroups, EC2 bootstrap may still be needed
       configuration_values = jsonencode({
         env = {
           ENABLE_PREFIX_DELEGATION = "true" # Increase max pods per node, t3.medium from 17 to 110 pod limit
@@ -118,8 +119,8 @@ module "eks" {
     aws-ebs-csi-driver = {
       resolve_conflicts_on_update = "OVERWRITE"
       resolve_conflicts_on_create = "OVERWRITE"
-      service_account_role_arn = module.ebs_csi_driver_irsa.iam_role_arn
-      addon_version = "v1.30.0-eksbuild.1"
+      service_account_role_arn    = module.ebs_csi_driver_irsa.iam_role_arn
+      addon_version               = "v1.30.0-eksbuild.1"
     }
   }
 
@@ -514,7 +515,7 @@ resource "aws_iam_role" "jenkins" {
         },
         Condition = {
           StringEquals = {
-            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub": "system:serviceaccount:jenkins:jenkins"
+            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:jenkins:jenkins"
           }
         }
       },
@@ -1000,34 +1001,22 @@ resource "kubernetes_storage_class_v1" "gp3" {
   ]
 }
 
-# GP2. disable having two defaults to prevent conflicts, also change to use csi driver
+# Disable GP2 as default to prevent conflicts
 # kubectl patch storageclass gp2 -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+resource "kubectl_manifest" "update_gp2_storage_class" {
+  yaml_body = <<-YAML
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: gp2
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+YAML
 
-#resource "kubernetes_storage_class_v1" "gp2" {
-#  metadata {
-#    name = "gp2"
-#
-#    annotations = {
-#      # Annotation to disable gp2 as default storage class
-#      "storageclass.kubernetes.io/is-default-class" = "false"
-#    }
-#  }
-#
-#  storage_provisioner    = "ebs.csi.aws.com"
-#  allow_volume_expansion = true
-#  reclaim_policy         = "Delete"
-#  volume_binding_mode    = "WaitForFirstConsumer"
-#
-#  parameters = {
-#    encrypted = false # check
-#    fsType    = "ext4"
-#    type      = "gp2"
-#  }
-#
-#  depends_on = [
-#    module.eks
-#  ]
-#}
+  depends_on = [
+    module.eks
+  ]
+}
 
 ###############################################################################
 # ECR
@@ -1104,10 +1093,10 @@ resource "helm_release" "external_secrets" {
   }
 
   #If set external secrets are only reconciled in the provided namespace # pending
-#  set {
-#    name  = "scopedNamespace"
-#    value = #?
-#  }
+  #  set {
+  #    name  = "scopedNamespace"
+  #    value = #?
+  #  }
 
   values = [
     <<-EOF
@@ -1129,57 +1118,57 @@ resource "helm_release" "external_secrets" {
 }
 
 # Jenkins
-resource "aws_iam_policy" "jenkins_ssm_read" {
-  name   = "SSM-for-jenkins"
+resource "aws_iam_policy" "jenkins_ssm_read" { # check
+  name = "SSM-for-jenkins"
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
-      Effect   = "Allow",
-      "Action": [
+      Effect = "Allow",
+      "Action" : [
         "ssm:GetParameter*",
         "ssm:ListTagsForResource", # check
-        "ssm:DescribeParameters" # check
+        "ssm:DescribeParameters"   # check
       ],
       Resource = "arn:aws:ssm:${local.region}:${data.aws_caller_identity.current.account_id}:parameter/*" # check .limit scope accordingly. SSM is region specific
     }]
   })
 }
 
-resource "aws_iam_role_policy_attachment" "jenkins_read_attach" {
+resource "aws_iam_role_policy_attachment" "jenkins_read_attach" { # check
   role       = aws_iam_role.jenkins.name
   policy_arn = aws_iam_policy.jenkins_ssm_read.arn
 }
 
 #######
 
-resource "aws_iam_policy" "jenkins_admin" {
-  name   = "JenkinsAdminPolicy"
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect   = "Allow",
-        Action   = "*",
-        Resource = "*"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "jenkins_admin_attach" {
-  role       = aws_iam_role.jenkins.name
-  policy_arn = aws_iam_policy.jenkins_admin.arn
-}
+#resource "aws_iam_policy" "jenkins_admin" {
+#  name   = "JenkinsAdminPolicy"
+#  policy = jsonencode({
+#    Version = "2012-10-17",
+#    Statement = [
+#      {
+#        Effect   = "Allow",
+#        Action   = "*",
+#        Resource = "*"
+#      }
+#    ]
+#  })
+#}
+#
+#resource "aws_iam_role_policy_attachment" "jenkins_admin_attach" {
+#  role       = aws_iam_role.jenkins.name
+#  policy_arn = aws_iam_policy.jenkins_admin.arn
+#}
 
 
 ###############################################################################
 # TF Helpers
 ###############################################################################
 
-## Update kubeconfig
+## Update kubeconfig cluster name and region
 resource "null_resource" "update_kubeconfig" {
   triggers = {
-    cluster_name = module.eks.cluster_name
+    cluster_name     = module.eks.cluster_name
     cluster_endpoint = module.eks.cluster_endpoint
   }
   provisioner "local-exec" {
@@ -1189,3 +1178,273 @@ resource "null_resource" "update_kubeconfig" {
     module.eks
   ]
 }
+
+###############################################################################
+# ExternalDNS
+###############################################################################
+
+# Note that the Service object is of type NodePort. We don't need a Service of type LoadBalancer here, since we will be using an Ingress to create an ALB.
+
+## must be set before tf apply
+# export TF_VAR_CFL_API_TOKEN=123example
+# When using API Token authentication, the token should be granted Zone Read, DNS Edit privileges, and access to All zones
+
+## Import environment variables as TF variable
+variable "CFL_API_TOKEN" {
+  description = "API token for Cloudflare"
+  type        = string
+  sensitive   = true
+}
+
+## Pass CF API token to k8s Secret
+# kubectl create secret generic cloudflare-api-key --from-literal=apiKey=123example -n kube-system
+resource "kubectl_manifest" "cloudflare_api_key" {
+  yaml_body = <<-YAML
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cloudflare-api-token
+  namespace: kube-system
+type: Opaque
+data:
+  api-token: ${base64encode(var.CFL_API_TOKEN)}
+  YAML
+
+  depends_on = [
+    module.eks
+  ]
+}
+
+resource "helm_release" "external_dns" {
+  name       = "external-dns"
+  chart      = "external-dns"
+  repository = "https://charts.bitnami.com/bitnami"
+  namespace  = "kube-system"
+  version    = "0.14.2"
+
+  values = [
+    <<-EOF
+    nodeSelector:
+      role: "ci-cd"
+
+    env:
+    - name: CF_API_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: cloudflare-api-token
+          key: api-token
+    EOF
+  ]
+
+  set {
+    name  = "extraArgs[0]"
+    value = "--source=ingress"
+  }
+
+  set {
+    name  = "extraArgs[1]" # API rate limit optimization
+    value = "--cloudflare-dns-records-per-page=5000"
+  }
+
+  set {
+    name  = "domainFilters[0]"
+    value = local.domain
+  }
+
+  set {
+    name  = "provider.name"
+    value = "cloudflare"
+  }
+
+  set {
+    name  = "policy"
+    value = "sync" # sync also deletes records. # upsert-only
+  }
+
+  set {
+    name  = "txtOwnerId"
+    value = local.name
+  }
+
+  set {
+    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = aws_iam_role.external_dns.arn
+  }
+
+  set {
+    name  = "serviceAccount.name"
+    value = "external-dns"
+  }
+
+  depends_on = [
+    kubectl_manifest.cloudflare_api_key
+  ]
+
+}
+
+resource "aws_iam_role" "external_dns" {
+  name = "external-dns"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "eks.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      },
+    ]
+  })
+}
+
+###############################################################################
+# Cert-Manager
+###############################################################################
+
+# DNS01 validation was used since it's needed when CI/CD apps are not publicly accessible
+
+resource "kubectl_manifest" "cert_manager" {
+  yaml_body = file("../../${path.module}/argo-apps/argo-cd/cert-manager.yaml")
+
+  depends_on = [
+    helm_release.cert_manager
+  ]
+}
+
+resource "helm_release" "cert_manager" {
+  name       = "cert-manager"
+  chart      = "cert-manager"
+  repository = "https://charts.jetstack.io"
+  namespace  = "kube-system"
+  version    = "1.14.5"
+
+  values = [
+    <<-EOF
+    nodeSelector:
+      role: "ci-cd"
+
+    EOF
+  ]
+
+  set {
+    name  = "crds.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = aws_iam_role.cert_manager.arn
+  }
+
+  set {
+    name  = "serviceAccount.name"
+    value = "cert-manager"
+  }
+
+  #         extraArgs:
+  #          - --logging-format=json
+  #        webhook:
+  #          extraArgs:
+  #            - --logging-format=json
+  #        cainjector:
+  #          extraArgs:
+  #            - --logging-format=json
+
+
+  depends_on = [
+    module.eks
+  ]
+
+}
+
+resource "aws_iam_role" "cert_manager" {
+  name = "cert-manager"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "eks.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      },
+    ]
+  })
+}
+
+
+
+
+
+###############################################################################
+# ACM
+###############################################################################
+
+### must be set before tf apply
+## export TF_VAR_CFL_ZONE_ID=123example
+#
+### Import environment variables as TF variable
+#variable "CFL_ZONE_ID" {
+#  description = "Zone ID for Cloudflare"
+#  type        = string
+#  sensitive   = true
+#}
+#
+#module "acm" {
+#  source  = "terraform-aws-modules/acm/aws"
+#  version = "5.0.1"
+#
+#  domain_name  = "argocd.tbalza.net"
+#
+#  wait_for_validation    = false
+#  create_route53_records = false
+#
+#  zone_id     = var.CFL_ZONE_ID
+#
+#  subject_alternative_names = [
+#    "jenkins.tbalza.net",
+#    "grafana.tbalza.net",
+#    "django.tbalza.net",
+#  ]
+#
+#  validation_method = "DNS"
+#
+#  validation_record_fqdns = [
+#    "_689571ee9a5f9ec307c512c5d851e25a.weekly.tf",
+#  ]
+#
+#  tags = {
+#    Name = "tbalza.net"
+#  }
+#
+#  depends_on = [
+#    module.eks
+#  ]
+#
+#}
+
+
+## CloudFlare
+# https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs
+
+#provider "cloudflare" {
+#  api_token = var.cloudflare_api_token
+#}
+#
+## Create a record
+#resource "cloudflare_record" "www" {
+#  # ...
+#}
+#
+## Create a page rule
+#resource "cloudflare_page_rule" "www" {
+#  # ...
+#}
+
+#depends_on = [
+#    module.eks
+#  ]

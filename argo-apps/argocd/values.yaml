@@ -3,34 +3,46 @@ serviceAccount:
     eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole"
 
 global:
-  domain: "" # Used for ingresses, certificates, SSO, notifications, etc. (allow all domains)
+  domain: "" # Used for ingresses, certificates, SSO, notifications, etc. (blank allows all domains)
 
 server:
   service:
     type: ClusterIP
   containerPorts:
     server: 8282
-  extraArgs:
-    - --insecure
-  extraEnv:
-    - name: ARGOCD_INSECURE
-      value: "true"
+  certificate:
+    enabled: true # Deploy a Certificate resource (requires cert-manager)
+    issuer:
+      group: "cert-manager.io" # -- Certificate issuer group. Set if using an external issuer. Eg. `cert-manager.io` # check
+      kind: "ClusterIssuer" # -- Certificate issuer kind. Either `Issuer` or `ClusterIssuer` # check
+      name: "letsencrypt-prod-django" # -- Certificate issuer name. Eg. `letsencrypt` # check
+#  extraArgs:
+#    - --insecure
+#  extraEnv:
+#    - name: ARGOCD_INSECURE
+#      value: "true"
   ingress:
-    enabled: true
-    ingressClassName: "alb"
+    enabled: true # true
+    ingressClassName: "alb" # Defines which ingress controller will implement the resource
     annotations:
       kubernetes.io/ingress.class: "alb"
-      alb.ingress.kubernetes.io/scheme: "internet-facing"
-      alb.ingress.kubernetes.io/target-type: "ip"
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'  # Adjust as necessary for HTTPS
+      alb.ingress.kubernetes.io/scheme: "internet-facing" # change to "internal" when made private
+      alb.ingress.kubernetes.io/target-type: "ip" # check. target-type:instance/nodeport. NodePort range (30000-32767)
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]' # '[{"HTTP": 80}]'
+      alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
       alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
       alb.ingress.kubernetes.io/group.order: "1"
       alb.ingress.kubernetes.io/healthcheck-path: "/healthz"
       alb.ingress.kubernetes.io/healthcheck-port: "traffic-port" # check
       alb.ingress.kubernetes.io/success-codes: "200" # check
-    path: "/*"
-    pathType: "ImplementationSpecific"
-    hostname: "" # references global: for domain
+      cert-manager.io/cluster-issuer: letsencrypt-prod-django # # The name of the ClusterIssuer
+      external-dns.alpha.kubernetes.io/hostname: argocd.tbalza.net
+      ##external-dns.alpha.kubernetes.io/ingress-hostname-source: annotation-only # external-dns controller only creates DNS records for /hostname
+
+    tls: true
+    path: "/" # /
+    pathType: "Prefix" #"ImplementationSpecific"
+    hostname: "argocd.tbalza.net" # references global: for domain
 
 applicationSet:
   enabled: true
@@ -38,6 +50,7 @@ applicationSet:
     role: ci-cd
 
 dex:
+  enabled: false # This is for SSO
   server:
     nodeSelector:
       role: ci-cd

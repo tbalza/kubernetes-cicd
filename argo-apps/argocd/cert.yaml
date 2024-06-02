@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-server-cert
+  namespace: argocd  # Same namespace as your Ingress resource
+spec:
+  dnsNames:
+  - "argocd.tbalza.net"
+  secretName: argocd-server-tls  # The name of the secret where cert-manager will store the certificate
+  issuerRef:
+    name: letsencrypt-prod-django
+    kind: ClusterIssuer
