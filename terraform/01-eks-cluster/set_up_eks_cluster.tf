@@ -1306,7 +1306,7 @@ resource "aws_iam_role" "external_dns" {
 # DNS01 validation was used since it's needed when CI/CD apps are not publicly accessible
 
 resource "kubectl_manifest" "cert_manager" {
-  yaml_body = file("../../${path.module}/argo-apps/argo-cd/cert-manager.yaml")
+  yaml_body = file("../../${path.module}/argo-apps/argocd/cert-manager.yaml")
 
   depends_on = [
     helm_release.cert_manager
