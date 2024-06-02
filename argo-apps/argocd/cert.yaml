@@ -4,9 +4,12 @@ metadata:
   name: argocd-server-cert
   namespace: argocd  # Same namespace as your Ingress resource
 spec:
-  dnsNames:
-  - "argocd.tbalza.net"
   secretName: argocd-server-tls  # The name of the secret where cert-manager will store the certificate
   issuerRef:
     name: letsencrypt-prod-django
     kind: ClusterIssuer
+  commonName: lab.armand.nz
+  dnsNames:
+  - argocd.tbalza.net # ?? tbalza.net The CommonName must be also listed as a dnsName
+  - one.lab.armand.nz
+  - two.lab.armand.nz

@@ -1003,20 +1003,23 @@ resource "kubernetes_storage_class_v1" "gp3" {
 
 # Disable GP2 as default to prevent conflicts
 # kubectl patch storageclass gp2 -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
-resource "kubectl_manifest" "update_gp2_storage_class" {
-  yaml_body = <<-YAML
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: gp2
-  annotations:
-    storageclass.kubernetes.io/is-default-class: "false"
-YAML
 
-  depends_on = [
-    module.eks
-  ]
-}
+# Forbidden: updates to provisioner are forbidden., volumeBindingMode: Invalid value: "Immediate": field is immutable
+
+#resource "kubectl_manifest" "update_gp2_storage_class" {
+#  yaml_body = <<-YAML
+#apiVersion: storage.k8s.io/v1
+#kind: StorageClass
+#metadata:
+#  name: gp2
+#  annotations:
+#    storageclass.kubernetes.io/is-default-class: "false"
+#YAML
+#
+#  depends_on = [
+#    module.eks
+#  ]
+#}
 
 ###############################################################################
 # ECR
@@ -1218,9 +1221,9 @@ data:
 resource "helm_release" "external_dns" {
   name       = "external-dns"
   chart      = "external-dns"
-  repository = "https://charts.bitnami.com/bitnami"
+  repository = "https://kubernetes-sigs.github.io/external-dns/"
   namespace  = "kube-system"
-  version    = "0.14.2"
+  version    = "1.14.4" # Chart 1.14.4, App 0.14.1
 
   values = [
     <<-EOF
