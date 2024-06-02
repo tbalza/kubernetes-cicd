@@ -390,6 +390,34 @@ module "eks" {
   # this creates serviceAccounts for each entry (in namespace "default"?)
   access_entries = {
 
+#    external-dns = {
+#      principal_arn     = aws_iam_role.external_dns.arn
+#      kubernetes_groups = []
+#
+#      policy_associations = {
+#        admin_policy = {
+#          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
+#          access_scope = {
+#            type = "cluster" # check
+#          }
+#        }
+#      }
+#    }
+#
+#    cert-manager = {
+#      principal_arn     = aws_iam_role.cert_manager.arn
+#      kubernetes_groups = []
+#
+#      policy_associations = {
+#        admin_policy = {
+#          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
+#          access_scope = {
+#            type = "cluster" # check
+#          }
+#        }
+#      }
+#    }
+
     external-secrets = {
       principal_arn     = aws_iam_role.external_secrets.arn
       kubernetes_groups = []
@@ -1112,8 +1140,6 @@ resource "helm_release" "external_secrets" {
     EOF
   ]
 
-  # certManager: # pending for later
-
   depends_on = [
     helm_release.aws_load_balancer_controller,
     module.eks # important
@@ -1214,6 +1240,7 @@ data:
   YAML
 
   depends_on = [
+    helm_release.aws_load_balancer_controller,
     module.eks
   ]
 }
@@ -1280,7 +1307,7 @@ resource "helm_release" "external_dns" {
   }
 
   depends_on = [
-    kubectl_manifest.cloudflare_api_key
+    kubectl_manifest.cloudflare_api_key # api key depends on load balancer controller
   ]
 
 }
@@ -1308,6 +1335,12 @@ resource "aws_iam_role" "external_dns" {
 
 # DNS01 validation was used since it's needed when CI/CD apps are not publicly accessible
 
+#resource "kubernetes_namespace" "cert_manager" {
+#  metadata {
+#    name = "cert-manager"
+#  }
+#}
+
 resource "kubectl_manifest" "cert_manager" {
   yaml_body = file("../../${path.module}/argo-apps/argocd/cert-manager.yaml")
 
@@ -1320,7 +1353,10 @@ resource "helm_release" "cert_manager" {
   name       = "cert-manager"
   chart      = "cert-manager"
   repository = "https://charts.jetstack.io"
-  namespace  = "kube-system"
+  namespace  = "cert-manager"
+
+  create_namespace = true
+
   version    = "1.14.5"
 
   values = [
@@ -1331,8 +1367,17 @@ resource "helm_release" "cert_manager" {
     EOF
   ]
 
+#  set {
+#    name  = "installCRDs" # although deprecated, install fails with only crds.enabled=true, both crds.enabled and crds.keep are needed
+#    value = "true"
+#  }
+
   set {
-    name  = "crds.enabled"
+    name  = "crds.enabled" # decides if the CRDs should be installed
+    value = "true"
+  }
+  set {
+    name  = "crds.keep" # prevent Helm from uninstalling the CRD when the Helm release is uninstalled
     value = "true"
   }
 
@@ -1357,6 +1402,7 @@ resource "helm_release" "cert_manager" {
 
 
   depends_on = [
+    helm_release.aws_load_balancer_controller,
     module.eks
   ]
 
@@ -1378,10 +1424,6 @@ resource "aws_iam_role" "cert_manager" {
     ]
   })
 }
-
-
-
-
 
 ###############################################################################
 # ACM

@@ -13,7 +13,7 @@ server:
   certificate:
     enabled: true # Deploy a Certificate resource (requires cert-manager)
     issuer:
-      group: "cert-manager.io" # -- Certificate issuer group. Set if using an external issuer. Eg. `cert-manager.io` # check
+#      group: "cert-manager.io" # -- Certificate issuer group. Set if using an external issuer. Eg. `cert-manager.io` # check
       kind: "ClusterIssuer" # -- Certificate issuer kind. Either `Issuer` or `ClusterIssuer` # check
       name: "letsencrypt-prod-django" # -- Certificate issuer name. Eg. `letsencrypt` # check
 #  extraArgs:
