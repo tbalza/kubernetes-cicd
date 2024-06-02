@@ -1233,7 +1233,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: cloudflare-api-token
-  namespace: kube-system
+  namespace: cert-manager
 type: Opaque
 data:
   api-token: ${base64encode(var.CFL_API_TOKEN)}
@@ -1367,10 +1367,10 @@ resource "helm_release" "cert_manager" {
     EOF
   ]
 
-#  set {
-#    name  = "installCRDs" # although deprecated, install fails with only crds.enabled=true, both crds.enabled and crds.keep are needed
-#    value = "true"
-#  }
+  set {
+    name  = "installCRDs" # although deprecated, install fails with only crds.enabled=true, both crds.enabled and crds.keep are needed
+    value = "true"
+  }
 
   set {
     name  = "crds.enabled" # decides if the CRDs should be installed
