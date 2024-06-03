@@ -1233,7 +1233,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: cloudflare-api-token
-  namespace: cert-manager
+  namespace: kube-system
 type: Opaque
 data:
   api-token: ${base64encode(var.CFL_API_TOKEN)}
@@ -1353,9 +1353,9 @@ resource "helm_release" "cert_manager" {
   name       = "cert-manager"
   chart      = "cert-manager"
   repository = "https://charts.jetstack.io"
-  namespace  = "cert-manager"
+  namespace  = "kube-system" # check . rbac needs to be made for externalDNS
 
-  create_namespace = true
+  #create_namespace = true
 
   version    = "1.14.5"
 
