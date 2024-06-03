@@ -1267,11 +1267,6 @@ resource "helm_release" "external_dns" {
   ]
 
   set {
-    name  = "extraArgs[0]"
-    value = "--source=ingress"
-  }
-
-  set {
     name  = "extraArgs[1]" # API rate limit optimization
     value = "--cloudflare-dns-records-per-page=5000"
   }

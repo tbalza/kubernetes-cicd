@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: externaldns-test
+  namespace: default
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: test.tbalza.net
+spec:
+  rules:
+  - host: test.tbalza.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: test-service
+            port:
+              number: 80
