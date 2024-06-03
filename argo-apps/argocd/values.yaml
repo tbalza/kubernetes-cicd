@@ -3,7 +3,7 @@ serviceAccount:
     eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole"
 
 global:
-  domain: "argocd.tbalza.net" # Used for ingresses, certificates, SSO, notifications, etc. (blank allows all domains)
+  domain: "tbalza.net" # Used for ingresses, certificates, SSO, notifications, etc. (blank allows all domains)
 
 server:
   service:
