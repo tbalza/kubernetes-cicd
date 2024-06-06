@@ -4,7 +4,7 @@ serviceAccount:
 # init containers or sidecars that configure or bootstrap the main containers based on dynamic inputs from secrets.
 
 crds:
-  keep: false # check # Keep CRDs on chart uninstall
+  keep: true # check # Keep CRDs on chart uninstall
 
 global:
   domain: "argocd.tbalza.net" # Used for ingresses, certificates, SSO, notifications, etc. (blank allows all domains)
@@ -13,7 +13,7 @@ configs:
   cm:
     kustomize.buildOptions: "--load-restrictor LoadRestrictionsNone --enable-helm" # Enable Kustomize to install helm charts
   params:
-    server.insecure: true # necessary when SSL termination is handled by ALB
+    server.insecure: false # necessary when SSL termination is handled by ALB
 
 server:
   service:
@@ -41,16 +41,14 @@ server:
       alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
       alb.ingress.kubernetes.io/group.order: "1"
       alb.ingress.kubernetes.io/healthcheck-path: "/healthz"
-#      alb.ingress.kubernetes.io/healthcheck-port: "traffic-port" # check
+      alb.ingress.kubernetes.io/healthcheck-port: "traffic-port" # check
       alb.ingress.kubernetes.io/success-codes: "200,307" # check # 200
       #cert-manager.io/cluster-issuer: letsencrypt-prod-django # The name of the ClusterIssuer
       external-dns.alpha.kubernetes.io/hostname: argocd.tbalza.net
       ##external-dns.alpha.kubernetes.io/ingress-hostname-source: annotation-only # external-dns controller only creates DNS records for /hostname
       alb.ingress.kubernetes.io/certificate-arn: " arn:aws:acm:us-east-1:350206045032:certificate/47561cda-e12f-48cd-a4c5-29a1ca67fcd0"
 
-    tls: # TLS configuration block
-      - hosts:
-          - argocd.tbalza.net
+    tls: true
     path: "/" # /
     pathType: "Prefix" #"ImplementationSpecific"
     hostname: "argocd.tbalza.net" # references global: for domain
