@@ -134,6 +134,9 @@ controller:
             name: jenkins
             port:
               number: 8080
+    tls:
+      - hosts:
+          - jenkins.tbalza.net
 #    paths:
 #      - pathType: Prefix
 #        path: /
