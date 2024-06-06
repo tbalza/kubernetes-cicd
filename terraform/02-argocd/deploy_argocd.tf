@@ -56,6 +56,7 @@ provider "kubectl" {
 # Dynamically load values from argocd's kustomization.yaml
 locals {
   argocd_config = yamldecode(file("../../${path.module}/argo-apps/argocd/kustomization.yaml"))
+
   # IDE may show "unresolved reference" even though it's linked correctly in tf.
   argocd_helm_chart = local.argocd_config.helmCharts[0] # Access the first (or only) element in the list
 }
@@ -72,6 +73,7 @@ resource "kubernetes_namespace" "argo_cd" {
 }
 
 resource "helm_release" "argo_cd" {
+
   # IDE may show "unresolved reference" even though it's linked correctly in tf.
   name       = local.argocd_helm_chart.name # "argo-cd"
   repository = local.argocd_helm_chart.repo # "https://argoproj.github.io/argo-helm"

@@ -116,6 +116,7 @@ module "eks" {
       })
     }
 
+    # pending `kubectl annotate sc gp2 storageclass.kubernetes.io/is-default-class: "false"`
     aws-ebs-csi-driver = {
       resolve_conflicts_on_update = "OVERWRITE"
       resolve_conflicts_on_create = "OVERWRITE"
@@ -390,33 +391,33 @@ module "eks" {
   # this creates serviceAccounts for each entry (in namespace "default"?)
   access_entries = {
 
-#    external-dns = {
-#      principal_arn     = aws_iam_role.external_dns.arn
-#      kubernetes_groups = []
-#
-#      policy_associations = {
-#        admin_policy = {
-#          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
-#          access_scope = {
-#            type = "cluster" # check
-#          }
-#        }
-#      }
-#    }
-#
-#    cert-manager = {
-#      principal_arn     = aws_iam_role.cert_manager.arn
-#      kubernetes_groups = []
-#
-#      policy_associations = {
-#        admin_policy = {
-#          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
-#          access_scope = {
-#            type = "cluster" # check
-#          }
-#        }
-#      }
-#    }
+    #    external-dns = {
+    #      principal_arn     = aws_iam_role.external_dns.arn
+    #      kubernetes_groups = []
+    #
+    #      policy_associations = {
+    #        admin_policy = {
+    #          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
+    #          access_scope = {
+    #            type = "cluster" # check
+    #          }
+    #        }
+    #      }
+    #    }
+    #
+    #    cert-manager = {
+    #      principal_arn     = aws_iam_role.cert_manager.arn
+    #      kubernetes_groups = []
+    #
+    #      policy_associations = {
+    #        admin_policy = {
+    #          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
+    #          access_scope = {
+    #            type = "cluster" # check
+    #          }
+    #        }
+    #      }
+    #    }
 
     external-secrets = {
       principal_arn     = aws_iam_role.external_secrets.arn
@@ -944,7 +945,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
   namespace  = "kube-system"
-  version    = "1.7.2" # AWS LBC ver v2.7.2, requires Kubernetes 1.22+
+  version    = "1.8.1" # (Chart 1.8.1, LBC 2.8.1) ####### (Chart 1.7.2, LBC 2.7.2) requires Kubernetes 1.22+
 
   set {
     name  = "replicaCount" # by default it creates 2 replicas
@@ -1002,7 +1003,7 @@ module "ebs_csi_driver_irsa" {
   }
 }
 
-# Enabe gp3 for aws-ebs-csi-driver
+# Enable gp3 for aws-ebs-csi-driver
 resource "kubernetes_storage_class_v1" "gp3" {
   metadata {
     name = "gp3"
@@ -1048,6 +1049,21 @@ resource "kubernetes_storage_class_v1" "gp3" {
 #    module.eks
 #  ]
 #}
+
+# Pending on a cleaner way to do this within the EKS module, or tf resource
+resource "null_resource" "update_gp2" {
+  triggers = {
+    cluster_name     = module.eks.cluster_name
+    cluster_endpoint = module.eks.cluster_endpoint
+  }
+  provisioner "local-exec" {
+    command = "kubectl annotate sc gp2 storageclass.kubernetes.io/is-default-class=false --overwrite"
+  }
+  depends_on = [
+    null_resource.update_kubeconfig
+  ]
+}
+
 
 ###############################################################################
 # ECR
@@ -1212,11 +1228,11 @@ resource "null_resource" "update_kubeconfig" {
 # ExternalDNS
 ###############################################################################
 
-# Note that the Service object is of type NodePort. We don't need a Service of type LoadBalancer here, since we will be using an Ingress to create an ALB.
-
 ## must be set before tf apply
 # export TF_VAR_CFL_API_TOKEN=123example
 # When using API Token authentication, the token should be granted Zone Read, DNS Edit privileges, and access to All zones
+
+# optional: limit which Ingress objects are used as an ExternalDNS source via the ingress-class
 
 ## Import environment variables as TF variable
 variable "CFL_API_TOKEN" {
@@ -1227,20 +1243,20 @@ variable "CFL_API_TOKEN" {
 
 ## Pass CF API token to k8s Secret
 # kubectl create secret generic cloudflare-api-key --from-literal=apiKey=123example -n kube-system
-resource "kubectl_manifest" "cloudflare_api_key" {
+resource "kubectl_manifest" "cloudflare_api_key" { # maybe chart expects `apiKey` instead of `api-token` (even though token is used?)
   yaml_body = <<-YAML
 apiVersion: v1
 kind: Secret
 metadata:
-  name: cloudflare-api-token
+  name: cloudflare-api-key
   namespace: kube-system
 type: Opaque
 data:
-  api-token: ${base64encode(var.CFL_API_TOKEN)}
+  apiKey: ${base64encode(var.CFL_API_TOKEN)}
   YAML
 
   depends_on = [
-    helm_release.aws_load_balancer_controller,
+    #helm_release.aws_load_balancer_controller,
     module.eks
   ]
 }
@@ -1261,19 +1277,34 @@ resource "helm_release" "external_dns" {
     - name: CF_API_TOKEN
       valueFrom:
         secretKeyRef:
-          name: cloudflare-api-token
-          key: api-token
+          name: cloudflare-api-key
+          key: apiKey
     EOF
   ]
 
+  #  set {
+  #    name  = "extraArgs[0]" # API rate limit optimization
+  #    value = "--cloudflare-dns-records-per-page=5000"
+  #  }
+
+  #  set {
+  #    name  = "extraArgs[0]" # API rate limit optimization
+  #    value = "--log-level=debug"
+  #  }
+
   set {
-    name  = "extraArgs[1]" # API rate limit optimization
-    value = "--cloudflare-dns-records-per-page=5000"
+    name  = "extraArgs[0]" # API rate limit optimization
+    value = "--source=service"
   }
+
+#  set {
+#    name  = "extraArgs[1]" # API rate limit optimization
+#    value = "--provider=cloudflare"
+#  }
 
   set {
     name  = "domainFilters[0]"
-    value = local.domain
+    value = local.domain # Necessary for helm install to succeed
   }
 
   set {
@@ -1288,7 +1319,7 @@ resource "helm_release" "external_dns" {
 
   set {
     name  = "txtOwnerId"
-    value = local.name
+    value = local.name # cluster name
   }
 
   set {
@@ -1297,12 +1328,19 @@ resource "helm_release" "external_dns" {
   }
 
   set {
+    name  = "serviceAccount.automountServiceAccountToken" # check
+    value = true
+  }
+
+  set {
     name  = "serviceAccount.name"
     value = "external-dns"
   }
 
   depends_on = [
-    kubectl_manifest.cloudflare_api_key # api key depends on load balancer controller
+    kubectl_manifest.cloudflare_api_key
+    #helm_release.aws_load_balancer_controller,
+    #module.eks
   ]
 
 }
@@ -1324,167 +1362,215 @@ resource "aws_iam_role" "external_dns" {
   })
 }
 
-###############################################################################
-# Cert-Manager
-###############################################################################
-
-# DNS01 validation was used since it's needed when CI/CD apps are not publicly accessible
-
-#resource "kubernetes_namespace" "cert_manager" {
-#  metadata {
-#    name = "cert-manager"
-#  }
+################################################################################
+## Cert-Manager
+################################################################################
+# This can only be used with NLB currently, as AWS LBC only supports ACM certs. There is a feature request pending, so ALB use might be enabled soon.
+## DNS01 validation was used since it's needed when CI/CD apps are not publicly accessible
+#
+##resource "kubernetes_namespace" "cert_manager" {
+##  metadata {
+##    name = "cert-manager"
+##  }
+##}
+#
+#resource "kubectl_manifest" "cert_manager" {
+#  yaml_body = file("../../${path.module}/argo-apps/argocd/cert-manager.yaml")
+#
+#  depends_on = [
+#    helm_release.cert_manager
+#  ]
 #}
-
-resource "kubectl_manifest" "cert_manager" {
-  yaml_body = file("../../${path.module}/argo-apps/argocd/cert-manager.yaml")
-
-  depends_on = [
-    helm_release.cert_manager
-  ]
-}
-
-resource "helm_release" "cert_manager" {
-  name       = "cert-manager"
-  chart      = "cert-manager"
-  repository = "https://charts.jetstack.io"
-  namespace  = "kube-system" # check . rbac needs to be made for externalDNS
-
-  #create_namespace = true
-
-  version    = "1.14.5"
-
-  values = [
-    <<-EOF
-    nodeSelector:
-      role: "ci-cd"
-
-    EOF
-  ]
-
-  set {
-    name  = "installCRDs" # although deprecated, install fails with only crds.enabled=true, both crds.enabled and crds.keep are needed
-    value = "true"
-  }
-
-  set {
-    name  = "crds.enabled" # decides if the CRDs should be installed
-    value = "true"
-  }
-  set {
-    name  = "crds.keep" # prevent Helm from uninstalling the CRD when the Helm release is uninstalled
-    value = "true"
-  }
-
-  set {
-    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = aws_iam_role.cert_manager.arn
-  }
-
-  set {
-    name  = "serviceAccount.name"
-    value = "cert-manager"
-  }
-
-  #         extraArgs:
-  #          - --logging-format=json
-  #        webhook:
-  #          extraArgs:
-  #            - --logging-format=json
-  #        cainjector:
-  #          extraArgs:
-  #            - --logging-format=json
-
-
-  depends_on = [
-    helm_release.aws_load_balancer_controller,
-    module.eks
-  ]
-
-}
-
-resource "aws_iam_role" "cert_manager" {
-  name = "cert-manager"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Service = "eks.amazonaws.com"
-        }
-        Action = "sts:AssumeRole"
-      },
-    ]
-  })
-}
+#
+#resource "helm_release" "cert_manager" {
+#  name       = "cert-manager"
+#  chart      = "cert-manager"
+#  repository = "https://charts.jetstack.io"
+#  namespace  = "cert-manager" #
+#
+#  #create_namespace = true
+#
+#  version    = "1.14.5"
+#
+#  values = [
+#    <<-EOF
+#    nodeSelector:
+#      role: "ci-cd"
+#
+#    EOF
+#  ]
+#
+#  set {
+#    name  = "installCRDs" # although deprecated, install fails with only crds.enabled=true, both crds.enabled and crds.keep are needed
+#    value = "true"
+#  }
+#
+##  set {
+##    name  = "crds.enabled" # decides if the CRDs should be installed
+##    value = "true"
+##  }
+##  set {
+##    name  = "crds.keep" # prevent Helm from uninstalling the CRD when the Helm release is uninstalled
+##    value = "true"
+##  }
+#
+#  set {
+#    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+#    value = aws_iam_role.cert_manager.arn
+#  }
+#
+#  set {
+#    name  = "serviceAccount.name"
+#    value = "cert-manager"
+#  }
+#
+#  #         extraArgs:
+#  #          - --logging-format=json
+#  #        webhook:
+#  #          extraArgs:
+#  #            - --logging-format=json
+#  #        cainjector:
+#  #          extraArgs:
+#  #            - --logging-format=json
+#
+#
+#  depends_on = [
+#    helm_release.aws_load_balancer_controller,
+#    module.eks
+#  ]
+#
+#}
+#
+#resource "aws_iam_role" "cert_manager" {
+#  name = "cert-manager"
+#
+#  assume_role_policy = jsonencode({
+#    Version = "2012-10-17"
+#    Statement = [
+#      {
+#        Effect = "Allow"
+#        Principal = {
+#          Service = "eks.amazonaws.com"
+#        }
+#        Action = "sts:AssumeRole"
+#      },
+#    ]
+#  })
+#}
 
 ###############################################################################
 # ACM
 ###############################################################################
+# Load Balancer Controller only works with ACM certificates (and cert-manager can't issue ACM certs)
+# IngressClassParams allows the use of static annotation `kubernetes.io/ingress.class: "alb-https"` to auth ACM without having to set dynamic ARN or rely on TLS auto-discovery
 
-### must be set before tf apply
-## export TF_VAR_CFL_ZONE_ID=123example
-#
-### Import environment variables as TF variable
-#variable "CFL_ZONE_ID" {
-#  description = "Zone ID for Cloudflare"
-#  type        = string
-#  sensitive   = true
-#}
-#
-#module "acm" {
-#  source  = "terraform-aws-modules/acm/aws"
-#  version = "5.0.1"
-#
-#  domain_name  = "argocd.tbalza.net"
-#
-#  wait_for_validation    = false
-#  create_route53_records = false
-#
-#  zone_id     = var.CFL_ZONE_ID
-#
-#  subject_alternative_names = [
-#    "jenkins.tbalza.net",
-#    "grafana.tbalza.net",
-#    "django.tbalza.net",
-#  ]
-#
-#  validation_method = "DNS"
-#
-#  validation_record_fqdns = [
-#    "_689571ee9a5f9ec307c512c5d851e25a.weekly.tf",
-#  ]
-#
-#  tags = {
-#    Name = "tbalza.net"
-#  }
-#
-#  depends_on = [
-#    module.eks
-#  ]
-#
-#}
+resource "kubectl_manifest" "ingress_class_params" {
+  yaml_body = <<-YAML
+  apiVersion: networking.k8s.io/v1
+  kind: IngressClass
+  metadata:
+    name: alb-https
+  spec:
+    controller: ingress.k8s.aws/alb
+    parameters:
+      apiGroup: ingress.k8s.aws
+      kind: IngressClassParams
+      name: alb-https-class-params
+  ---
+  apiVersion: ingress.k8s.aws/v1beta1
+  kind: IngressClassParams
+  metadata:
+    name: alb-https-class-params
+  spec:
+    scheme: internet-facing
+    certificateArn: ${module.acm.acm_certificate_arn}
+  YAML
+
+  depends_on = [
+    helm_release.aws_load_balancer_controller, # check
+    module.acm # check
+  ]
+}
 
 
-## CloudFlare
-# https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs
+## must be set before tf apply
+# export TF_VAR_CFL_ZONE_ID=123example
 
-#provider "cloudflare" {
-#  api_token = var.cloudflare_api_token
-#}
-#
-## Create a record
-#resource "cloudflare_record" "www" {
-#  # ...
-#}
-#
-## Create a page rule
-#resource "cloudflare_page_rule" "www" {
-#  # ...
-#}
+## Import environment variables as TF variable
+variable "CFL_ZONE_ID" {
+  description = "Zone ID for Cloudflare"
+  type        = string
+  sensitive   = true
+}
 
-#depends_on = [
-#    module.eks
-#  ]
+# Create ACM wildcard cert, with DNS validation using Cloudflare
+module "acm" {
+  source  = "terraform-aws-modules/acm/aws"
+  version = "5.0.1"
+
+  # ACM cert for subdomains only
+  domain_name = "*.${local.domain}"
+  zone_id     = var.CFL_ZONE_ID
+
+  validation_method = "DNS"
+
+  validation_record_fqdns = cloudflare_record.validation[*].hostname
+
+  wait_for_validation    = true
+  create_route53_records = false
+
+  subject_alternative_names = [
+    "*.${local.domain}",
+  ]
+
+  tags = {
+    Name = local.domain
+  }
+
+  depends_on = [
+    helm_release.aws_load_balancer_controller,
+  ]
+
+}
+
+###############################################################################
+# Cloudflare
+###############################################################################
+# This block only takes care of validating the wildcard ACM cert.
+# individual app CNAME entries are created dynamically by ExternalDNS (defined in the ingress of each app)
+
+## must be set before tf apply
+# export TF_VAR_CFL_API_TOKEN=123example
+
+provider "cloudflare" {
+  api_token = var.CFL_API_TOKEN
+}
+
+# Validate generated ACM cert by creating validation domain record
+resource "cloudflare_record" "validation" {
+  count = length(module.acm.distinct_domain_names)
+
+  zone_id = var.CFL_ZONE_ID
+  name    = element(module.acm.validation_domains, count.index)["resource_record_name"]
+  type    = element(module.acm.validation_domains, count.index)["resource_record_type"]
+  value   = trimsuffix(element(module.acm.validation_domains, count.index)["resource_record_value"], ".") # ensure no trailing periods that could disrupt DNS record creation
+  ttl     = 60
+  proxied = false
+
+  allow_overwrite = true
+
+  depends_on = [
+    helm_release.aws_load_balancer_controller,
+  ]
+
+}
+
+###############################################################################
+# RDS
+###############################################################################
+
+#module "rds" {
+#  source  = "terraform-aws-modules/rds/aws"
+#  version = "6.6.0"
+#
+#}

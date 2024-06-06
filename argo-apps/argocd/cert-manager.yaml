@@ -7,7 +7,7 @@ spec:
     # The ACME server URL for Let's Encrypt Production Environment
     server: https://acme-v02.api.letsencrypt.org/directory # https://acme-staging-v02.api.letsencrypt.org/directory
     # Email address used for ACME registration and recovery contact
-    email: tomas.balza@gmail.com # check
+    email: email@email.email
     # Secret resource used to store the ACME account private key
     privateKeySecretRef:
       name: letsencrypt-prod-django
