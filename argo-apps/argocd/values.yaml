@@ -3,6 +3,9 @@ serviceAccount:
     eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole"
 # init containers or sidecars that configure or bootstrap the main containers based on dynamic inputs from secrets.
 
+crds:
+  keep: false # check # Keep CRDs on chart uninstall
+
 global:
   domain: "argocd.tbalza.net" # Used for ingresses, certificates, SSO, notifications, etc. (blank allows all domains)
 
