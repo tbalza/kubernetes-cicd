@@ -28,9 +28,9 @@ server:
   ingress:
     enabled: true # true
     controller: aws # Specifies that this is managed by AWS ALB
+    #hostname: "argocd.tbalza.net" # references/defaults to global: for domain
     aws:
       serviceType: ClusterIP # <- Used with target-type: ip
-#      backendProtocolVersion: GRPC
     ingressClassName: "alb" # (default `alb`) `alb-https` IngressClassParams set in tf container ACM ARN
     annotations:
       kubernetes.io/ingress.class: "alb" # (default `alb`) `alb-https` IngressClassParams set in tf container ACM ARN
@@ -49,14 +49,7 @@ server:
       ##external-dns.alpha.kubernetes.io/ingress-hostname-source: annotation-only # external-dns controller only creates DNS records for /hostname
       #alb.ingress.kubernetes.io/certificate-arn: " arn:aws:acm:us-east-1:350206045032:certificate/47561cda-e12f-48cd-a4c5-29a1ca67fcd0"
       # https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/cert_discovery/
-
-##    tls: true
-#    tls: # TLS configuration block
-#      - hosts:
-#          - argocd.tbalza.net
-#    path: "/" # /
-#    pathType: "Prefix" #"ImplementationSpecific"
-#    hostname: "argocd.tbalza.net" # references global: for domain
+      # https://github.com/argoproj/argo-helm/blob/main/charts/argo-cd/README.md
 
 applicationSet:
   enabled: true
