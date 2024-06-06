@@ -99,7 +99,7 @@ controller:
     size: "9Gi" # check (not applying)
     accessMode: "ReadWriteOnce" # ReadWriteMany for HA/efs
 
-  ingress: #insecure
+  ingress: #insecure . "-noCertificateCheck" . http.sslVerify false . If you are using SSL termination on the ALB, with a self-signed certificate, you need also to build a custom inbound-agent base image (see here) with the CA certificate.
     enabled: true
     ingressClassName: "alb" # Ingress class name for using AWS ALB
     annotations:
@@ -118,7 +118,7 @@ controller:
       #alb.ingress.kubernetes.io/certificate-arn: " arn:aws:acm:us-east-1:350206045032:certificate/47561cda-e12f-48cd-a4c5-29a1ca67fcd0"
 
     hostName: jenkins.tbalza.net
-    apiVersion: networking.k8s.io/v1 # for newer Kubernetes versions, specify the correct API version
+    apiVersion: extensions/networking.k8s.io/v1 # for newer Kubernetes versions, specify the correct API version
     paths:
        - backend:
            serviceName: "jenkins"
