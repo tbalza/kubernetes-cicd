@@ -6,9 +6,15 @@ serviceAccount:
 global:
   domain: "argocd.tbalza.net" # Used for ingresses, certificates, SSO, notifications, etc. (blank allows all domains)
 
+configs:
+  cm:
+    kustomize.buildOptions: "--load-restrictor LoadRestrictionsNone --enable-helm" # Enable Kustomize to install helm charts
+  params:
+    server.insecure: true # necessary when SSL termination is handled by ALB
+
 server:
-  service:
-    type: ClusterIP
+#  service:
+#    type: ClusterIP
 #  containerPorts:
 #    server: 8282
 #  extraArgs:
@@ -18,7 +24,7 @@ server:
 #      value: "true"
   ingress:
     enabled: true # true
-    controller: aws
+    controller: aws # Specifies that this is managed by AWS ALB
     aws:
       serviceType: ClusterIP # <- Used with target-type: ip
     ingressClassName: "alb" # (default `alb`) `alb-https` IngressClassParams set in tf container ACM ARN
@@ -37,11 +43,14 @@ server:
       #cert-manager.io/cluster-issuer: letsencrypt-prod-django # The name of the ClusterIssuer
       external-dns.alpha.kubernetes.io/hostname: argocd.tbalza.net
       ##external-dns.alpha.kubernetes.io/ingress-hostname-source: annotation-only # external-dns controller only creates DNS records for /hostname
+      alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:350206045032:certificate/e1b68e1b-34e7-45c2-944f-dcedcf4e1101"
 
-    tls: true
-    path: "/" # /
-    pathType: "Prefix" #"ImplementationSpecific"
-    hostname: "argocd.tbalza.net" # references global: for domain
+#    tls: # TLS configuration block
+#      - hosts:
+#          - argocd.tbalza.net
+#    path: "/" # /
+#    pathType: "Prefix" #"ImplementationSpecific"
+#    hostname: "argocd.tbalza.net" # references global: for domain
 
 applicationSet:
   enabled: true
@@ -66,7 +75,3 @@ controller:
 repoServer:
   nodeSelector:
     role: ci-cd
-
-configs:
-  cm:
-    kustomize.buildOptions: "--load-restrictor LoadRestrictionsNone --enable-helm" # Enable Kustomize to install helm charts
