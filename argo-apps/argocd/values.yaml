@@ -16,8 +16,8 @@ configs:
     server.insecure: true # necessary when SSL termination is handled by ALB
 
 server:
-#  service:
-#    type: ClusterIP
+  service:
+    type: ClusterIP
 #  containerPorts:
 #    server: 8282
 #  extraArgs:
