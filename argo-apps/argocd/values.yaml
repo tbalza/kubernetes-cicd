@@ -49,9 +49,12 @@ server:
       alb.ingress.kubernetes.io/certificate-arn: " arn:aws:acm:us-east-1:350206045032:certificate/47561cda-e12f-48cd-a4c5-29a1ca67fcd0"
 
 #    tls: true
-#    path: "/" # /
-#    pathType: "Prefix" #"ImplementationSpecific"
-#    hostname: "argocd.tbalza.net" # references global: for domain
+    tls: # TLS configuration block
+      - hosts:
+          - argocd.tbalza.net
+    path: "/" # /
+    pathType: "Prefix" #"ImplementationSpecific"
+    hostname: "argocd.tbalza.net" # references global: for domain
 
 applicationSet:
   enabled: true
