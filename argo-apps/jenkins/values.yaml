@@ -134,6 +134,14 @@ controller:
             name: jenkins
             port:
               number: 8080
+#    paths:
+#      - pathType: Prefix
+#        path: /
+#        backend:
+#          service:
+#            name: jenkins-service
+#            port:
+#              number: 32000
 
   nodeSelector:
     role: ci-cd
