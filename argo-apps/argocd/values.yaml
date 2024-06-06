@@ -44,7 +44,7 @@ server:
       alb.ingress.kubernetes.io/healthcheck-path: "/healthz"
       alb.ingress.kubernetes.io/healthcheck-port: "traffic-port" # check
       alb.ingress.kubernetes.io/success-codes: "200,307" # check # 200
-      cert-manager.io/cluster-issuer: letsencrypt-prod-django # The name of the ClusterIssuer
+      #cert-manager.io/cluster-issuer: letsencrypt-prod-django # The name of the ClusterIssuer
       external-dns.alpha.kubernetes.io/hostname: argocd.tbalza.net
       ##external-dns.alpha.kubernetes.io/ingress-hostname-source: annotation-only # external-dns controller only creates DNS records for /hostname
       #alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:350206045032:certificate/60dbd336-ad5a-4927-beaf-144b4143af4d"
