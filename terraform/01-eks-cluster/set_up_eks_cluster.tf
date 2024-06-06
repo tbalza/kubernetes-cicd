@@ -1572,7 +1572,7 @@ resource "cloudflare_record" "validation" {
   name    = element(module.acm.validation_domains, count.index)["resource_record_name"]
   type    = element(module.acm.validation_domains, count.index)["resource_record_type"]
   value   = trimsuffix(element(module.acm.validation_domains, count.index)["resource_record_value"], ".") # ensure no trailing periods that could disrupt DNS record creation
-  ttl     = 60
+  ttl     = "Auto" # 60
   proxied = false
 
   allow_overwrite = true
