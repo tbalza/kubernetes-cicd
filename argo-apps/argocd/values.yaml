@@ -13,7 +13,7 @@ configs:
   cm:
     kustomize.buildOptions: "--load-restrictor LoadRestrictionsNone --enable-helm" # Enable Kustomize to install helm charts
   params:
-    server.insecure: false # necessary when SSL termination is handled by ALB
+    server.insecure: true # necessary when SSL termination is handled by ALB
 
 server:
   service:
@@ -30,6 +30,7 @@ server:
     controller: aws # Specifies that this is managed by AWS ALB
     aws:
       serviceType: ClusterIP # <- Used with target-type: ip
+      backendProtocolVersion: GRPC
     ingressClassName: "alb" # (default `alb`) `alb-https` IngressClassParams set in tf container ACM ARN
     annotations:
       kubernetes.io/ingress.class: "alb" # (default `alb`) `alb-https` IngressClassParams set in tf container ACM ARN
