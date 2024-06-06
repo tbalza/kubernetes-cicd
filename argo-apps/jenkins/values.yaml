@@ -99,12 +99,9 @@ controller:
     size: "9Gi" # check (not applying)
     accessMode: "ReadWriteOnce" # ReadWriteMany for HA/efs
 
-  serviceType: "ClusterIP" # (default)
-  agentListenerServiceType: "ClusterIP" # (default)
   ingress: #insecure
     enabled: true
-    hostName: jenkins.tbalza.net # #apiVersion: "networking.k8s.io/v1" # for newer Kubernetes versions, specify the correct API version
-    ingressClassName: "alb" Ingress class name for using AWS ALB
+    ingressClassName: "alb" # Ingress class name for using AWS ALB
     annotations:
       kubernetes.io/ingress.class: "alb"
       alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
@@ -120,6 +117,8 @@ controller:
       external-dns.alpha.kubernetes.io/hostname: jenkins.tbalza.net
       #alb.ingress.kubernetes.io/certificate-arn: " arn:aws:acm:us-east-1:350206045032:certificate/47561cda-e12f-48cd-a4c5-29a1ca67fcd0"
 
+    hostName: jenkins.tbalza.net
+    apiVersion: networking.k8s.io/v1 # for newer Kubernetes versions, specify the correct API version
     paths:
        - backend:
            serviceName: "jenkins"
