@@ -1541,7 +1541,7 @@ module "acm" {
   version = "5.0.1"
 
   # ACM cert for subdomains only
-  domain_name = "*.${local.domain}" # "*.${local.domain}" #
+  domain_name = "*.${local.domain}" # only for subdomains of *.tbalza.net, TLD is not included by default
   zone_id     = var.CFL_ZONE_ID
 
   validation_method = "DNS"
@@ -1553,7 +1553,6 @@ module "acm" {
 
 #  subject_alternative_names = [
 #    "*.${local.domain}", # domain name and subject alternative name should not be repeated
-#    #"argocd.tbalza.net",
 #  ]
 
   tags = {
