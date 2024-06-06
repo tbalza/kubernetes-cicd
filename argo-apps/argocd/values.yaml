@@ -30,7 +30,7 @@ server:
     controller: aws # Specifies that this is managed by AWS ALB
     aws:
       serviceType: ClusterIP # <- Used with target-type: ip
-      backendProtocolVersion: GRPC
+#      backendProtocolVersion: GRPC
     ingressClassName: "alb" # (default `alb`) `alb-https` IngressClassParams set in tf container ACM ARN
     annotations:
       kubernetes.io/ingress.class: "alb" # (default `alb`) `alb-https` IngressClassParams set in tf container ACM ARN
