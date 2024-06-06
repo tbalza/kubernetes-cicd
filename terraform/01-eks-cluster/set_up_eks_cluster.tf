@@ -1466,47 +1466,20 @@ resource "aws_iam_role" "external_dns" {
 # ACM
 ###############################################################################
 # Load Balancer Controller only works with ACM certificates (and cert-manager can't issue ACM certs)
-# IngressClassParams allows the use of static annotation `kubernetes.io/ingress.class: "alb-https"` to auth ACM without having to set dynamic ARN or rely on TLS auto-discovery
+# added in release v2.8.0
+# Support set the certificateArn for Ingress at the IngressClass level. This feature adds new certificateArn to the IngressClassParams Spec to configure the ARN of the certificates for all Ingresses that belong to IngressClass with this IngressClassParams.
+# https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.1/guide/ingress/cert_discovery/
 
 resource "kubectl_manifest" "ingress_class_params" { # check # pending
-  yaml_body = <<-YAML
-  apiVersion: networking.k8s.io/v1
-  kind: IngressClass
-  metadata:
-    name: alb-https
-    labels:
-      app.kubernetes.io/instance: aws-load-balancer-controller
-      app.kubernetes.io/managed-by: Terraform
-      app.kubernetes.io/name: aws-load-balancer-controller
-      app.kubernetes.io/version: "v2.8.1"
-      helm.sh/chart: aws-load-balancer-controller-1.8.1
-    annotations:
-      managed-by: "Terraform"
-      terraform-managed: "true"
-  spec:
-    controller: ingress.k8s.aws/alb
-    parameters:
-      apiGroup: ingress.k8s.aws
-      kind: IngressClassParams
-      name: alb-https-class-params
-  ---
-  apiVersion: ingress.k8s.aws/v1beta1
+  yaml_body = <<-EOT
+  apiVersion: elbv2.k8s.aws/v1beta1
   kind: IngressClassParams
   metadata:
-    name: alb-https-class-params
-    labels:
-      app.kubernetes.io/instance: aws-load-balancer-controller
-      app.kubernetes.io/managed-by: Helm
-      app.kubernetes.io/name: aws-load-balancer-controller
-      app.kubernetes.io/version: "v2.8.1"
-      helm.sh/chart: aws-load-balancer-controller-1.8.1
-    annotations:
-      managed-by: "Terraform"
-      terraform-managed: "true"
+    name: alb  # Ensure this matches the existing IngressClassParams name
   spec:
-    scheme: internet-facing
-    certificateArn: ${module.acm.acm_certificate_arn}
-  YAML
+    certificateArn:
+      - "${module.acm.acm_certificate_arn}"
+  EOT
 
   depends_on = [
     helm_release.aws_load_balancer_controller, # check
