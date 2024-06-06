@@ -78,6 +78,7 @@ module "eks" {
   vpc_id                   = module.vpc.vpc_id
   subnet_ids               = module.vpc.private_subnets
   #control_plane_subnet_ids = module.vpc.intra_subnets
+  # database subnet ids # check
 
   #create_delay_dependencies = [for group in module.eks.eks_managed_node_groups : group.node_group_arn] # check eks-blueprints-addons
 
@@ -94,17 +95,17 @@ module "eks" {
 
   cluster_addons = {
     coredns = {
-      resolve_conflicts_on_update = "OVERWRITE"
+      resolve_conflicts_on_update = "OVERWRITE" #nodeSelector: {}
       resolve_conflicts_on_create = "OVERWRITE"
       addon_version               = "v1.11.1-eksbuild.9"
     }
     kube-proxy = {
-      resolve_conflicts_on_update = "OVERWRITE"
+      resolve_conflicts_on_update = "OVERWRITE" #nodeSelector: {}
       resolve_conflicts_on_create = "OVERWRITE"
       addon_version               = "v1.29.3-eksbuild.2"
     }
     vpc-cni = {
-      resolve_conflicts_on_update = "OVERWRITE"
+      resolve_conflicts_on_update = "OVERWRITE" #nodeSelector: {}
       resolve_conflicts_on_create = "OVERWRITE"
       addon_version               = "v1.18.1-eksbuild.3"
       before_compute              = true # Attempts to create VPC CNI before the associated nodegroups, EC2 bootstrap may still be needed
@@ -117,11 +118,24 @@ module "eks" {
     }
 
     # pending `kubectl annotate sc gp2 storageclass.kubernetes.io/is-default-class: "false"`
+    # https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/charts/aws-ebs-csi-driver/values.yaml
+    #nodeSelector: {}
+    #deploymentAnnotations: {}
     aws-ebs-csi-driver = {
       resolve_conflicts_on_update = "OVERWRITE"
       resolve_conflicts_on_create = "OVERWRITE"
       service_account_role_arn    = module.ebs_csi_driver_irsa.iam_role_arn
       addon_version               = "v1.30.0-eksbuild.1"
+#      configuration_values = jsonencode({
+#        storageClasses = [
+#          {
+#            name = "gp2"
+#            annotations = {
+#              "storageclass.kubernetes.io/is-default-class" = "false"
+#            }
+#          }
+#        ]
+#      })
     }
   }
 
@@ -1297,10 +1311,10 @@ resource "helm_release" "external_dns" {
     value = "--source=service"
   }
 
-#  set {
-#    name  = "extraArgs[1]" # API rate limit optimization
-#    value = "--provider=cloudflare"
-#  }
+  #  set {
+  #    name  = "extraArgs[1]" # API rate limit optimization
+  #    value = "--provider=cloudflare"
+  #  }
 
   set {
     name  = "domainFilters[0]"
@@ -1506,7 +1520,7 @@ resource "kubectl_manifest" "ingress_class_params" {
 
   depends_on = [
     helm_release.aws_load_balancer_controller, # check
-    module.acm # check
+    module.acm                                 # check
   ]
 }
 
@@ -1572,7 +1586,7 @@ resource "cloudflare_record" "validation" {
   name    = element(module.acm.validation_domains, count.index)["resource_record_name"]
   type    = element(module.acm.validation_domains, count.index)["resource_record_type"]
   value   = trimsuffix(element(module.acm.validation_domains, count.index)["resource_record_value"], ".") # ensure no trailing periods that could disrupt DNS record creation
-  ttl     = "Auto" # 60
+  ttl     = "Auto"                                                                                        # 60
   proxied = false
 
   allow_overwrite = true
