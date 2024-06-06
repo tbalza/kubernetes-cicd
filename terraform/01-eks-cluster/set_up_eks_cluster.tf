@@ -1470,6 +1470,15 @@ resource "kubectl_manifest" "ingress_class_params" {
   kind: IngressClass
   metadata:
     name: alb-https
+    labels:
+      app.kubernetes.io/instance: aws-load-balancer-controller
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: aws-load-balancer-controller
+      app.kubernetes.io/version: "v2.8.1"
+      helm.sh/chart: aws-load-balancer-controller-1.8.1
+    annotations:
+      managed-by: "Terraform"
+      terraform-managed: "true"
   spec:
     controller: ingress.k8s.aws/alb
     parameters:
@@ -1481,6 +1490,15 @@ resource "kubectl_manifest" "ingress_class_params" {
   kind: IngressClassParams
   metadata:
     name: alb-https-class-params
+    labels:
+      app.kubernetes.io/instance: aws-load-balancer-controller
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: aws-load-balancer-controller
+      app.kubernetes.io/version: "v2.8.1"
+      helm.sh/chart: aws-load-balancer-controller-1.8.1
+    annotations:
+      managed-by: "Terraform"
+      terraform-managed: "true"
   spec:
     scheme: internet-facing
     certificateArn: ${module.acm.acm_certificate_arn}
