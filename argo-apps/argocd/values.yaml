@@ -28,7 +28,7 @@ server:
   ingress:
     enabled: true # true
     controller: aws # Specifies that this is managed by AWS ALB
-    #hostname: "argocd.tbalza.net" # references/defaults to global: for domain
+    hostname: "argocd.tbalza.net" # references/defaults to global: for domain
     aws:
       serviceType: ClusterIP # <- Used with target-type: ip
     ingressClassName: "alb" # (default `alb`) `alb-https` IngressClassParams set in tf container ACM ARN
@@ -47,7 +47,7 @@ server:
       #cert-manager.io/cluster-issuer: letsencrypt-prod-django # The name of the ClusterIssuer
       external-dns.alpha.kubernetes.io/hostname: argocd.tbalza.net
       ##external-dns.alpha.kubernetes.io/ingress-hostname-source: annotation-only # external-dns controller only creates DNS records for /hostname
-      #alb.ingress.kubernetes.io/certificate-arn: " arn:aws:acm:us-east-1:350206045032:certificate/47561cda-e12f-48cd-a4c5-29a1ca67fcd0"
+      #alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:350206045032:certificate/60dbd336-ad5a-4927-beaf-144b4143af4d"
       # https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/cert_discovery/
       # https://github.com/argoproj/argo-helm/blob/main/charts/argo-cd/README.md
 
