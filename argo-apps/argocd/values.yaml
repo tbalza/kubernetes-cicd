@@ -9,8 +9,8 @@ global:
 server:
   service:
     type: ClusterIP
-  containerPorts:
-    server: 8282
+#  containerPorts:
+#    server: 8282
 #  extraArgs:
 #    - --insecure
 #  extraEnv:
