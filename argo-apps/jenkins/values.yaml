@@ -103,7 +103,7 @@ controller:
     enabled: true
     ingressClassName: "alb" # Ingress class name for using AWS ALB
     annotations:
-      kubernetes.io/ingress.class: "alb"
+      #kubernetes.io/ingress.class: "alb"
       alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
       alb.ingress.kubernetes.io/backend-protocol: "HTTP"
       alb.ingress.kubernetes.io/scheme: "internet-facing" # "internet-facing"
@@ -118,39 +118,10 @@ controller:
       external-dns.alpha.kubernetes.io/hostname: jenkins.tbalza.net
       alb.ingress.kubernetes.io/certificate-arn: " arn:aws:acm:us-east-1:350206045032:certificate/47561cda-e12f-48cd-a4c5-29a1ca67fcd0"
 
-    #hostName: jenkins.tbalza.net
+    hostName: jenkins.tbalza.net
 #    jenkinsUrlProtocol: "https"
 #    jenkinsUrl: "jenkins.tbalza.net"
     apiVersion: "networking.k8s.io/v1" # for newer Kubernetes versions, specify the correct API version
-
-#    paths:
-#      - path: /
-#        pathType: Prefix
-#        backend:
-#          service:
-#            name: jenkins
-#            port:
-#              number: 8080
-#    tls:
-#      - hosts:
-#          - jenkins.tbalza.net
-#    paths:
-#      - pathType: Prefix
-#        path: /
-#        backend:
-#          service:
-#            name: jenkins
-#            port:
-#              number: 8080
-
-    paths:
-      - path: "/"
-        pathType: Prefix
-        backend:
-          service:
-            name: jenkins
-            port:
-              number: 8080
 
   nodeSelector:
     role: ci-cd
