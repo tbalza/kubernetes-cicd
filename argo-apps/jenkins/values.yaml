@@ -114,7 +114,7 @@ controller:
       #alb.ingress.kubernetes.io/group.order: "2"
       #alb.ingress.kubernetes.io/healthcheck-path: "/login"
       #alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
-      #alb.ingress.kubernetes.io/success-codes: "200,302"
+      #alb.ingress.kubernetes.io/success-codes: "200,299"
       #alb.ingress.kubernetes.io/healthcheck-protocol: "GRPC"
       external-dns.alpha.kubernetes.io/hostname: jenkins.tbalza.net
       alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:350206045032:certificate/47561cda-e12f-48cd-a4c5-29a1ca67fcd0

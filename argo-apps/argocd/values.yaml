@@ -26,7 +26,7 @@ server:
 #    - name: ARGOCD_INSECURE
 #      value: "true"
   ingress:
-    enabled: true # true
+    enabled: false # true
     controller: aws # Specifies that this is managed by AWS ALB
     #hostname: "argocd.tbalza.net" # references/defaults to global: for domain
     aws:

@@ -18,6 +18,14 @@ resources:
   - secret-store.yaml # load ECR repo dynamically
   - secret-external.yaml # load ECR repo dynamically
 
+patches:
+- path: ingress.yaml
+  target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: jenkins
+
 #configMapGenerator:
 #- name: custom-config
 #  behavior: create # create(default) replace
