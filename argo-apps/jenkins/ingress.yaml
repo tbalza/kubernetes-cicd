@@ -12,6 +12,7 @@ metadata:
     alb.ingress.kubernetes.io/healthcheck-path: "/login"
     alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
     alb.ingress.kubernetes.io/success-codes: "200"
+    external-dns.alpha.kubernetes.io/hostname: "jenkins.example.com"
 spec:
   ingressClassName: alb
   rules:
@@ -24,4 +25,4 @@ spec:
           service:
             name: jenkins
             port:
-              number: 80
+              number: 8080  # Assuming Jenkins service runs on port 8080

@@ -101,35 +101,35 @@ controller:
 
   serviceType: ClusterIP
   ingress: #insecure . "-noCertificateCheck" . http.sslVerify false . If you are using SSL termination on the ALB, with a self-signed certificate, you need also to build a custom inbound-agent base image (see here) with the CA certificate.
-    enabled: true
-    #ingressClassName: "alb" # Ingress class name for using AWS ALB
-    annotations:
-      kubernetes.io/ingress.class: "alb"
-      #alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
-      #alb.ingress.kubernetes.io/backend-protocol: "HTTP"
-      alb.ingress.kubernetes.io/scheme: "internet-facing" # "internet-facing"
-      alb.ingress.kubernetes.io/target-type: "ip" # ip
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-      alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
-      #alb.ingress.kubernetes.io/group.order: "2"
-      #alb.ingress.kubernetes.io/healthcheck-path: "/login"
-      #alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
-      #alb.ingress.kubernetes.io/success-codes: "200,299"
-      #alb.ingress.kubernetes.io/healthcheck-protocol: "GRPC"
-      external-dns.alpha.kubernetes.io/hostname: jenkins.tbalza.net
-      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:350206045032:certificate/47561cda-e12f-48cd-a4c5-29a1ca67fcd0
-
-    #hostName: jenkins.tbalza.net
-#    jenkinsUrlProtocol: "https"
-#    jenkinsUrl: "jenkins.tbalza.net"
-#    apiVersion: "networking.k8s.io/v1" # for newer Kubernetes versions, specify the correct API version
-#    serviceLabels:
-#      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http" # https
-#      service.beta.kubernetes.io/aws-load-balancer-ssl-cert:
+    enabled: false
+#    #ingressClassName: "alb" # Ingress class name for using AWS ALB
+#    annotations:
+#      kubernetes.io/ingress.class: "alb"
+#      #alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+#      #alb.ingress.kubernetes.io/backend-protocol: "HTTP"
+#      alb.ingress.kubernetes.io/scheme: "internet-facing" # "internet-facing"
+#      alb.ingress.kubernetes.io/target-type: "ip" # ip
+#      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+#      alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
+#      #alb.ingress.kubernetes.io/group.order: "2"
+#      #alb.ingress.kubernetes.io/healthcheck-path: "/login"
+#      #alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
+#      #alb.ingress.kubernetes.io/success-codes: "200,299"
+#      #alb.ingress.kubernetes.io/healthcheck-protocol: "GRPC"
+#      external-dns.alpha.kubernetes.io/hostname: jenkins.tbalza.net
+#      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:350206045032:certificate/47561cda-e12f-48cd-a4c5-29a1ca67fcd0
 #
-    path: /
-    hosts:
-      - jenkins.tbalza.net
+#    #hostName: jenkins.tbalza.net
+##    jenkinsUrlProtocol: "https"
+##    jenkinsUrl: "jenkins.tbalza.net"
+##    apiVersion: "networking.k8s.io/v1" # for newer Kubernetes versions, specify the correct API version
+##    serviceLabels:
+##      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http" # https
+##      service.beta.kubernetes.io/aws-load-balancer-ssl-cert:
+##
+#    path: /
+#    hosts:
+#      - jenkins.tbalza.net
 
   nodeSelector:
     role: ci-cd
