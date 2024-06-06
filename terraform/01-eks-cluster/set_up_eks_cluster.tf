@@ -1472,7 +1472,7 @@ resource "kubectl_manifest" "ingress_class_params" {
     name: alb-https
     labels:
       app.kubernetes.io/instance: aws-load-balancer-controller
-      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/managed-by: Terraform
       app.kubernetes.io/name: aws-load-balancer-controller
       app.kubernetes.io/version: "v2.8.1"
       helm.sh/chart: aws-load-balancer-controller-1.8.1
