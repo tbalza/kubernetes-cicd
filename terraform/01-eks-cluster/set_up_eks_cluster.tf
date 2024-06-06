@@ -1257,7 +1257,7 @@ variable "CFL_API_TOKEN" {
 
 ## Pass CF API token to k8s Secret
 # kubectl create secret generic cloudflare-api-key --from-literal=apiKey=123example -n kube-system
-resource "kubectl_manifest" "cloudflare_api_key" { # maybe chart expects `apiKey` instead of `api-token` (even though token is used?)
+resource "kubectl_manifest" "cloudflare_api_key" { # pending. change name to token for clarity
   yaml_body = <<-YAML
 apiVersion: v1
 kind: Secret
@@ -1301,20 +1301,10 @@ resource "helm_release" "external_dns" {
   #    value = "--cloudflare-dns-records-per-page=5000"
   #  }
 
-  #  set {
-  #    name  = "extraArgs[0]" # API rate limit optimization
-  #    value = "--log-level=debug"
-  #  }
-
   set {
     name  = "extraArgs[0]"
     value = "--source=ingress" # required for ALB
   }
-
-  #  set {
-  #    name  = "extraArgs[1]" # API rate limit optimization
-  #    value = "--provider=cloudflare"
-  #  }
 
   set {
     name  = "domainFilters[0]"
@@ -1478,7 +1468,7 @@ resource "aws_iam_role" "external_dns" {
 # Load Balancer Controller only works with ACM certificates (and cert-manager can't issue ACM certs)
 # IngressClassParams allows the use of static annotation `kubernetes.io/ingress.class: "alb-https"` to auth ACM without having to set dynamic ARN or rely on TLS auto-discovery
 
-resource "kubectl_manifest" "ingress_class_params" {
+resource "kubectl_manifest" "ingress_class_params" { # check # pending
   yaml_body = <<-YAML
   apiVersion: networking.k8s.io/v1
   kind: IngressClass
