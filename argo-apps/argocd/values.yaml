@@ -18,9 +18,9 @@ server:
 #      value: "true"
   ingress:
     enabled: true # true
-    ingressClassName: "alb" # Defines which ingress controller will implement the resource
+    ingressClassName: "alb-https" # (default `alb`) `alb-https` IngressClassParams set in tf container ACM ARN
     annotations:
-      kubernetes.io/ingress.class: "alb" # `alb-https` IngressClassParams set in tf container ACM ARN
+      kubernetes.io/ingress.class: "alb-https" # (default `alb`) `alb-https` IngressClassParams set in tf container ACM ARN
       alb.ingress.kubernetes.io/scheme: "internet-facing" # change to "internal" when made private
       alb.ingress.kubernetes.io/target-type: "ip" # check. target-type:instance/nodeport. NodePort range (30000-32767)
       alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]' # '[{"HTTP": 80}]'
