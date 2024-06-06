@@ -51,6 +51,15 @@ server:
       # https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/cert_discovery/
       # https://github.com/argoproj/argo-helm/blob/main/charts/argo-cd/README.md
 
+##    tls: true
+    tls: # TLS configuration block
+      - hosts:
+          - argocd.tbalza.net
+    path: "/" # /
+    pathType: "Prefix" #"ImplementationSpecific"
+    #hostname: "argocd.tbalza.net" # references global: for domain
+
+
 applicationSet:
   enabled: true
   nodeSelector:
