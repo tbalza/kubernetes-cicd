@@ -1114,25 +1114,25 @@ module "ecr" {
   tags = local.tags
 }
 
-output "repository_name" {
-  description = "Name of the repository"
-  value       = module.ecr.repository_name
-}
-
-output "repository_arn" {
-  description = "Full ARN of the repository"
-  value       = module.ecr.repository_arn
-}
-
-output "repository_registry_id" {
-  description = "The registry ID where the repository was created"
-  value       = module.ecr.repository_registry_id
-}
-
-output "repository_url" {
-  description = "The URL of the repository (in the form `aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName`)"
-  value       = module.ecr.repository_url
-}
+#output "repository_name" {
+#  description = "Name of the repository"
+#  value       = module.ecr.repository_name
+#}
+#
+#output "repository_arn" {
+#  description = "Full ARN of the repository"
+#  value       = module.ecr.repository_arn
+#}
+#
+#output "repository_registry_id" {
+#  description = "The registry ID where the repository was created"
+#  value       = module.ecr.repository_registry_id
+#}
+#
+#output "repository_url" {
+#  description = "The URL of the repository (in the form `aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName`)"
+#  value       = module.ecr.repository_url
+#}
 
 
 ###############################################################################
@@ -1541,7 +1541,7 @@ module "acm" {
   version = "5.0.1"
 
   # ACM cert for subdomains only
-  domain_name = "*.${local.domain}"
+  domain_name = "*.${local.domain}" # "*.${local.domain}" #
   zone_id     = var.CFL_ZONE_ID
 
   validation_method = "DNS"
@@ -1551,9 +1551,10 @@ module "acm" {
   wait_for_validation    = true
   create_route53_records = false
 
-  subject_alternative_names = [
-    "*.${local.domain}",
-  ]
+#  subject_alternative_names = [
+#    "*.${local.domain}", # domain name and subject alternative name should not be repeated
+#    #"argocd.tbalza.net",
+#  ]
 
   tags = {
     Name = local.domain
@@ -1563,6 +1564,16 @@ module "acm" {
     helm_release.aws_load_balancer_controller,
   ]
 
+}
+
+output "distinct_domain_names" {
+  description = "List of distinct domains names used for the validation."
+  value       = module.acm.distinct_domain_names
+}
+
+output "validation_domains" {
+  description = "List of distinct domain validation options. This is useful if subject alternative names contain wildcards."
+  value       = module.acm.validation_domains
 }
 
 ###############################################################################
@@ -1586,7 +1597,7 @@ resource "cloudflare_record" "validation" {
   name    = element(module.acm.validation_domains, count.index)["resource_record_name"]
   type    = element(module.acm.validation_domains, count.index)["resource_record_type"]
   value   = trimsuffix(element(module.acm.validation_domains, count.index)["resource_record_value"], ".") # ensure no trailing periods that could disrupt DNS record creation
-  ttl     = "Auto"                                                                                        # 60
+  ttl     = 60 # 60 # "Auto"
   proxied = false
 
   allow_overwrite = true
