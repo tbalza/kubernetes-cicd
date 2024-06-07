@@ -4,7 +4,7 @@ items:
   kind: Ingress
   metadata:
     annotations:
-      alb.ingress.kubernetes.io/backend-protocol: HTTPS
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
       alb.ingress.kubernetes.io/conditions.argo-cd-argocd-server-grpc: |
         [{"field":"http-header","httpHeaderConfig":{"httpHeaderName": "Content-Type", "values":["application/grpc"]}}]
       alb.ingress.kubernetes.io/group.name: argo-cd-cluster
@@ -31,7 +31,7 @@ items:
       helm.sh/chart: argo-cd-6.7.14
     name: argo-cd-argocd-server
     namespace: argocd
-    resourceVersion: "42769"
+    resourceVersion: "46744"
     uid: 4a3b8979-c92a-4af7-889d-71de1aedb5af
   spec:
     ingressClassName: alb

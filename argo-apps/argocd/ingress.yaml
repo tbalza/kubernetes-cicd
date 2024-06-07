@@ -1,34 +1,49 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: argocd-server-ingress
+  name: argo-cd-argocd-server
+  namespace: argocd
+  labels:
+    app.kubernetes.io/component: server
+    app.kubernetes.io/instance: argo-cd
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: argocd-server
+    app.kubernetes.io/part-of: argocd
+#    app.kubernetes.io/version: v2.10.7
+    argocd.argoproj.io/instance: argocd
+#    helm.sh/chart: argo-cd-6.7.14
   annotations:
-    kubernetes.io/ingress.class: "alb"
-    alb.ingress.kubernetes.io/scheme: "internet-facing"
-    alb.ingress.kubernetes.io/target-type: "ip"
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
-    alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
+    alb.ingress.kubernetes.io/conditions.argo-cd-argocd-server-grpc: |
+      [{"field":"http-header","httpHeaderConfig":{"httpHeaderName": "Content-Type", "values":["application/grpc"]}}]
+    alb.ingress.kubernetes.io/group.name: argo-cd-cluster
     alb.ingress.kubernetes.io/group.order: "1"
-    alb.ingress.kubernetes.io/healthcheck-path: "/healthz"
-    alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
-    alb.ingress.kubernetes.io/success-codes: "200"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod-django"
-    external-dns.alpha.kubernetes.io/hostname: "argocd.tbalza.net"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/target-type: ip
+    external-dns.alpha.kubernetes.io/hostname: argocd.tbalza.net
 spec:
-  ingressClassName: "alb"
+  ingressClassName: alb
   rules:
-  - host: "argocd.tbalza.net"
+  - host: argocd.tbalza.net
     http:
       paths:
-      - path: "/"
-        pathType: "Prefix"
+      - path: /
+        pathType: Prefix
         backend:
           service:
-            name: argocd-server
+            name: argo-cd-argocd-server-grpc
             port:
               number: 80
-  tls:
-  - hosts:
-    - "argocd.tbalza.net"
-    secretName: argocd-server-tls  # This Secret should be created by cert-manager
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argo-cd-argocd-server
+            port:
+              number: 80
+status:
+  loadBalancer:
+    ingress:
+    - hostname: k8s-argocdcluster-5a9eface86-96093700.us-east-1.elb.amazonaws.com
