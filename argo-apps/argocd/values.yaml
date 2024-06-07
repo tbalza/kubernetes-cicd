@@ -43,9 +43,9 @@ server:
       #alb.ingress.kubernetes.io/ssl-redirect: '443'
       alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
       alb.ingress.kubernetes.io/group.order: "1"
-      alb.ingress.kubernetes.io/healthcheck-path: "/healthz"
-      alb.ingress.kubernetes.io/healthcheck-port: "traffic-port" # check
-      alb.ingress.kubernetes.io/success-codes: "200,307" # check # 200
+      #alb.ingress.kubernetes.io/healthcheck-path: "/healthz"
+      #alb.ingress.kubernetes.io/healthcheck-port: "traffic-port" # check
+      #alb.ingress.kubernetes.io/success-codes: "200,307" # check # 200
       external-dns.alpha.kubernetes.io/hostname: argocd.tbalza.net
       ##external-dns.alpha.kubernetes.io/ingress-hostname-source: annotation-only # external-dns controller only creates DNS records for /hostname
       #alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:350206045032:certificate/60dbd336-ad5a-4927-beaf-144b4143af4d" # When certificateArn is specified in the IngressClassParams, the AWS LBC will ignore the certificate ARN specified via annotations
