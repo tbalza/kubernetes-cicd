@@ -31,6 +31,7 @@ server:
     hostname: "argocd.tbalza.net" # references/defaults to global: for domain
     aws:
       serviceType: ClusterIP # <- Used with target-type: ip
+      backendProtocolVersion: GRPC
     ingressClassName: alb # (default `alb`) `alb-https` IngressClassParams set in tf dynamically referencing ACM ARN ### redundant with annotation
     annotations:
 #      kubernetes.io/ingress.class: "alb" # (default `alb`) `alb-https` IngressClassParams set in tf container ACM ARN ### ingressClassName preferred in k8s 1.18+
