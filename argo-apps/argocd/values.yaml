@@ -25,7 +25,7 @@ server:
 #  extraEnv:
 #    - name: ARGOCD_INSECURE
 #      value: "true"
-  ingress:
+  ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
     enabled: true # true
     controller: aws # Specifies that this is managed by AWS ALB
     ingressClassName: alb # (default `alb`) `alb-https` IngressClassParams set in tf dynamically referencing ACM ARN ### redundant with annotation
