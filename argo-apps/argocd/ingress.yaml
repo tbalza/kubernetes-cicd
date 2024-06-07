@@ -3,15 +3,6 @@ kind: Ingress
 metadata:
   name: argo-cd-argocd-server
   namespace: argocd
-  labels:
-    app.kubernetes.io/component: server
-    app.kubernetes.io/instance: argo-cd
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: argocd-server
-    app.kubernetes.io/part-of: argocd
-#    app.kubernetes.io/version: v2.10.7
-    argocd.argoproj.io/instance: argocd
-#    helm.sh/chart: argo-cd-6.7.14
   annotations:
     alb.ingress.kubernetes.io/backend-protocol: HTTP
     alb.ingress.kubernetes.io/conditions.argo-cd-argocd-server-grpc: |
@@ -43,7 +34,3 @@ spec:
             name: argo-cd-argocd-server
             port:
               number: 80
-status:
-  loadBalancer:
-    ingress:
-    - hostname: k8s-argocdcluster-5a9eface86-96093700.us-east-1.elb.amazonaws.com
