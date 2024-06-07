@@ -31,9 +31,9 @@ server:
     hostname: "argocd.tbalza.net" # references/defaults to global: for domain
     aws:
       serviceType: ClusterIP # <- Used with target-type: ip
-    ingressClassName: "alb" # (default `alb`) `alb-https` IngressClassParams set in tf container ACM ARN
+    ingressClassName: alb # (default `alb`) `alb-https` IngressClassParams set in tf dynamically referencing ACM ARN ### redundant with annotation
     annotations:
-      kubernetes.io/ingress.class: "alb" # (default `alb`) `alb-https` IngressClassParams set in tf container ACM ARN
+#      kubernetes.io/ingress.class: "alb" # (default `alb`) `alb-https` IngressClassParams set in tf container ACM ARN ### ingressClassName preferred in k8s 1.18+
       alb.ingress.kubernetes.io/scheme: "internet-facing" # change to "internal" when made private
       alb.ingress.kubernetes.io/backend-protocol: "HTTP" # traffic between the ALB and the pods is over HTTP
       alb.ingress.kubernetes.io/target-type: "ip" # check. target-type:instance/nodeport. NodePort range (30000-32767)
@@ -44,12 +44,12 @@ server:
       alb.ingress.kubernetes.io/healthcheck-path: "/healthz"
       alb.ingress.kubernetes.io/healthcheck-port: "traffic-port" # check
       alb.ingress.kubernetes.io/success-codes: "200,307" # check # 200
-      ###cert-manager.io/cluster-issuer: letsencrypt-prod-django # The name of the ClusterIssuer
       external-dns.alpha.kubernetes.io/hostname: argocd.tbalza.net
       ##external-dns.alpha.kubernetes.io/ingress-hostname-source: annotation-only # external-dns controller only creates DNS records for /hostname
-      #alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:350206045032:certificate/60dbd336-ad5a-4927-beaf-144b4143af4d"
+      #alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:350206045032:certificate/60dbd336-ad5a-4927-beaf-144b4143af4d" # When certificateArn is specified in the IngressClassParams, the AWS LBC will ignore the certificate ARN specified via annotations
       # https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/cert_discovery/
       # https://github.com/argoproj/argo-helm/blob/main/charts/argo-cd/README.md
+      ###cert-manager.io/cluster-issuer: letsencrypt-prod-django # The name of the ClusterIssuer
 
 #    tls: true
 #    tls: # TLS configuration block

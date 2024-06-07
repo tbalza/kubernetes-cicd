@@ -30,6 +30,10 @@ locals {
     #    }
   }
 
+  # argocd "internal" secret, generated randomly and set by default, not related to login passwords, apparently can drift and break the install
+  # kubectl create secret generic argocd-secret --from-literal=server.secretkey=$(openssl rand -base64 32) -n argocd --dry-run=client -o yaml --save-config | kubectl apply -f - secret/argocd-secret configured
+  # might need to be randomly declaratively generated and defined in SSM
+
   tags = {
     Example = local.name
   }
@@ -126,16 +130,16 @@ module "eks" {
       resolve_conflicts_on_create = "OVERWRITE"
       service_account_role_arn    = module.ebs_csi_driver_irsa.iam_role_arn
       addon_version               = "v1.30.0-eksbuild.1"
-#      configuration_values = jsonencode({
-#        storageClasses = [
-#          {
-#            name = "gp2"
-#            annotations = {
-#              "storageclass.kubernetes.io/is-default-class" = "false"
-#            }
-#          }
-#        ]
-#      })
+      #      configuration_values = jsonencode({
+      #        storageClasses = [
+      #          {
+      #            name = "gp2"
+      #            annotations = {
+      #              "storageclass.kubernetes.io/is-default-class" = "false"
+      #            }
+      #          }
+      #        ]
+      #      })
     }
   }
 
@@ -405,19 +409,19 @@ module "eks" {
   # this creates serviceAccounts for each entry (in namespace "default"?)
   access_entries = {
 
-    #    external-dns = {
-    #      principal_arn     = aws_iam_role.external_dns.arn
-    #      kubernetes_groups = []
-    #
-    #      policy_associations = {
-    #        admin_policy = {
-    #          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
-    #          access_scope = {
-    #            type = "cluster" # check
-    #          }
-    #        }
-    #      }
-    #    }
+    external-dns = {
+      principal_arn     = aws_iam_role.external_dns.arn
+      kubernetes_groups = []
+
+      policy_associations = {
+        admin_policy = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
+          access_scope = {
+            type = "cluster" # check
+          }
+        }
+      }
+    }
     #
     #    cert-manager = {
     #      principal_arn     = aws_iam_role.cert_manager.arn
@@ -1262,11 +1266,11 @@ resource "kubectl_manifest" "cloudflare_api_key" { # pending. change name to tok
 apiVersion: v1
 kind: Secret
 metadata:
-  name: cloudflare-api-key
+  name: cloudflare-api-token
   namespace: kube-system
 type: Opaque
 data:
-  apiKey: ${base64encode(var.CFL_API_TOKEN)}
+  apiToken: ${base64encode(var.CFL_API_TOKEN)}
   YAML
 
   depends_on = [
@@ -1291,8 +1295,8 @@ resource "helm_release" "external_dns" {
     - name: CF_API_TOKEN
       valueFrom:
         secretKeyRef:
-          name: cloudflare-api-key
-          key: apiKey
+          name: cloudflare-api-token
+          key: apiToken
     EOF
   ]
 
@@ -1487,7 +1491,6 @@ resource "kubectl_manifest" "ingress_class_params" { # check # pending
   ]
 }
 
-
 ## must be set before tf apply
 # export TF_VAR_CFL_ZONE_ID=123example
 
@@ -1514,9 +1517,9 @@ module "acm" {
   wait_for_validation    = true
   create_route53_records = false
 
-#  subject_alternative_names = [
-#    "*.${local.domain}", # domain name and subject alternative name should not be repeated
-#  ]
+  #  subject_alternative_names = [
+  #    "*.${local.domain}", # domain name and subject alternative name should not be repeated
+  #  ]
 
   tags = {
     Name = local.domain
@@ -1559,7 +1562,7 @@ resource "cloudflare_record" "validation" {
   name    = element(module.acm.validation_domains, count.index)["resource_record_name"]
   type    = element(module.acm.validation_domains, count.index)["resource_record_type"]
   value   = trimsuffix(element(module.acm.validation_domains, count.index)["resource_record_value"], ".") # ensure no trailing periods that could disrupt DNS record creation
-  ttl     = 300 # 60 # "Auto"
+  ttl     = 300                                                                                           # 60 # "Auto"
   proxied = false
 
   allow_overwrite = true
