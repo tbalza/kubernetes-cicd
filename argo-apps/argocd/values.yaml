@@ -26,7 +26,7 @@ server:
 #    - name: ARGOCD_INSECURE
 #      value: "true"
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
-    enabled: true # true
+    enabled: false # true
 #    controller: aws # Specifies that this is managed by AWS ALB
 #    ingressClassName: alb # (default `alb`) `alb-https` IngressClassParams set in tf dynamically referencing ACM ARN ### redundant with annotation
 ##    hostname: "argocd.tbalza.net" # references/defaults to global: for domain
