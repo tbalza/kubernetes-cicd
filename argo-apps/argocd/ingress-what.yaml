@@ -4,25 +4,19 @@ items:
   kind: Ingress
   metadata:
     annotations:
-      alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig":
-        { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
       alb.ingress.kubernetes.io/backend-protocol: HTTP
-      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:350206045032:certificate/60dbd336-ad5a-4927-beaf-144b4143af4d
       alb.ingress.kubernetes.io/conditions.argo-cd-argocd-server-grpc: |
         [{"field":"http-header","httpHeaderConfig":{"httpHeaderName": "Content-Type", "values":["application/grpc"]}}]
       alb.ingress.kubernetes.io/group.name: argo-cd-cluster
       alb.ingress.kubernetes.io/group.order: "1"
-      alb.ingress.kubernetes.io/healthcheck-path: /healthz
-      alb.ingress.kubernetes.io/healthcheck-port: traffic-port
       alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
       alb.ingress.kubernetes.io/scheme: internet-facing
-      alb.ingress.kubernetes.io/success-codes: 200,307
+      alb.ingress.kubernetes.io/ssl-redirect: "443"
       alb.ingress.kubernetes.io/target-type: ip
       external-dns.alpha.kubernetes.io/hostname: argocd.tbalza.net
-      kubernetes.io/ingress.class: alb
       meta.helm.sh/release-name: argo-cd
       meta.helm.sh/release-namespace: argocd
-    creationTimestamp: "2024-06-06T19:18:07Z"
+    creationTimestamp: "2024-06-07T17:56:58Z"
     finalizers:
     - group.ingress.k8s.aws/argo-cd-cluster
     generation: 1
@@ -37,8 +31,8 @@ items:
       helm.sh/chart: argo-cd-6.7.14
     name: argo-cd-argocd-server
     namespace: argocd
-    resourceVersion: "14271"
-    uid: 687097eb-09a3-418c-b663-833b43913668
+    resourceVersion: "29124"
+    uid: 4a3b8979-c92a-4af7-889d-71de1aedb5af
   spec:
     ingressClassName: alb
     rules:
@@ -60,7 +54,9 @@ items:
           path: /
           pathType: Prefix
   status:
-    loadBalancer: {}
+    loadBalancer:
+      ingress:
+      - hostname: k8s-argocdcluster-5a9eface86-96093700.us-east-1.elb.amazonaws.com
 kind: List
 metadata:
   resourceVersion: ""
