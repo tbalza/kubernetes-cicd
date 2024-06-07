@@ -11,7 +11,7 @@ helmCharts:
     namespace: argocd
     includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
     valuesFile: values.yaml
-    #valuesMerge: # specifies how to treat valuesInline with respect to Values. Legal values: ‘merge’, ‘override’, ‘replace’. Defaults to ‘override’.
+    valuesMerge: merge # specifies how to treat valuesInline with respect to Values. Legal values: ‘merge’, ‘override’, ‘replace’. Defaults to ‘override’.
 #    valuesInline:
 #      serviceAccount:
 #        annotations:
