@@ -15,7 +15,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-  - host: jenkins.example.com
+  - host: jenkins.tbalza.com
     http:
       paths:
       - path: /
