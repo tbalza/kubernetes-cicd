@@ -6,6 +6,8 @@ helmCharts:
     repo: https://argoproj.github.io/argo-helm
     version: 6.7.14 # Chart 6.7.14, app v v2.10.7
     releaseName: argo-cd
+#    apiVersions:
+#      - monitoring.coreos.com/v1
     namespace: argocd
     includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
     valuesFile: values.yaml
