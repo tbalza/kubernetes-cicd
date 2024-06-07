@@ -18,13 +18,13 @@ helmCharts:
 resources:
   - applicationset.yaml
 
-patches:
-- path: ingress.yaml
-  target:
-    group: networking.k8s.io
-    version: v1
-    kind: Ingress
-    name: argocd
+#patches:
+#- path: ingress.yaml
+#  target:
+#    group: networking.k8s.io
+#    version: v1
+#    kind: Ingress
+#    name: argocd
 
 #patchesStrategicMerge:
 
