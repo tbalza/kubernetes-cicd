@@ -28,7 +28,6 @@ server:
 ##      kubernetes.io/ingress.class: "alb" # (default `alb`) `alb-https` IngressClassParams set in tf container ACM ARN ### ingressClassName preferred in k8s 1.18+
 #      alb.ingress.kubernetes.io/scheme: "internet-facing" # change to "internal" when made private
 #      alb.ingress.kubernetes.io/backend-protocol: HTTP # traffic between the ALB and the pods is over HTTP # for grpc, HTTPS causes 502 bad gateway
-##      alb.ingress.kubernetes.io/backend-protocol-version: GRPC # ?
 #      alb.ingress.kubernetes.io/target-type: ip # check. target-type:instance/nodeport. NodePort range (30000-32767)
 #      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]' # '[{"HTTP": 80}]' # '[{"HTTP": 80}, {"HTTPS": 443}]' # HTTPS redirect still works with listener only on HTTPS
 #      #alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
