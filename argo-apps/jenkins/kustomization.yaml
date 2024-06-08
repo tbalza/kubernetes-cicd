@@ -12,8 +12,8 @@ helmCharts:
     includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
     valuesMerge: merge # how to treat valuesInline with respect to Values. Legal values: ‘merge’, ‘override’, ‘replace’. Defaults to ‘override’.
     valuesFile: values.yaml
-#    additionalValuesFiles:
-#    - casc-config-h.yaml
+    additionalValuesFiles:
+    - casc-config-h.yaml
 
 resources:
   - secret-store.yaml # load ECR repo dynamically # not really a secret, maybe configmap is more adequate # check
