@@ -78,10 +78,10 @@ controller:
     enabled: true
     defaultConfig: true
     overwriteConfiguration: true # related to PVC. requires pod restart (or sidecars: configAutoReload: )
-#    configScripts:
-#      example-one: |
-#        jenkins:
-#          systemMessage: values.yaml custom message.
+    configScripts:
+      example-one: |
+        jenkins:
+          systemMessage: values.yaml custom message.
 #      example-two: |
 #        jenkins:
 #          tool:
