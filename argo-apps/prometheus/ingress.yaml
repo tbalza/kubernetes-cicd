@@ -25,6 +25,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: kube-prometheus-stack-grafana  # Verify the actual service name in your setup
+            name: kube-prometheus-stack-grafana
             port:
               number: 80
