@@ -4,7 +4,6 @@ metadata:
   name: jenkins
   namespace: jenkins
   annotations:
-    #kubernetes.io/ingress.class: "alb"
     alb.ingress.kubernetes.io/group.name: argo-cd-cluster
     alb.ingress.kubernetes.io/group.order: "2"
     alb.ingress.kubernetes.io/scheme: "internet-facing"
