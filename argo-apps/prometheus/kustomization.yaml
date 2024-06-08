@@ -9,3 +9,6 @@ helmCharts:
     namespace: prometheus
     includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
     valuesFile: values.yaml
+
+resources:
+  - ingress.yaml
