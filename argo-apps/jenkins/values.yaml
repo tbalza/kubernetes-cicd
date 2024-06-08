@@ -117,18 +117,6 @@ controller:
 #      #alb.ingress.kubernetes.io/success-codes: "200,307"
 #      external-dns.alpha.kubernetes.io/hostname: jenkins.tbalza.net
 #      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:350206045032:certificate/47561cda-e12f-48cd-a4c5-29a1ca67fcd0
-#
-#    #hostName: jenkins.tbalza.net
-##    jenkinsUrlProtocol: "https"
-##    jenkinsUrl: "jenkins.tbalza.net"
-##    apiVersion: "networking.k8s.io/v1" # for newer Kubernetes versions, specify the correct API version
-##    serviceLabels:
-##      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http" # https
-##      service.beta.kubernetes.io/aws-load-balancer-ssl-cert:
-##
-#    path: /
-#    hosts:
-#      - jenkins.tbalza.net
 
   nodeSelector:
     role: ci-cd
