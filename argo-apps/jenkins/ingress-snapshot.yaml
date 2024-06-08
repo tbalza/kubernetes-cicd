@@ -15,7 +15,7 @@ items:
       alb.ingress.kubernetes.io/success-codes: 200,307
       alb.ingress.kubernetes.io/target-type: ip
       external-dns.alpha.kubernetes.io/hostname: jenkins.tbalza.net
-    creationTimestamp: "2024-06-07T23:35:49Z"
+    creationTimestamp: "2024-06-07T23:50:40Z"
     finalizers:
     - group.ingress.k8s.aws/argo-cd-cluster
     generation: 1
@@ -23,8 +23,8 @@ items:
       argocd.argoproj.io/instance: jenkins
     name: jenkins
     namespace: jenkins
-    resourceVersion: "25151"
-    uid: b18d8d34-5784-4bc7-8f6e-18ddc16b8a30
+    resourceVersion: "28917"
+    uid: 1ee4034b-ba16-47a5-8b95-df506b83e501
   spec:
     ingressClassName: alb
     rules:
