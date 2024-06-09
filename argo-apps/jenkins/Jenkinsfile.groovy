@@ -7,7 +7,7 @@ pipeline {
     }
     environment {
         AWS_DEFAULT_REGION = 'us-east-1' // Specify the AWS region
-        ECR_URL = "350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production" //"${env.ECR_URL}" // Ensure the ECR URL is correctly defined
+        ECR_URL = "350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production" //"${env.ECR_URL}"
     }
 
     stages {
