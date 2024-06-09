@@ -1,4 +1,6 @@
 controller:
+  nodeSelector:
+    role: ci-cd
 #  # 'name' is a name of an existing secret in the same namespace as jenkins,
 #  # 'keyName' is the name of one of the keys inside the current secret.
 #  # the 'name' and 'keyName' are concatenated with a '-' in between, so for example:
@@ -90,15 +92,6 @@ controller:
 #nameSuffix: -prod
 #You cannot use template calls ({{ .SomeValue }} in kustomize
 
-  persistence:
-    enabled: true #
-    #existingClaim: jenkins
-    # https://github.com/jenkinsci/helm-charts/issues/659
-    # https://github.com/jenkinsci/helm-charts/issues/64
-    storageClass: "gp3" # check # ebs-gp3
-    size: "9Gi" # check (not applying)
-    accessMode: "ReadWriteOnce" # RWO can be mounted as read-write by a single node. ReadWriteMany for HA/efs
-
   serviceType: ClusterIP
   ingress: #insecure . "-noCertificateCheck" . http.sslVerify false . If you are using SSL termination on the ALB, with a self-signed certificate, you need also to build a custom inbound-agent base image (see here) with the CA certificate.
     enabled: false
@@ -118,13 +111,21 @@ controller:
 #      external-dns.alpha.kubernetes.io/hostname: jenkins.tbalza.net
 #      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:350206045032:certificate/47561cda-e12f-48cd-a4c5-29a1ca67fcd0
 
-  nodeSelector:
-    role: ci-cd
+
+persistence:
+  enabled: true #
+  #existingClaim: jenkins
+  # https://github.com/jenkinsci/helm-charts/issues/659
+  # https://github.com/jenkinsci/helm-charts/issues/64
+  storageClass: "gp3" # check # ebs-gp3
+  size: "9Gi" # check (not applying)
+  accessMode: "ReadWriteOnce" # RWO can be mounted as read-write by a single node. ReadWriteMany for HA/efs
 
 agent:
   nodeSelector:
     role: ci-cd
   websocket: true # check
+  directConnection: true
 
 serviceAccount:
   create: true
