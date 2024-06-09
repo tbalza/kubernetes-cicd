@@ -76,12 +76,12 @@ controller:
     - amazon-ecr:1.114.vfd22430621f5
   JCasC:
     enabled: true
-    defaultConfig: true
+    defaultConfig: false
     overwriteConfiguration: true # related to PVC. requires pod restart (or sidecars: configAutoReload: )
-    configScripts:
-      example-one: |
-        jenkins:
-          systemMessage: values.yaml custom message.
+#    configScripts:
+#      example-one: |
+#        jenkins:
+#          systemMessage: values.yaml custom message.
 #      example-two: |
 #        jenkins:
 #          tool:
@@ -97,7 +97,7 @@ controller:
     # https://github.com/jenkinsci/helm-charts/issues/64
     storageClass: "gp3" # check # ebs-gp3
     size: "9Gi" # check (not applying)
-    accessMode: "ReadWriteOnce" # ReadWriteMany for HA/efs
+    accessMode: "ReadWriteOnce" # RWO can be mounted as read-write by a single node. ReadWriteMany for HA/efs
 
   serviceType: ClusterIP
   ingress: #insecure . "-noCertificateCheck" . http.sslVerify false . If you are using SSL termination on the ALB, with a self-signed certificate, you need also to build a custom inbound-agent base image (see here) with the CA certificate.
