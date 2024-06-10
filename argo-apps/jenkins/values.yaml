@@ -154,19 +154,20 @@ agent:
     role: ci-cd
   websocket: true # (websocket and directConnection are mutually exclusive)
   directConnection: false #  (websocket and directConnection are mutually exclusive)
-#  additionalContainers:
-#    - name: kaniko
-#      image:
-#        repository: "gcr.io/kaniko-project/executor:debug" # debug release required for tty
-#        tag: "v1.23.1-debug"
-#      ttyEnabled: true
-#      volumeMounts:
-#        - name: django-app
-#          mountPath: "/django"
-#  volumes:
-#    - name: django-app
-#      persistentVolumeClaim:
-#        claimName: "django-pvc"
+  additionalContainers:
+    - sideContainerName: kaniko
+      image:
+        repository: "gcr.io/kaniko-project/executor:debug" # debug release required for tty
+        tag: "v1.23.1-debug"
+      #ttyEnabled: true
+      mounts:
+        - mountPath: "/django"
+          name: django-app
+  volumes:
+    - type: PVC
+      claimName: "django-pvc"
+      mountPath: "/django"
+      readOnly: false
 
 #  envVars:
 #    - name: AWS_DEFAULT_REGION
