@@ -159,10 +159,10 @@ agent:
       image:
         repository: "gcr.io/kaniko-project/executor:debug" # debug release required for tty
         tag: "v1.23.1-debug"
-      #ttyEnabled: true
-      mounts:
-        - mountPath: "/django"
-          name: django-app
+#      ttyEnabled: true
+#      mounts:
+#        - mountPath: "/django"
+#          name: django-app
   volumes:
     - type: PVC
       claimName: "django-pvc"
