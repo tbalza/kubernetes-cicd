@@ -161,10 +161,9 @@ agent:
         tag: "v1.23.1-debug"
       args: ""
       privileged: false
-#      ttyEnabled: true
-#      mounts:
-#        - mountPath: "/django"
-#          name: django-app
+      mounts:
+        - mountPath: "/django"
+          name: django-app
   volumes:
     - type: PVC
       claimName: django-pvc
