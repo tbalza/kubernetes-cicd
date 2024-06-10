@@ -157,16 +157,16 @@ agent:
   additionalContainers:
     - sideContainerName: kaniko
       image:
-        repository: "gcr.io/kaniko-project/executor:debug" # debug release required for tty
-        tag: "v1.23.1-debug"
+        repository: gcr.io/kaniko-project/executor:debug # debug release required for tty
+        tag: v1.23.1-debug
 #      ttyEnabled: true
 #      mounts:
 #        - mountPath: "/django"
 #          name: django-app
   volumes:
     - type: PVC
-      claimName: "django-pvc"
-      mountPath: "/django"
+      claimName: django-pvc
+      mountPath: /django
       readOnly: false
 
 #  envVars:
