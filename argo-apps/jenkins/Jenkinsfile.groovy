@@ -16,8 +16,8 @@ pipeline {
                 container('kaniko') {
                     script {
                         sh """
-                        /kaniko/executor --dockerfile /argo-apps/django/Dockerfile \
-                                          --context /argo-apps/django/ \
+                        /kaniko/executor --dockerfile /django/Dockerfile \
+                                          --context /django/ \
                                           --destination ${ECR_URL}:${BUILD_NUMBER} \
                                           --cache=true
                         """

@@ -149,23 +149,24 @@ persistence:
 
 agent:
   jenkinsUrl: "https://jenkins.tbalza.net"
+  namespace: jenkins # where agents are launched
   nodeSelector:
     role: ci-cd
   websocket: true # (websocket and directConnection are mutually exclusive)
   directConnection: false #  (websocket and directConnection are mutually exclusive)
-  additionalContainers:
-    - name: kaniko
-      image:
-        repository: "gcr.io/kaniko-project/executor:debug" # debug release required for tty
-        tag: "v1.23.1-debug"
-      ttyEnabled: true
-      volumeMounts:
-        - name: django-app
-          mountPath: "/django"
-  volumes:
-    - name: django-app
-      persistentVolumeClaim:
-        claimName: "django-pvc"
+#  additionalContainers:
+#    - name: kaniko
+#      image:
+#        repository: "gcr.io/kaniko-project/executor:debug" # debug release required for tty
+#        tag: "v1.23.1-debug"
+#      ttyEnabled: true
+#      volumeMounts:
+#        - name: django-app
+#          mountPath: "/django"
+#  volumes:
+#    - name: django-app
+#      persistentVolumeClaim:
+#        claimName: "django-pvc"
 
 #  envVars:
 #    - name: AWS_DEFAULT_REGION
