@@ -1,8 +1,7 @@
 pipeline {
     agent {
         kubernetes {
-            label 'jenkins-jenkins-agent'
-            defaultContainer 'jnlp'
+            inheritFrom 'default'
         }
     }
     environment {

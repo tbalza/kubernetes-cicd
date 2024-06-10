@@ -148,6 +148,8 @@ persistence:
 #  #    readOnly: true
 
 agent:
+  podName: default
+  customJenkinsLabels: default
   #jenkinsUrl: "https://jenkins.tbalza.net"
   namespace: jenkins # where agents are launched
   nodeSelector:
@@ -159,16 +161,18 @@ agent:
       image:
         repository: "gcr.io/kaniko-project/executor:debug" # debug release required for tty
         tag: "v1.23.1-debug"
-      args: ""
+      command: "sleep"
+      args: "9999999"
       privileged: false
-      mounts:
-        - mountPath: "/django"
-          name: django-app
+#      mounts:
+#        - mountPath: "/django"
+#          name: django-app
   volumes:
     - type: PVC
       claimName: django-pvc
       mountPath: /django
       readOnly: false
+  podRetention: "Always" # Always, Never, OnFailure # Controls how agent pods are retained after the Jenkins build completes `Always` for testing out kaniko container and PVC creation
 
 #  envVars:
 #    - name: AWS_DEFAULT_REGION

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+spec:
+  initContainers:
+  - name: kaniko-init
+    image: gcr.io/kaniko-project/executor:latest
+    args: ["--context", "/workspace", "--dockerfile", "/workspace/Dockerfile", "--destination", "myregistry.com/myuser/myapp:latest"]
+    volumeMounts:
+    - name: kaniko-workspace
+      mountPath: /workspace
+  containers:
+  - name: myapp-container
+    image: myregistry.com/myuser/myapp:latest
+    // Other container configurations
+  volumes:
+  - name: kaniko-workspace
+    emptyDir: {}
