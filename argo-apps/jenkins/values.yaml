@@ -148,7 +148,7 @@ persistence:
 #  #    readOnly: true
 
 agent:
-  jenkinsUrl: "https://jenkins.tbalza.net"
+  #jenkinsUrl: "https://jenkins.tbalza.net"
   namespace: jenkins # where agents are launched
   nodeSelector:
     role: ci-cd
