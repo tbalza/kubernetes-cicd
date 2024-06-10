@@ -122,12 +122,12 @@ controller:
 
 persistence:
   enabled: true #
-  #existingClaim: jenkins
-  # https://github.com/jenkinsci/helm-charts/issues/659
-  # https://github.com/jenkinsci/helm-charts/issues/64
   storageClass: "gp3"
   size: "9Gi"
   accessMode: "ReadWriteOnce" # RWO can be mounted as read-write by a single node. ReadWriteMany for HA/efs
+  #existingClaim: jenkins
+  # https://github.com/jenkinsci/helm-charts/issues/659
+  # https://github.com/jenkinsci/helm-charts/issues/64
   # ref: https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/
   # -- Existing data source to clone PVC from
 #  dataSource: {}
@@ -148,33 +148,30 @@ persistence:
 #  #    readOnly: true
 
 agent:
+  jenkinsUrl: "https://jenkins.tbalza.net"
   nodeSelector:
     role: ci-cd
   websocket: true # (websocket and directConnection are mutually exclusive)
   directConnection: false #  (websocket and directConnection are mutually exclusive)
-  podTemplates: # kaniko debug image is because it allows shell access inside container needed by jenkins
-    kaniko: |
-      - name: kaniko
-        label: kaniko
-        serviceAccount: jenkins
-        containers:
-          - name: kaniko
-            image: gcr.io/kaniko-project/executor:v1.23.1-debug
-            command: "sh -c"
-            args: "cat"
-            ttyEnabled: true
-            privileged: false
-          - name: jnlp
-            image: jenkins/inbound-agent:3248.v65ecb_254c298
-            command: "jenkins-agent"
-            args: ""
-            ttyEnabled: true
-            privileged: false
-        volumes:
-          - secretVolume:
-              secretName: kaniko-secret
-              mountPath: "/kaniko/.docker"
-              defaultMode: "400"
+  additionalContainers:
+    - name: kaniko
+      image:
+        repository: "gcr.io/kaniko-project/executor:debug" # debug release required for tty
+        tag: "v1.23.1-debug"
+      ttyEnabled: true
+      volumeMounts:
+        - name: django-app
+          mountPath: "/django"
+  volumes:
+    - name: django-app
+      persistentVolumeClaim:
+        claimName: "django-pvc"
+
+#  envVars:
+#    - name: AWS_DEFAULT_REGION
+#      value: "us-east-1"
+#    - name: ECR_URL
+#      value: "350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
 
 # Direct Connection mode agents will not be able to reconnect to a restarted controller if a Random 'TCP port for inbound agents' is configured!
 
