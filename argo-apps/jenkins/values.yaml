@@ -165,19 +165,19 @@ agent:
       image:
         repository: "gcr.io/kaniko-project/executor:debug" # debug release required for tty
         tag: "v1.23.1-debug"
-      command: "sleep"
-      args: "9999999"
+      command: ""
+      args: ""
       privileged: false
       ttyEnabled: true
-      mounts:
-        - mountPath: "/django"
-          name: django-app
-  volumes:
-    - type: PVC # @deprecated Use {@link GenericEphemeralVolume} instead. Implements a dynamic PVC volume, that is created before the agent pod is created, and terminated afterwards.
-      claimName: django-pvc
-      mountPath: /django
-      readOnly: false
-  podRetention: "Never" # Always, Never, OnFailure # Controls how agent pods are retained after the Jenkins build completes `Always` for testing out kaniko container and PVC creation
+#      mounts:
+#        - mountPath: "/django"
+#          name: django-app
+#  volumes:
+#    - type: PVC # @deprecated Use {@link GenericEphemeralVolume} instead. Implements a dynamic PVC volume, that is created before the agent pod is created, and terminated afterwards.
+#      claimName: django-pvc
+#      mountPath: /django
+#      readOnly: false
+#  podRetention: "Never" # Always, Never, OnFailure # Controls how agent pods are retained after the Jenkins build completes `Always` for testing out kaniko container and PVC creation
 
 
 #  envVars:
