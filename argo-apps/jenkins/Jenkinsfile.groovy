@@ -22,8 +22,8 @@ pipeline {
                 container('kaniko') {
                     script {
                         sh """
-                        /kaniko/executor --dockerfile /home/jenkins/agent/workspace/sample-two/django/Dockerfile \
-                                          --context /home/jenkins/agent/workspace/sample-two/django/ \
+                        /kaniko/executor --dockerfile /home/jenkins/agent/workspace/build-django/django/Dockerfile \
+                                          --context /home/jenkins/agent/workspace/build-django/django/ \
                                           --destination ${ECR_URL}:${BUILD_NUMBER} \
                                           --cache=true
                         """
