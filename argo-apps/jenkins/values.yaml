@@ -42,8 +42,25 @@ controller:
   probes: # Startup probe failed: Get "http://10.0.8.143:8080/login": dial tcp 10.0.8.143:8080: connect: connection refused
     startupProbe:
       failureThreshold: 12 # -- Set the failure threshold for the startup probe
+      httpGet:
+        port: 8080
       periodSeconds: 10 # -- Set the time interval between two startup probes executions in seconds
       timeoutSeconds: 60 # -- Set the timeout for the startup probe in seconds
+      initialDelaySeconds: 20
+    livenessProbe:
+      failureThreshold: 12 # -- Set the failure threshold for the startup probe
+      httpGet:
+        port: 8080
+      periodSeconds: 10 # -- Set the time interval between two startup probes executions in seconds
+      timeoutSeconds: 60 # -- Set the timeout for the startup probe in seconds
+      initialDelaySeconds: 20
+    readinessProbe:
+      failureThreshold: 12 # -- Set the failure threshold for the startup probe
+      httpGet:
+        port: 8080
+      periodSeconds: 10 # -- Set the time interval between two startup probes executions in seconds
+      timeoutSeconds: 60 # -- Set the timeout for the startup probe in seconds
+      initialDelaySeconds: 20
   sidecars:
     configAutoReload:
       enabled: false # require pod restart for config change. false allows to view current temporary jcasc
@@ -156,19 +173,20 @@ agent:
   TTYEnabled: true
   namespace: jenkins # where agents are launched
   privileged: false # Agent privileged container # default: false
-  nodeSelector:
-    role: ci-cd
+#  nodeSelector: # might not be related to ec2 instance, and break agent connetions
+#    role: ci-cd
   websocket: true # (websocket and directConnection are mutually exclusive)
   directConnection: false #  (websocket and directConnection are mutually exclusive)
   additionalContainers:
     - sideContainerName: "kaniko"
       image:
-        repository: "gcr.io/kaniko-project/executor:debug" # debug release required for tty
+        repository: "gcr.io/kaniko-project/executor" # debug release required for tty
         tag: "v1.23.1-debug"
       command: ""
       args: ""
       privileged: false
       ttyEnabled: true
+
 #      mounts:
 #        - mountPath: "/django"
 #          name: django-app
@@ -200,6 +218,6 @@ serviceAccount:
 
 serviceAccountAgent:
   create: false
-  name: jenkins-agent
+  name: jenkins
   annotations:
     eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/JenkinsRole"
