@@ -201,10 +201,6 @@ agent:
        requestsSize: 5Gi
        storageClassName: gp3
 
-  workspaceVolume:
-     - type: EmptyDir
-       memory: false
-
   podRetention: "Always" # Always, Never, OnFailure # Controls how agent pods are retained after the Jenkins build completes `Always` for testing out kaniko container and PVC creation
 
 
