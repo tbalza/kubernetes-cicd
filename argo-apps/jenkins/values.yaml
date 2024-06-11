@@ -1,11 +1,11 @@
 controller:
   # -- Map of groovy init scripts to be executed during Jenkins controller start
-  initScripts:
-    runJenkinsfileDsl: |-
-      def scriptPath = '/var/jenkins_home/groovy_scripts/Jenkinsfile.groovy'
-      def dslScript = new File(scriptPath).text
-      // Load and run the DSL script
-      new javaposse.jobdsl.dsl.DslScriptLoader().runScript(dslScript)
+#  initScripts:
+#    runJenkinsfileDsl: |-
+#      def scriptPath = '/var/jenkins_home/groovy_scripts/Jenkinsfile.groovy'
+#      def dslScript = new File(scriptPath).text
+#      // Load and run the DSL script
+#      new javaposse.jobdsl.dsl.DslScriptLoader().runScript(dslScript)
 
   # -- Name of the existing ConfigMap that contains init scripts
   initConfigMap:
@@ -120,6 +120,17 @@ controller:
       example-one: |
         jenkins:
           systemMessage: values.yaml custom message.
+      job-dsl: |
+        jobs:
+          - script: >
+              pipelineJob('django-build-and-push') {
+                definition {
+                  cps {
+                    script(readFileFromWorkspace('/var/jenkins_home/groovy_scripts/Jenkinsfile.groovy'))
+                    sandbox()
+                  }
+                }
+              }
 #      example-two: |
 #        jenkins:
 #          tool:
