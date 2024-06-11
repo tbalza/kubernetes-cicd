@@ -1,23 +1,7 @@
 pipeline {
     agent {
         kubernetes {
-            yaml '''
-            apiVersion: v1
-            kind: Pod
-            spec:
-              containers:
-                name: kaniko
-                image: gcr.io/kaniko-project/executor:debug:v1.23.1-debug
-                ttyEnabled: true
-                volumeMounts:
-                - name: django-app
-                  mountPath: "/django"
-              restartPolicy: Never
-              volumes:
-              - name: django-app
-                persistentVolumeClaim:
-                  claimName: "django-pvc"
-            '''
+            inheritFrom 'default'
         }
     }
     environment {
