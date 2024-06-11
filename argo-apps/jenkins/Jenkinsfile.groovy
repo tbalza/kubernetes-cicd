@@ -4,11 +4,9 @@ pipeline {
             yaml '''
             apiVersion: v1
             kind: Pod
-            metadata:
-                name: kaniko
             spec:
               containers:
-              - name: kaniko
+                name: kaniko
                 image: gcr.io/kaniko-project/executor:debug:v1.23.1-debug
                 ttyEnabled: true
                 volumeMounts:
