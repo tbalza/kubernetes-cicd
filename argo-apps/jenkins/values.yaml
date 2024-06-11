@@ -195,15 +195,15 @@ agent:
 #        - mountPath: "/django"
 #          name: "django-volume"
 
-  volumes:
+#  volumes:
 #     - type: EphemeralVolume
 #       mountPath: /django
 #       accessModes: ReadWriteOnce
 #       requestsSize: 5Gi
 #       storageClassName: gp3
-     - type: EmptyDir
-       mountPath: /home/jenkins/agent
-       memory: false
+#     - type: EmptyDir
+#       mountPath: /home/jenkins/agent
+#       memory: false
 
   podRetention: "Always" # Always, Never, OnFailure # Controls how agent pods are retained after the Jenkins build completes `Always` for testing out kaniko container and PVC creation
 
