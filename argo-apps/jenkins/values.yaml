@@ -187,8 +187,8 @@ agent:
       image:
         repository: "gcr.io/kaniko-project/executor" # debug release required for tty
         tag: "v1.23.1-debug"
-      command: ""
-      args: ""
+      command: "sleep" # required
+      args: "9999999" # required
       privileged: false
       ttyEnabled: true
 #      mounts:
