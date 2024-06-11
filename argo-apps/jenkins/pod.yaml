@@ -1,18 +1,28 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: myapp-pod
+ name: kaniko
 spec:
-  initContainers:
-  - name: kaniko-init
-    image: gcr.io/kaniko-project/executor:latest
-    args: ["--context", "/workspace", "--dockerfile", "/workspace/Dockerfile", "--destination", "myregistry.com/myuser/myapp:latest"]
-    volumeMounts:
-    - name: kaniko-workspace
-      mountPath: /workspace
-  containers:
-  - name: myapp-container
-    image: myregistry.com/myuser/myapp:latest
-  volumes:
-  - name: kaniko-workspace
-    emptyDir: {}
+ containers:
+ - name: jnlp
+   workingDir: /home/jenkins
+ - name: kaniko
+   workingDir: /home/jenkins
+   image: gcr.io/kaniko-project/executor:debug
+   imagePullPolicy: Always
+   command:
+   - /busybox/cat
+   tty: true
+   volumeMounts:
+   - name: docker-config
+     mountPath: /kaniko/.docker/
+   - name: aws-secret
+     mountPath: /root/.aws/
+ restartPolicy: Never
+      volumes:
+         - name: docker-config
+           configMap:
+             name: docker-config
+         - name: aws-secret
+           secret:
+             secretName: aws-secret

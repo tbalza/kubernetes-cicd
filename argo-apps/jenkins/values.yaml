@@ -151,6 +151,8 @@ agent:
   podName: default
   customJenkinsLabels: default
   #jenkinsUrl: "https://jenkins.tbalza.net" ##
+  workingDir: "/home/jenkins/agent" # default
+  nodeUsageMode: "NORMAL" # default
   namespace: jenkins # where agents are launched
   nodeSelector:
     role: ci-cd
@@ -168,7 +170,7 @@ agent:
 #        - mountPath: "/django"
 #          name: django-app
   volumes:
-    - type: PVC
+    - type: PVC # @deprecated Use {@link GenericEphemeralVolume} instead. Implements a dynamic PVC volume, that is created before the agent pod is created, and terminated afterwards.
       claimName: django-pvc
       mountPath: /django
       readOnly: false
