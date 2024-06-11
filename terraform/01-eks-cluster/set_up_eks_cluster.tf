@@ -1093,7 +1093,7 @@ module "ecr" {
 
   repository_name = local.name
 
-  repository_read_write_access_arns = [aws_iam_role.jenkins.arn]
+  repository_read_write_access_arns = [aws_iam_role.jenkins.arn] # pending . not attaching policy
   create_lifecycle_policy           = true
   repository_lifecycle_policy = jsonencode({
     rules = [
@@ -1117,6 +1117,44 @@ module "ecr" {
 
   tags = local.tags
 }
+
+
+resource "aws_iam_policy" "jenkins_ecr" {
+  name        = "jenkinsECRPolicy"
+  path        = "/"
+  description = "Allows Jenkins to push and pull images from ECR"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect    = "Allow"
+        Action    = [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:GetRepositoryPolicy",
+          "ecr:DescribeRepositories",
+          "ecr:ListImages",
+          "ecr:DescribeImages",
+          "ecr:BatchGetImage",
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload",
+          "ecr:PutImage"
+        ]
+        Resource  = "*"
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "jenkins_ecr_attach" {
+  role       = aws_iam_role.jenkins.name  # Assumes `aws_iam_role.jenkins` is defined elsewhere in your Terraform code
+  policy_arn = aws_iam_policy.jenkins_ecr.arn
+}
+
+
 
 output "repository_name" {
   description = "Name of the repository"

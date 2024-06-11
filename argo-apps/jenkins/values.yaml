@@ -205,7 +205,7 @@ agent:
 #       mountPath: /home/jenkins/agent
 #       memory: false
 
-  podRetention: "Always" # Always, Never, OnFailure # Controls how agent pods are retained after the Jenkins build completes `Always` for testing out kaniko container and PVC creation
+  #podRetention: "Always" # Always, Never, OnFailure # Controls how agent pods are retained after the Jenkins build completes `Always` for testing out kaniko container and PVC creation
 
 
 #  envVars:
