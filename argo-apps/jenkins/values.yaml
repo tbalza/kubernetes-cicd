@@ -1,9 +1,11 @@
 controller:
   # -- Map of groovy init scripts to be executed during Jenkins controller start
-  initScripts: { }
-  #  test: |-
-  #    print 'adding global pipeline libraries, register properties, bootstrap jobs...'
-
+  initScripts:
+    runJenkinsfileDsl: |-
+      def scriptPath = '/var/jenkins_home/groovy_scripts/Jenkinsfile.groovy'
+      def dslScript = new File(scriptPath).text
+      // Load and run the DSL script
+      new javaposse.jobdsl.dsl.DslScriptLoader().runScript(dslScript)
 
   # -- Name of the existing ConfigMap that contains init scripts
   initConfigMap:
@@ -165,12 +167,12 @@ persistence:
   # ref: https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/
   # -- Existing data source to clone PVC from
   volumes:
-  - name: jenkins-groovy-scripts
+  - name: jenkins-groovy-scripts # arbitrary name
     configMap:
-      name: jenkins-scripts  # This should match the generated ConfigMap
+      name: jenkins-scripts  # This should match the generated ConfigMap (kustomization.yaml)
   mounts:
   - mountPath: /var/jenkins_home/groovy_scripts
-    name: jenkins-groovy-scripts
+    name: jenkins-groovy-scripts # arbitrary name
     readOnly: true
 
 agent:

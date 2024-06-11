@@ -23,4 +23,4 @@ resources:
 configMapGenerator:
 - name: jenkins-scripts
   files:
-  - Jenkinsfile.groovy
+  - Jenkinsfile.groovy # SCM Sync Configuration Plugin, which can help version control Jenkins job configurations.
