@@ -149,7 +149,6 @@ persistence:
 
 agent:
   podName: default
-  customJenkinsLabels: default
   #jenkinsUrl: "https://jenkins.tbalza.net" ##
   workingDir: "/home/jenkins/agent" # default
   nodeUsageMode: "NORMAL" # default
