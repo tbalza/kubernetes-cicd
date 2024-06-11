@@ -494,6 +494,20 @@ module "eks" {
       }
     }
 
+    django = {
+      principal_arn     = aws_iam_role.django.arn
+      kubernetes_groups = []
+
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
+          access_scope = {
+            type = "cluster" # check
+          }
+        }
+      }
+    }
+
 
   }
 }
@@ -563,6 +577,36 @@ resource "aws_iam_role" "jenkins" {
         Condition = {
           StringEquals = {
             "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:jenkins:jenkins"
+          }
+        }
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role" "django" {
+  name = "DjangoRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = "sts:AssumeRole",
+        Principal = {
+          Service = "eks.amazonaws.com"
+        },
+      },
+      # External Secrets Operator reqs (jwt auth)
+      {
+        Effect = "Allow",
+        Action = "sts:AssumeRoleWithWebIdentity",
+        Principal = {
+          Federated = module.eks.oidc_provider_arn
+        },
+        Condition = {
+          StringEquals = {
+            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:django:django"
           }
         }
       },
