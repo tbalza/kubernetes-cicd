@@ -120,17 +120,14 @@ controller:
       example-one: |
         jenkins:
           systemMessage: values.yaml custom message.
-      job-dsl: |
-        jobs:
-          - script: >
-              pipelineJob('django-build-and-push') {
-                definition {
-                  cps {
-                    script(readFileFromWorkspace('/var/jenkins_home/groovy_scripts/Jenkinsfile.groovy'))
-                    sandbox()
-                  }
-                }
-              }
+      runJenkinsfileDsl: |-
+        def scriptPath = '/var/jenkins_home/groovy_scripts/Jenkinsfile.groovy'
+        def file = new File(scriptPath)
+        if (file.exists()) {
+          println(file.text)
+        } else {
+          println("File not found.")
+        }
 #      example-two: |
 #        jenkins:
 #          tool:
