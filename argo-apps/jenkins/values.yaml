@@ -1,4 +1,18 @@
 controller:
+  # -- Map of groovy init scripts to be executed during Jenkins controller start
+  initScripts: { }
+  #  test: |-
+  #    print 'adding global pipeline libraries, register properties, bootstrap jobs...'
+
+
+  # -- Name of the existing ConfigMap that contains init scripts
+  initConfigMap:
+
+  # -- Jenkins controller custom labels for the StatefulSet
+  statefulSetLabels: {}
+  #   foo: bar
+  #   bar: foo
+
   nodeSelector:
     role: ci-cd
 #  # 'name' is a name of an existing secret in the same namespace as jenkins,
@@ -150,22 +164,14 @@ persistence:
   # https://github.com/jenkinsci/helm-charts/issues/64
   # ref: https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/
   # -- Existing data source to clone PVC from
-#  dataSource: {}
-#  #   name: PVC-NAME
-#  #   kind: PersistentVolumeClaim
-#
-#  # -- SubPath for jenkins-home mount
-#  subPath:
-#  # -- Additional volumes
-#  volumes: []
-#  #  - name: nothing
-#  #    emptyDir: {}
-#
-#  # -- Additional mounts
-#  mounts: []
-#  #  - mountPath: /var/nothing
-#  #    name: nothing
-#  #    readOnly: true
+  volumes:
+  - name: jenkins-groovy-scripts
+    configMap:
+      name: jenkins-scripts  # This should match the generated ConfigMap name
+  mounts:
+  - name: jenkins-groovy-scripts
+    mountPath: /var/jenkins_home/groovy_scripts
+    readOnly: true
 
 agent:
   podName: default # default # Agent Pod base name
@@ -191,9 +197,6 @@ agent:
       args: "9999999" # required
       privileged: false
       ttyEnabled: true
-#      mounts:
-#        - mountPath: "/django"
-#          name: "django-volume"
 
 #  volumes:
 #     - type: EphemeralVolume
