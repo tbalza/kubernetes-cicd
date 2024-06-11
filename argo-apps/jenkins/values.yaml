@@ -39,7 +39,7 @@ controller:
 #println "Configuring Jenkins during startup..."
 #jenkins.model.Jenkins.instance.securityRealm = new hudson.security.LDAPSecurityRealm(...)
 #jenkins.model.Jenkins.instance.save()
-  probes:
+  probes: # Startup probe failed: Get "http://10.0.8.143:8080/login": dial tcp 10.0.8.143:8080: connect: connection refused
     startupProbe:
       failureThreshold: 12 # -- Set the failure threshold for the startup probe
       periodSeconds: 10 # -- Set the time interval between two startup probes executions in seconds
@@ -148,32 +148,33 @@ persistence:
 #  #    readOnly: true
 
 agent:
-  podName: default
+  podName: default # default
   #jenkinsUrl: "https://jenkins.tbalza.net" ##
   workingDir: "/home/jenkins/agent" # default
   nodeUsageMode: "NORMAL" # default
   namespace: jenkins # where agents are launched
-  nodeSelector:
-    role: ci-cd
+#  nodeSelector: # this might not need to be the ec2 nodegroup
+#    role: ci-cd
   websocket: true # (websocket and directConnection are mutually exclusive)
   directConnection: false #  (websocket and directConnection are mutually exclusive)
-  additionalContainers:
-    - sideContainerName: "kaniko"
-      image:
-        repository: "gcr.io/kaniko-project/executor:debug" # debug release required for tty
-        tag: "v1.23.1-debug"
-      command: "sleep"
-      args: "9999999"
-      privileged: false
+#  additionalContainers:
+#    - sideContainerName: "kaniko"
+#      image:
+#        repository: "gcr.io/kaniko-project/executor:debug" # debug release required for tty
+#        tag: "v1.23.1-debug"
+#      command: "sleep"
+#      args: "9999999"
+#      privileged: false
+#      ttyEnabled: true
 #      mounts:
 #        - mountPath: "/django"
 #          name: django-app
-  volumes:
-    - type: PVC # @deprecated Use {@link GenericEphemeralVolume} instead. Implements a dynamic PVC volume, that is created before the agent pod is created, and terminated afterwards.
-      claimName: django-pvc
-      mountPath: /django
-      readOnly: false
-  podRetention: "Always" # Always, Never, OnFailure # Controls how agent pods are retained after the Jenkins build completes `Always` for testing out kaniko container and PVC creation
+#  volumes:
+#    - type: PVC # @deprecated Use {@link GenericEphemeralVolume} instead. Implements a dynamic PVC volume, that is created before the agent pod is created, and terminated afterwards.
+#      claimName: django-pvc
+#      mountPath: /django
+#      readOnly: false
+#  podRetention: "Never" # Always, Never, OnFailure # Controls how agent pods are retained after the Jenkins build completes `Always` for testing out kaniko container and PVC creation
 
 #  envVars:
 #    - name: AWS_DEFAULT_REGION
