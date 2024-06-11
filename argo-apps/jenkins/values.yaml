@@ -44,7 +44,6 @@ controller:
       failureThreshold: 12 # -- Set the failure threshold for the startup probe
       httpGet:
         port: 8080
-        scheme: TCP
         #path: /login
       periodSeconds: 10 # -- Set the time interval between two startup probes executions in seconds
       timeoutSeconds: 60 # -- Set the timeout for the startup probe in seconds
