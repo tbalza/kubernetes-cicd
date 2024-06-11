@@ -8,7 +8,7 @@ controller:
       failureThreshold: 12 # -- Set the failure threshold for the startup probe
       httpGet:
         #path: '{{ default "" .Values.controller.jenkinsUriPrefix }}/login' # default
-        path: 'http://jenkins.jenkins.svc.cluster.local/login'
+        #path: 'http://jenkins.jenkins.svc.cluster.local/login'
         port: 8080
       periodSeconds: 10 # -- Set the time interval between two startup probes executions in seconds
       timeoutSeconds: 60 # -- Set the timeout for the startup probe in seconds
