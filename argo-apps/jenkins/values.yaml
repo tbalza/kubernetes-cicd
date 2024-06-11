@@ -44,6 +44,8 @@ controller:
       failureThreshold: 12 # -- Set the failure threshold for the startup probe
       httpGet:
         port: 8080
+        scheme: TCP
+        #path: /login
       periodSeconds: 10 # -- Set the time interval between two startup probes executions in seconds
       timeoutSeconds: 60 # -- Set the timeout for the startup probe in seconds
       initialDelaySeconds: 20
@@ -166,6 +168,7 @@ persistence:
 
 agent:
   podName: default # default # Agent Pod base name
+  args: "" # leave blank as kubernetes plugin provides these as env variables
   defaultsProviderTemplate: "" # default: blank # The name of the pod template to use for providing default values
   #jenkinsUrl: "https://jenkins.tbalza.net" ##
   workingDir: "/home/jenkins/agent" # default
@@ -218,6 +221,6 @@ serviceAccount:
 
 serviceAccountAgent:
   create: false
-  name: jenkins
+  name: jenkins # necessary for agent pod to connect to controller
   annotations:
     eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/JenkinsRole"
