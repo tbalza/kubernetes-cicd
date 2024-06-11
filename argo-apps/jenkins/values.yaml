@@ -190,9 +190,9 @@ agent:
       args: ""
       privileged: false
       ttyEnabled: true
-      mounts:
-        - mountPath: "/django"
-          name: "django-volume"
+#      mounts:
+#        - mountPath: "/django"
+#          name: "django-volume"
 
   volumes:
     - type: EphemeralVolume
@@ -202,8 +202,8 @@ agent:
       storageClassName: gp3
 
   workspaceVolume:
-   - type: EmptyDir
-     memory: false
+    - type: EmptyDir
+      memory: false
 
   podRetention: "Always" # Always, Never, OnFailure # Controls how agent pods are retained after the Jenkins build completes `Always` for testing out kaniko container and PVC creation
 
