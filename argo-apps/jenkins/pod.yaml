@@ -13,7 +13,6 @@ spec:
   containers:
   - name: myapp-container
     image: myregistry.com/myuser/myapp:latest
-    // Other container configurations
   volumes:
   - name: kaniko-workspace
     emptyDir: {}
