@@ -167,10 +167,10 @@ persistence:
   volumes:
   - name: jenkins-groovy-scripts
     configMap:
-      name: jenkins-scripts  # This should match the generated ConfigMap name
+      name: jenkins-scripts  # This should match the generated ConfigMap
   mounts:
-  - name: jenkins-groovy-scripts
-    mountPath: /var/jenkins_home/groovy_scripts
+  - mountPath: /var/jenkins_home/groovy_scripts
+    name: jenkins-groovy-scripts
     readOnly: true
 
 agent:

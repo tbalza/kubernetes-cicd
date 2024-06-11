@@ -21,6 +21,6 @@ resources:
   - ingress.yaml
 
 configMapGenerator:
-- name: jenkins-groovy-scripts
+- name: jenkins-scripts
   files:
   - Jenkinsfile.groovy
