@@ -1,60 +1,7 @@
 controller:
-  # -- Map of groovy init scripts to be executed during Jenkins controller start
-#  initScripts:
-#    runJenkinsfileDsl: |-
-#      def scriptPath = '/var/jenkins_home/groovy_scripts/Jenkinsfile.groovy'
-#      def dslScript = new File(scriptPath).text
-#      // Load and run the DSL script
-#      new javaposse.jobdsl.dsl.DslScriptLoader().runScript(dslScript)
-
-  # -- Name of the existing ConfigMap that contains init scripts
-  initConfigMap:
-
-  # -- Jenkins controller custom labels for the StatefulSet
-  statefulSetLabels: {}
-  #   foo: bar
-  #   bar: foo
-
   nodeSelector:
     role: ci-cd
-#  # 'name' is a name of an existing secret in the same namespace as jenkins,
-#  # 'keyName' is the name of one of the keys inside the current secret.
-#  # the 'name' and 'keyName' are concatenated with a '-' in between, so for example:
-#  # an existing secret "secret-credentials" and a key inside it named "github-password" should be used in JCasC as ${secret-credentials-github-password}
-#  # 'name' and 'keyName' must be lowercase RFC 1123 label must consist of lower case alphanumeric characters or '-',
-#  # and must start and end with an alphanumeric character (e.g. 'my-name', or '123-abc')
-#  # existingSecret existing secret "secret-credentials" and a key inside it named "github-username" should be used in JCasC as ${github-username}
-#  # When using existingSecret no need to specify the keyName under additionalExistingSecrets.
-#  existingSecret:
-#
-#  # -- List of additional existing secrets to mount
-#  additionalExistingSecrets: [ ]
-#  # ref: https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/docs/features/secrets.adoc#kubernetes-secrets
-#  # additionalExistingSecrets:
-#  #  - name: secret-name-1
-#  #    keyName: username
-#  #  - name: secret-name-1
-#  #    keyName: password
-#
-#  # -- List of additional secrets to create and mount
-#  additionalSecrets: [ ]
-#  # ref: https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/docs/features/secrets.adoc#kubernetes-secrets
-#  # additionalSecrets:
-#  #  - name: nameOfSecret
-#  #    value: secretText
 
-## https://github.com/jenkinsci/helm-charts/issues/678
-#  initScripts:
-#    setup-known-hosts: |
-#      new File("/var/jenkins_home/.ssh").mkdir()
-#      File file = new File("/var/jenkins_home/.ssh/known_hosts")
-#      file.write '${known_hosts}'
-
-#  initConfigMap: jenkins-init-scripts (kustomize confimapgenerator references to a .groovy job)
-#// init.groovy
-#println "Configuring Jenkins during startup..."
-#jenkins.model.Jenkins.instance.securityRealm = new hudson.security.LDAPSecurityRealm(...)
-#jenkins.model.Jenkins.instance.save()
   # http://jenkins.jenkins.svc.cluster.local:8080
   probes: # Startup probe failed: Get "http://10.0.8.143:8080/login": dial tcp 10.0.8.143:8080: connect: connection refused
     startupProbe:
@@ -83,9 +30,6 @@ controller:
   sidecars:
     configAutoReload:
       enabled: false # require pod restart for config change. false allows to view current temporary jcasc
-#  containerEnv:
-#    - name: CASC_JENKINS_CONFIG
-#      value: "/var/jenkins_home/"
   image:
     repository: "jenkins/jenkins"
     tag: 2.440.3
@@ -117,9 +61,6 @@ controller:
     defaultConfig: true # `false` required with custom config (conflicting/duplicate definitions crashes jenkins install)
     overwriteConfiguration: true # related to PVC. requires pod restart (or sidecars: configAutoReload: )
     configScripts:
-      example-one: |
-        jenkins:
-          systemMessage: values.yaml custom message.
       job-dsl: |
         jobs:
           - script: >
@@ -131,41 +72,11 @@ controller:
                   }
                 }
               }
-#      example-two: |
-#        jenkins:
-#          tool:
-#            hello:
-#      awssecrets: |
-#        unclassified:
-#          awsCredentialsProvider:
-#            endpointConfiguration:
-#              serviceEndpoint: https://secretsmanager.eu-west-1.amazonaws.com
-#              signingRegion: eu-west-1
 
 #nameSuffix: -prod
-#You cannot use template calls ({{ .SomeValue }} in kustomize
-
-  #jenkinsUrl: "https://jenkins.tbalza.net"
-
   serviceType: ClusterIP
-  ingress: #insecure . "-noCertificateCheck" . http.sslVerify false . If you are using SSL termination on the ALB, with a self-signed certificate, you need also to build a custom inbound-agent base image (see here) with the CA certificate.
+  ingress: #If you are using SSL termination on the ALB, with a self-signed certificate, you need also to build a custom inbound-agent base image (see here) with the CA certificate.
     enabled: false
-#    #ingressClassName: "alb" # Ingress class name for using AWS ALB
-#    annotations:
-#      kubernetes.io/ingress.class: "alb"
-#      #alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
-#      #alb.ingress.kubernetes.io/backend-protocol: "HTTP"
-#      alb.ingress.kubernetes.io/scheme: "internet-facing" # "internet-facing"
-#      alb.ingress.kubernetes.io/target-type: "ip" # ip
-#      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-#      alb.ingress.kubernetes.io/group.name: "argo-cd-cluster"
-#      #alb.ingress.kubernetes.io/group.order: "2"
-#      #alb.ingress.kubernetes.io/healthcheck-path: "/login"
-#      #alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
-#      #alb.ingress.kubernetes.io/success-codes: "200,307"
-#      external-dns.alpha.kubernetes.io/hostname: jenkins.tbalza.net
-#      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:350206045032:certificate/47561cda-e12f-48cd-a4c5-29a1ca67fcd0
-
 
 persistence:
   enabled: true #
@@ -177,7 +88,7 @@ persistence:
   # https://github.com/jenkinsci/helm-charts/issues/64
   # ref: https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/
   # -- Existing data source to clone PVC from
-  volumes:
+  volumes: # mount local repo pipeline script to jenkins, have jcasc read/configure it afterward
   - name: jenkins-groovy-scripts # arbitrary name
     configMap:
       name: jenkins-scripts  # This should match the generated ConfigMap (kustomization.yaml)
@@ -190,7 +101,6 @@ agent:
   podName: default # default # Agent Pod base name
   args: "" # leave blank as kubernetes plugin provides these as env variables
   defaultsProviderTemplate: "" # default: blank # The name of the pod template to use for providing default values
-  #jenkinsUrl: "https://jenkins.tbalza.net" ##
   workingDir: "/home/jenkins/agent" # default
   nodeUsageMode: "NORMAL" # default
   TTYEnabled: true
@@ -200,7 +110,6 @@ agent:
 #    role: ci-cd
   websocket: true # (websocket and directConnection are mutually exclusive)
   directConnection: false #  (websocket and directConnection are mutually exclusive)
-  #yamlMergeStrategy: "merge" # default `override` # Defines how the raw yaml field gets merged with yaml definitions from inherited pod templates
   additionalContainers:
     - sideContainerName: "kaniko"
       image:
@@ -210,19 +119,6 @@ agent:
       args: "9999999" # required
       privileged: false
       ttyEnabled: true
-
-#  volumes:
-#     - type: EphemeralVolume
-#       mountPath: /django
-#       accessModes: ReadWriteOnce
-#       requestsSize: 5Gi
-#       storageClassName: gp3
-#     - type: EmptyDir
-#       mountPath: /home/jenkins/agent
-#       memory: false
-
-  #podRetention: "Always" # Always, Never, OnFailure # Controls how agent pods are retained after the Jenkins build completes `Always` for testing out kaniko container and PVC creation
-
 
 #  envVars:
 #    - name: AWS_DEFAULT_REGION
