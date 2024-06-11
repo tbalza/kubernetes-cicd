@@ -39,12 +39,14 @@ controller:
 #println "Configuring Jenkins during startup..."
 #jenkins.model.Jenkins.instance.securityRealm = new hudson.security.LDAPSecurityRealm(...)
 #jenkins.model.Jenkins.instance.save()
+  # http://jenkins.jenkins.svc.cluster.local:8080
   probes: # Startup probe failed: Get "http://10.0.8.143:8080/login": dial tcp 10.0.8.143:8080: connect: connection refused
     startupProbe:
       failureThreshold: 12 # -- Set the failure threshold for the startup probe
       httpGet:
+        #path: '{{ default "" .Values.controller.jenkinsUriPrefix }}/login' # default
+        #path: 'http://jenkins.jenkins.svc.cluster.local/login'
         port: 8080
-        #path: /login
       periodSeconds: 10 # -- Set the time interval between two startup probes executions in seconds
       timeoutSeconds: 60 # -- Set the timeout for the startup probe in seconds
       initialDelaySeconds: 20
@@ -188,16 +190,22 @@ agent:
       args: ""
       privileged: false
       ttyEnabled: true
+      mounts:
+        - mountPath: "/django"
+          name: "django-volume"
 
-#      mounts:
-#        - mountPath: "/django"
-#          name: django-app
-#  volumes:
-#    - type: PVC # @deprecated Use {@link GenericEphemeralVolume} instead. Implements a dynamic PVC volume, that is created before the agent pod is created, and terminated afterwards.
-#      claimName: django-pvc
-#      mountPath: /django
-#      readOnly: false
-#  podRetention: "Never" # Always, Never, OnFailure # Controls how agent pods are retained after the Jenkins build completes `Always` for testing out kaniko container and PVC creation
+  volumes:
+    - type: EphemeralVolume
+      mountPath: /django
+      accessModes: ReadWriteOnce
+      requestsSize: 5Gi
+      storageClassName: gp3
+
+  workspaceVolume:
+   - type: EmptyDir
+     memory: false
+
+  podRetention: "Always" # Always, Never, OnFailure # Controls how agent pods are retained after the Jenkins build completes `Always` for testing out kaniko container and PVC creation
 
 
 #  envVars:
