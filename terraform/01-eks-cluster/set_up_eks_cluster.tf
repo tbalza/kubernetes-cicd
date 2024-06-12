@@ -1286,7 +1286,7 @@ resource "aws_iam_role_policy_attachment" "jenkins_read_attach" { # check
 
 # Django
 resource "aws_iam_policy" "django_ssm_read" { # check
-  name = "SSM-for-jenkins"
+  name = "SSM-for-django"
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
