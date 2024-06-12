@@ -5,7 +5,7 @@ metadata:
   labels:
     app: django
 spec:
-  replicas: 2
+  replicas: 2  # Scale up based on your load expectations
   selector:
     matchLabels:
       app: django
@@ -14,20 +14,17 @@ spec:
       labels:
         app: django
     spec:
-      serviceAccountName: django-service-account
       containers:
       - name: django
-        image: django-app  # This will use the image defined in kustomization.yaml
+        image: 350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production:latest  # Replace with your ECR image path
         ports:
-        - containerPort: 8000
+        - containerPort: 8000  # Match the port exposed in your Dockerfile
         env:
           - name: DJANGO_SECRET_KEY
             valueFrom:
               secretKeyRef:
-                name: django-secret
+                name: django-secret  # Ensure this secret is defined in your cluster
                 key: secret_key
-          - name: DATABASE_URL
-            valueFrom:
-              secretKeyRef:
-                name: django-secret
-                key: database_url
+          - name: ALLOWED_HOSTS
+            value: '*'  # Allows all hosts, adjust if necessary for production
+      serviceAccountName: django  # Assuming IRSA setup for permissions
