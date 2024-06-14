@@ -1,8 +1,27 @@
+
+
 set Cloudflare API token as an environment variable (that will be used by ExternalDNS)
 # export TF_VAR_CFL_API_TOKEN=123example
 set Cloudflare Zone ID as an environment variable (that will be used by ACM)
 # export TF_VAR_CFL_ZONE_ID=123example
 
+# Django local vars
+
+.env
+DB_NAME=postgres
+DB_USERNAME=user
+DB_PASSWORD=pass
+DB_HOST=postgres-service
+DB_PORT=5432
+
+export STATIC_ROOT=/data/static
+
+ALLOWED_HOSTS
+Debug=0 (in production)
+
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY =
 
 you are better off separating your infrastructure from your applications.
 this would be two different statefiles, and you would need to explicitly handle the removal of the applications running on the cluster first, before destroying the cluster
