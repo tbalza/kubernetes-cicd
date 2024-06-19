@@ -2,6 +2,16 @@ provider "aws" {
   region = local.region
 }
 
+# Output AWS Caller Identity
+output "zzzcaller_identity" {
+  value = data.aws_caller_identity.current.account_id
+}
+
+# Output the first three available AWS Availability Zones
+output "zzzavailability_zones" {
+  value = slice(data.aws_availability_zones.available.names, 0, 3)
+}
+
 data "aws_caller_identity" "current" {}
 data "aws_availability_zones" "available" {}
 
@@ -749,10 +759,11 @@ module "vpc" {
   name = local.name
   cidr = local.vpc_cidr
 
-  azs             = local.azs
-  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)]
-  public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)]
-  database_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 6)]
+  azs = local.azs
+    private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)]
+    public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)]
+    database_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 52)]
+
   #intra_subnets   = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 52)] # used for control_plane_subnet_ids cluster (?)
 
   create_database_subnet_group = true
