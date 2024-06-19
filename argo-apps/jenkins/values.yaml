@@ -90,10 +90,10 @@ persistence:
   - name: jenkins-groovy-scripts # arbitrary name
     configMap:
       name: jenkins-scripts  # This should match the generated ConfigMap (kustomization.yaml)
-  mounts:
-  - mountPath: /var/jenkins_home/groovy_scripts
-    name: jenkins-groovy-scripts # arbitrary name
-    readOnly: true
+#  mounts:
+#  - mountPath: /var/jenkins_home/groovy_scripts
+#    name: jenkins-groovy-scripts # arbitrary name
+#    readOnly: true
 
 agent:
   podName: default # default # Agent Pod base name
