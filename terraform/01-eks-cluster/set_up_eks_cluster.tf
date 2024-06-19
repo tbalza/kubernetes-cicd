@@ -18,9 +18,9 @@ locals {
   vpc_cidr = "10.0.0.0/16" # ~65k IPs
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
-  rds_user = "django"
+  rds_user   = "django"
   rds_dbname = "postgres"
-  rds_port = 5432 # postgres default
+  rds_port   = 5432 # postgres default
 
   # SSM Parameter values
   parameters = {
@@ -37,7 +37,7 @@ locals {
       value = local.rds_dbname
     }
 
-    "rds_password" = { # pending # make type secret after test
+    "rds_password" = {                                 # pending # make type secret after test
       value = random_password.database_password.result # pending. figure out how not to include in tf state
     }
 
@@ -94,8 +94,8 @@ module "ssm-parameter" {
   # use module wrapper for multiple environments dev/qa/prod etc.
 
   depends_on = [
-  module.eks,
-    module.db,
+    module.eks,
+    module.db, # check dependency loop
     module.ecr,
   ]
 
@@ -666,7 +666,7 @@ resource "aws_iam_role" "prometheus" {
   })
 }
 
-resource "aws_iam_role" "external_secrets" {
+resource "aws_iam_role" "external_secrets" { # check
   name = "ExternalSecretsRole"
 
   assume_role_policy = jsonencode({
@@ -698,6 +698,10 @@ output "prometheus_iam_role_arn" {
 
 output "external_secrets_iam_role_arn" {
   value = aws_iam_role.external_secrets.arn
+}
+
+output "django_iam_role_arn" {
+  value = aws_iam_role.django.arn
 }
 
 ## Allow Jenkins to push images to ECR
@@ -1209,8 +1213,8 @@ resource "aws_iam_policy" "jenkins_ecr" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect    = "Allow"
-        Action    = [
+        Effect = "Allow"
+        Action = [
           "ecr:GetAuthorizationToken",
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetDownloadUrlForLayer",
@@ -1224,14 +1228,14 @@ resource "aws_iam_policy" "jenkins_ecr" {
           "ecr:CompleteLayerUpload",
           "ecr:PutImage"
         ]
-        Resource  = "*"
+        Resource = "*"
       },
     ]
   })
 }
 
 resource "aws_iam_role_policy_attachment" "jenkins_ecr_attach" {
-  role       = aws_iam_role.jenkins.name  # Assumes `aws_iam_role.jenkins` is defined elsewhere in your Terraform code
+  role       = aws_iam_role.jenkins.name # Assumes `aws_iam_role.jenkins` is defined elsewhere in your Terraform code
   policy_arn = aws_iam_policy.jenkins_ecr.arn
 }
 
@@ -1718,18 +1722,21 @@ resource "cloudflare_record" "validation" {
 # RDS - django-app
 ###############################################################################
 
+# Pending. connection pooling (possibly using something like django-db-connection-pool or other external tools like PgBouncer).
+
+
 # Create rds random password.
 resource "random_password" "database_password" {
-          length  = 28
-          special = true
-          override_special = "!#$%&'()+,-.=?^_~" # special character whitelist
+  length           = 28
+  special          = true
+  override_special = "!#$%&'()+,-.=?^_~" # special character whitelist
 }
 
 resource "random_password" "django_secretkey" {
-          length  = 28
-          special = false
-          min_numeric = 10
-          #override_special = "!#$%&'()+,-.=?^_~" # special character whitelist
+  length      = 28
+  special     = false
+  min_numeric = 10
+  #override_special = "!#$%&'()+,-.=?^_~" # special character whitelist
 }
 
 #############
@@ -1780,23 +1787,23 @@ module "db" {
   manage_master_user_password_rotation              = false
   master_user_password_rotate_immediately           = false
   master_user_password_rotation_schedule_expression = "rate(60 days)"
-  manage_master_user_password = false # Set to true to allow RDS to manage the master user password in Secrets Manager
-  create_random_password = false # required if you supply your own password (i.e. SSM parameter)
+  manage_master_user_password                       = false # Set to true to allow RDS to manage the master user password in Secrets Manager
+  ##create_random_password                            = false # required if you supply your own password (i.e. SSM parameter) ## doesn't exist?
 
 
-  #password = var.RDS_PASSWORD
-  password = aws_ssm_parameter.rds_password.value # random_password.database_password.result # data.aws_ssm_parameter.kms_keyid.value
+  password = random_password.database_password.result
+  #password = aws_ssm_parameter.rds_password.value # random_password.database_password.result # data.aws_ssm_parameter.kms_keyid.value
   # IRSA + IAM DB auth?
 
   iam_database_authentication_enabled = false # pending
   publicly_accessible                 = false
 
-  multi_az               = false # false
+  multi_az = false # false
   #availability_zone = local.azs
   db_subnet_group_name   = module.vpc.database_subnet_group
   vpc_security_group_ids = [module.security_group.security_group_id]
 
-  create_db_option_group = false # Use a default option group provided by AWS
+  create_db_option_group    = false # Use a default option group provided by AWS
   create_db_parameter_group = false # Use a default parameter group provided by AWS
 
   maintenance_window              = "Mon:00:00-Mon:03:00"

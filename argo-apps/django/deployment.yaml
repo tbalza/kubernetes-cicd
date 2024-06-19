@@ -1,11 +1,11 @@
+# Django
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: django-app
-  labels:
-    app: django
+  name: django
+  namespace: django
 spec:
-  replicas: 2  # Scale up based on your load expectations
+  replicas: 1
   selector:
     matchLabels:
       app: django
@@ -15,16 +15,57 @@ spec:
         app: django
     spec:
       containers:
-      - name: django
-        image: 350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production:latest  # Replace with your ECR image path
-        ports:
-        - containerPort: 8000  # Match the port exposed in your Dockerfile
-        env:
-          - name: DJANGO_SECRET_KEY
-            valueFrom:
-              secretKeyRef:
-                name: django-secret  # Ensure this secret is defined in your cluster
-                key: secret_key
-          - name: ALLOWED_HOSTS
-            value: '*'  # Allows all hosts, adjust if necessary for production
-      serviceAccountName: django  # Assuming IRSA setup for permissions
+        - name: django
+          image: 350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production:latest # pending . ESO
+          imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: django-secrets # Reference the ExternalSecret name
+          ports:
+            - containerPort: 8000 # Match the port exposed in your Dockerfile (django)
+          volumeMounts:
+            - mountPath: "/static"
+              name: staticfiles
+      volumes:
+        - name: staticfiles
+          persistentVolumeClaim:
+            claimName: staticfiles-pvc
+      serviceAccountName: django
+---
+# nginx
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: django
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27.0 # pending. make dynamic with configmap/kustomize
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+              name: nginx-config
+              readOnly: true
+            - mountPath: "/static"
+              name: staticfiles
+      volumes:
+        - name: staticfiles
+          persistentVolumeClaim:
+            claimName: staticfiles-pvc
+        - name: nginx-config
+          configMap:
+            name: nginx-config # reference to configMapGenerator is kustomization.yaml
+      serviceAccountName: nginx

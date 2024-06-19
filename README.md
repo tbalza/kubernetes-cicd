@@ -14,6 +14,8 @@ DB_PASSWORD=pass
 DB_HOST=postgres-service
 DB_PORT=5432
 
+check "TODO" django
+
 export STATIC_ROOT=/data/static
 
 ALLOWED_HOSTS

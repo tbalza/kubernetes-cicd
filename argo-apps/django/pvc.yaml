@@ -1,25 +1,28 @@
+# Django
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: django-static-pvc
-  labels:
-    app: django
+  name: staticfiles-pvc
+  namespace: django # Pending. check if redundant due to applicationSet and remove on all files
 spec:
+  storageClassName: gp3
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 1Gi
+      storage: 5Gi
+  volumeName: staticfiles-pv
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
+kind: PersistentVolume
 metadata:
-  name: django-media-pvc
-  labels:
-    app: django
+  name: staticfiles-pv
 spec:
+  storageClassName: gp3
+  capacity:
+    storage: 5Gi
   accessModes:
     - ReadWriteMany
-  resources:
-    requests:
-      storage: 1Gi
+  hostPath:
+    path: "/static"
+# nginx

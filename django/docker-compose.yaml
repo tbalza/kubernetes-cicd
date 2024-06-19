@@ -7,7 +7,7 @@ services:
     volumes:
       - .:/app # this maps the entire django project directory to /app in the container
     depends_on:
-      - postgres
+      - postgres # system health?
     environment:
       - DB_HOST=${DB_HOST}  # This should point to the name of the service running PostgreSQL ("postgres")
       - DB_NAME=${DB_NAME}
