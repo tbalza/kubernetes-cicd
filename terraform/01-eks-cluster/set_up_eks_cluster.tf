@@ -760,9 +760,9 @@ module "vpc" {
   cidr = local.vpc_cidr
 
   azs = local.azs
-    private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)]
-    public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)]
-    database_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 52)]
+    private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)] # ~4k IPs
+    public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)] # ~256 IPs
+    database_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 52)] # ~256 IPs
 
   #intra_subnets   = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 52)] # used for control_plane_subnet_ids cluster (?)
 
