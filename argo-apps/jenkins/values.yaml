@@ -60,18 +60,18 @@ controller:
     enabled: true
     defaultConfig: true # `false` required with custom config (conflicting/duplicate definitions crashes jenkins install)
     overwriteConfiguration: true # related to PVC. requires pod restart (or sidecars: configAutoReload: )
-#    configScripts:
-#      job-dsl: | # pending # mount and make into jcasc, also iterate all configs in the directory
-#        jobs:
-#          - script: >
-#              pipelineJob('build-django') {
-#                definition {
-#                  cps {
-#                    script(new File('/var/jenkins_home/groovy_scripts/Jenkinsfile.groovy').text)
-#                    sandbox(true)
-#                  }
-#                }
-#              }
+    configScripts:
+      job-dsl: | # pending # mount and make into jcasc, also iterate all configs in the directory
+        jobs:
+          - script: >
+              pipelineJob('build-django') {
+                definition {
+                  cps {
+                    script(new File('/var/jenkins_home/groovy_scripts/Jenkinsfile.groovy').text)
+                    sandbox(true)
+                  }
+                }
+              }
 
 #nameSuffix: -prod
   serviceType: ClusterIP
