@@ -86,10 +86,10 @@ persistence:
   # https://github.com/jenkinsci/helm-charts/issues/64
   # ref: https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/
   # -- Existing data source to clone PVC from
-  volumes: # mount local repo pipeline script to jenkins, have jcasc read/configure it afterward
-  - name: jenkins-groovy-scripts # arbitrary name
-    configMap:
-      name: jenkins-scripts  # This should match the generated ConfigMap (kustomization.yaml)
+#  volumes: # mount local repo pipeline script to jenkins, have jcasc read/configure it afterward
+#  - name: jenkins-groovy-scripts # arbitrary name
+#    configMap:
+#      name: jenkins-scripts  # This should match the generated ConfigMap (kustomization.yaml)
 #  mounts:
 #  - mountPath: /var/jenkins_home/groovy_scripts
 #    name: jenkins-groovy-scripts # arbitrary name
@@ -108,15 +108,15 @@ agent:
 #    role: ci-cd
   websocket: true # (websocket and directConnection are mutually exclusive)
   directConnection: false #  (websocket and directConnection are mutually exclusive)
-  additionalContainers:
-    - sideContainerName: "kaniko"
-      image:
-        repository: "gcr.io/kaniko-project/executor" # debug release required for tty
-        tag: "v1.23.1-debug"
-      command: "sleep" # required
-      args: "9999999" # required
-      privileged: false
-      ttyEnabled: true
+#  additionalContainers:
+#    - sideContainerName: "kaniko"
+#      image:
+#        repository: "gcr.io/kaniko-project/executor" # debug release required for tty
+#        tag: "v1.23.1-debug"
+#      command: "sleep" # required
+#      args: "9999999" # required
+#      privileged: false
+#      ttyEnabled: true
 
 #  envVars:
 #    - name: AWS_DEFAULT_REGION

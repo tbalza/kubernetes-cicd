@@ -55,9 +55,9 @@ locals {
       value = local.rds_port
     }
 
-    "rds_endpoint" = {
-      value = module.db.db_instance_endpoint # circular ref issue? # maybe store as secret directly as with ExternalDNS
-    }
+#    "rds_endpoint" = {
+#      value = module.db.db_instance_endpoint # circular ref issue? # maybe store as secret directly as with ExternalDNS
+#    }
 
     "django_secretkey" = {
       value = random_password.django_secretkey.result
@@ -105,8 +105,8 @@ module "ssm-parameter" {
 
   depends_on = [
     module.eks,
-    module.db, # check dependency loop
-    module.ecr,
+#    module.db, # check dependency loop
+#    module.ecr,
   ]
 
 }
@@ -760,13 +760,13 @@ module "vpc" {
   cidr = local.vpc_cidr
 
   azs = local.azs
-    private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)] # ~4k IPs
-    public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)] # ~256 IPs
-    database_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 52)] # ~256 IPs
+  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)] # ~4k IPs
+  public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)] # ~256 IPs
+#  database_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 52)] # ~256 IPs
 
   #intra_subnets   = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 52)] # used for control_plane_subnet_ids cluster (?)
 
-  create_database_subnet_group = true
+#  create_database_subnet_group = true
 
   enable_nat_gateway     = true
   single_nat_gateway     = true
@@ -1762,98 +1762,98 @@ resource "random_password" "django_secretkey" {
 #  sensitive   = true
 #}
 
-module "db" {
-  source  = "terraform-aws-modules/rds/aws"
-  version = "6.7.0"
-
-  identifier = local.name
-
-  # All available versions: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts
-  # aws rds describe-db-engine-versions --default-only --engine postgres
-  engine               = "postgres"
-  engine_version       = "16.2"
-  family               = "postgres16" # DB parameter group
-  major_engine_version = "16"         # DB option group
-  instance_class       = "db.t4g.micro"
-
-  #kms_key_id        = "arn:aws:kms:${var.aws_region}:${var.account_id}:key/${data.aws_ssm_parameter.kms_keyid.value}"
-
-  allocated_storage     = 5
-  max_allocated_storage = 10
-
-  # NOTE: Do NOT use 'user' as the value for 'username' as it throws:
-  # "Error creating DB Instance: InvalidParameterValue: MasterUsername
-  # user cannot be used as it is a reserved word used by the engine"
-  db_name  = local.rds_dbname
-  username = local.rds_user
-  port     = local.rds_port
-
-  # Setting manage_master_user_password_rotation to false after it
-  # has previously been set to true disables automatic rotation
-  # however using an initial value of false (default) does not disable
-  # automatic rotation and rotation will be handled by RDS.
-  # manage_master_user_password_rotation allows users to configure
-  # a non-default schedule and is not meant to disable rotation
-  # when initially creating / enabling the password management feature
-  manage_master_user_password_rotation              = false
-  master_user_password_rotate_immediately           = false
-  master_user_password_rotation_schedule_expression = "rate(60 days)"
-  manage_master_user_password                       = false # Set to true to allow RDS to manage the master user password in Secrets Manager
-  ##create_random_password                            = false # required if you supply your own password (i.e. SSM parameter) ## doesn't exist?
-
-
-  password = random_password.database_password.result
-  #password = aws_ssm_parameter.rds_password.value # random_password.database_password.result # data.aws_ssm_parameter.kms_keyid.value
-  # IRSA + IAM DB auth?
-
-  iam_database_authentication_enabled = false # pending
-  publicly_accessible                 = false
-
-  multi_az = false # false
-  #availability_zone = local.azs
-  db_subnet_group_name   = module.vpc.database_subnet_group
-  vpc_security_group_ids = [module.security_group.security_group_id]
-
-  create_db_option_group    = false # Use a default option group provided by AWS
-  create_db_parameter_group = false # Use a default parameter group provided by AWS
-
-  maintenance_window              = "Mon:00:00-Mon:03:00"
-  backup_window                   = "03:00-06:00"
-  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
-  create_cloudwatch_log_group     = true
-
-  backup_retention_period = 1
-  skip_final_snapshot     = true
-  deletion_protection     = false
-
-  performance_insights_enabled          = true
-  performance_insights_retention_period = 7
-  create_monitoring_role                = true
-  monitoring_interval                   = 60
-  monitoring_role_name                  = "example-monitoring-role-name"
-  monitoring_role_use_name_prefix       = true
-  monitoring_role_description           = "Description for monitoring role"
-
-  parameters = [ # pending. force SSL?
-    {
-      name  = "autovacuum"
-      value = 1
-    },
-    {
-      name  = "client_encoding"
-      value = "utf8"
-    }
-  ]
-
-  tags = local.tags
-  db_option_group_tags = {
-    "Sensitive" = "low"
-  }
-  db_parameter_group_tags = {
-    "Sensitive" = "low"
-  }
-
-}
+#module "db" {
+#  source  = "terraform-aws-modules/rds/aws"
+#  version = "6.7.0"
+#
+#  identifier = local.name
+#
+#  # All available versions: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts
+#  # aws rds describe-db-engine-versions --default-only --engine postgres
+#  engine               = "postgres"
+#  engine_version       = "16.2"
+#  family               = "postgres16" # DB parameter group
+#  major_engine_version = "16"         # DB option group
+#  instance_class       = "db.t4g.micro"
+#
+#  #kms_key_id        = "arn:aws:kms:${var.aws_region}:${var.account_id}:key/${data.aws_ssm_parameter.kms_keyid.value}"
+#
+#  allocated_storage     = 5
+#  max_allocated_storage = 10
+#
+#  # NOTE: Do NOT use 'user' as the value for 'username' as it throws:
+#  # "Error creating DB Instance: InvalidParameterValue: MasterUsername
+#  # user cannot be used as it is a reserved word used by the engine"
+#  db_name  = local.rds_dbname
+#  username = local.rds_user
+#  port     = local.rds_port
+#
+#  # Setting manage_master_user_password_rotation to false after it
+#  # has previously been set to true disables automatic rotation
+#  # however using an initial value of false (default) does not disable
+#  # automatic rotation and rotation will be handled by RDS.
+#  # manage_master_user_password_rotation allows users to configure
+#  # a non-default schedule and is not meant to disable rotation
+#  # when initially creating / enabling the password management feature
+#  manage_master_user_password_rotation              = false
+#  master_user_password_rotate_immediately           = false
+#  master_user_password_rotation_schedule_expression = "rate(60 days)"
+#  manage_master_user_password                       = false # Set to true to allow RDS to manage the master user password in Secrets Manager
+#  ##create_random_password                            = false # required if you supply your own password (i.e. SSM parameter) ## doesn't exist?
+#
+#
+#  password = random_password.database_password.result
+#  #password = aws_ssm_parameter.rds_password.value # random_password.database_password.result # data.aws_ssm_parameter.kms_keyid.value
+#  # IRSA + IAM DB auth?
+#
+#  iam_database_authentication_enabled = false # pending
+#  publicly_accessible                 = false
+#
+#  multi_az = false # false
+#  #availability_zone = local.azs
+#  db_subnet_group_name   = module.vpc.database_subnet_group
+#  vpc_security_group_ids = [module.security_group.security_group_id]
+#
+#  create_db_option_group    = false # Use a default option group provided by AWS
+#  create_db_parameter_group = false # Use a default parameter group provided by AWS
+#
+#  maintenance_window              = "Mon:00:00-Mon:03:00"
+#  backup_window                   = "03:00-06:00"
+#  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
+#  create_cloudwatch_log_group     = true
+#
+#  backup_retention_period = 1
+#  skip_final_snapshot     = true
+#  deletion_protection     = false
+#
+#  performance_insights_enabled          = true
+#  performance_insights_retention_period = 7
+#  create_monitoring_role                = true
+#  monitoring_interval                   = 60
+#  monitoring_role_name                  = "example-monitoring-role-name"
+#  monitoring_role_use_name_prefix       = true
+#  monitoring_role_description           = "Description for monitoring role"
+#
+#  parameters = [ # pending. force SSL?
+#    {
+#      name  = "autovacuum"
+#      value = 1
+#    },
+#    {
+#      name  = "client_encoding"
+#      value = "utf8"
+#    }
+#  ]
+#
+#  tags = local.tags
+#  db_option_group_tags = {
+#    "Sensitive" = "low"
+#  }
+#  db_parameter_group_tags = {
+#    "Sensitive" = "low"
+#  }
+#
+#}
 
 module "security_group" {
   source  = "terraform-aws-modules/security-group/aws"
@@ -1877,68 +1877,68 @@ module "security_group" {
   tags = local.tags
 }
 
-output "db_instance_address" {
-  description = "The address of the RDS instance"
-  value       = module.db.db_instance_address
-}
-
-output "db_instance_arn" {
-  description = "The ARN of the RDS instance"
-  value       = module.db.db_instance_arn
-}
-
-output "db_instance_availability_zone" {
-  description = "The availability zone of the RDS instance"
-  value       = module.db.db_instance_availability_zone
-}
-
-output "db_instance_endpoint" {
-  description = "The connection endpoint"
-  value       = module.db.db_instance_endpoint
-}
-
-output "db_instance_engine" {
-  description = "The database engine"
-  value       = module.db.db_instance_engine
-}
-
-output "db_instance_engine_version_actual" {
-  description = "The running version of the database"
-  value       = module.db.db_instance_engine_version_actual
-}
-
-output "db_instance_hosted_zone_id" {
-  description = "The canonical hosted zone ID of the DB instance (to be used in a Route 53 Alias record)"
-  value       = module.db.db_instance_hosted_zone_id
-}
-
-output "db_instance_identifier" {
-  description = "The RDS instance identifier"
-  value       = module.db.db_instance_identifier
-}
-
-output "db_instance_resource_id" {
-  description = "The RDS Resource ID of this instance"
-  value       = module.db.db_instance_resource_id
-}
-
-output "db_instance_status" {
-  description = "The RDS instance status"
-  value       = module.db.db_instance_status
-}
-
-output "db_instance_name" {
-  description = "The database name"
-  value       = module.db.db_instance_name
-}
-
-output "db_instance_username" {
-  description = "The master username for the database"
-  value       = module.db.db_instance_username
-  sensitive   = true
-}
-
-output "db_instance_port" {
-  description = "The database port"
-  value       = module.db.db_instance_port
-}
+#output "db_instance_address" {
+#  description = "The address of the RDS instance"
+#  value       = module.db.db_instance_address
+#}
+#
+#output "db_instance_arn" {
+#  description = "The ARN of the RDS instance"
+#  value       = module.db.db_instance_arn
+#}
+#
+#output "db_instance_availability_zone" {
+#  description = "The availability zone of the RDS instance"
+#  value       = module.db.db_instance_availability_zone
+#}
+#
+#output "db_instance_endpoint" {
+#  description = "The connection endpoint"
+#  value       = module.db.db_instance_endpoint
+#}
+#
+#output "db_instance_engine" {
+#  description = "The database engine"
+#  value       = module.db.db_instance_engine
+#}
+#
+#output "db_instance_engine_version_actual" {
+#  description = "The running version of the database"
+#  value       = module.db.db_instance_engine_version_actual
+#}
+#
+#output "db_instance_hosted_zone_id" {
+#  description = "The canonical hosted zone ID of the DB instance (to be used in a Route 53 Alias record)"
+#  value       = module.db.db_instance_hosted_zone_id
+#}
+#
+#output "db_instance_identifier" {
+#  description = "The RDS instance identifier"
+#  value       = module.db.db_instance_identifier
+#}
+#
+#output "db_instance_resource_id" {
+#  description = "The RDS Resource ID of this instance"
+#  value       = module.db.db_instance_resource_id
+#}
+#
+#output "db_instance_status" {
+#  description = "The RDS instance status"
+#  value       = module.db.db_instance_status
+#}
+#
+#output "db_instance_name" {
+#  description = "The database name"
+#  value       = module.db.db_instance_name
+#}
+#
+#output "db_instance_username" {
+#  description = "The master username for the database"
+#  value       = module.db.db_instance_username
+#  sensitive   = true
+#}
+#
+#output "db_instance_port" {
+#  description = "The database port"
+#  value       = module.db.db_instance_port
+#}
