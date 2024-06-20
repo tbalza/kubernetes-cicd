@@ -20,82 +20,82 @@ controller:
       memory: "2Gi"
   service:
     port: 8080
-  installPlugins:
-    - kubernetes:4203.v1dd44f5b_1cf9
-    - workflow-aggregator:596.v8c21c963d92d
-    - git:5.2.1
-    - configuration-as-code:1775.v810dc950b_514
-    - ansible:307.va_1f3ef06575a_
-    - docker-workflow:580.vc0c340686b_54
-    - credentials:1337.v60b_d7b_c7b_c9f
-    - job-dsl:1.87
-    - amazon-ecr:1.114.vfd22430621f5
+#  installPlugins:
+#    - kubernetes:4203.v1dd44f5b_1cf9
+#    - workflow-aggregator:596.v8c21c963d92d
+#    - git:5.2.1
+#    - configuration-as-code:1775.v810dc950b_514
+#    - ansible:307.va_1f3ef06575a_
+#    - docker-workflow:580.vc0c340686b_54
+#    - credentials:1337.v60b_d7b_c7b_c9f
+#    - job-dsl:1.87
+#    - amazon-ecr:1.114.vfd22430621f5
   JCasC:
     enabled: true
     defaultConfig: true # `false` required with custom config (conflicting/duplicate definitions crashes jenkins install)
     overwriteConfiguration: false # related to PVC. requires pod restart (or sidecars: configAutoReload: )
-#    configScripts:
-#      job-dsl: | # pending # mount and make into jcasc, also iterate all configs in the directory
-#        jobs:
-#          - script: >
-#              pipelineJob('build-django') {
-#                definition {
-#                  cps {
-#                    script(new File('/var/jenkins_home/groovy_scripts/Jenkinsfile.groovy').text)
-#                    sandbox(true)
-#                  }
-#                }
-#              }
+    configScripts:
+      job-dsl: | # pending # mount and make into jcasc, also iterate all configs in the directory
+        jobs:
+          - script: >
+              pipelineJob('build-django') {
+                definition {
+                  cps {
+                    script(new File('/var/jenkins_home/groovy_scripts/Jenkinsfile.groovy').text)
+                    sandbox(true)
+                  }
+                }
+              }
   serviceType: ClusterIP
   ingress: #If you are using SSL termination on the ALB, with a self-signed certificate, you need also to build a custom inbound-agent base image (see here) with the CA certificate.
     enabled: false
 
-#persistence:
-#  enabled: true #
-#  storageClass: "gp3"
-#  size: "9Gi"
-#  accessMode: "ReadWriteOnce" # RWO can be mounted as read-write by a single node. ReadWriteMany for HA/efs
-#  #existingClaim: jenkins
-#  # https://github.com/jenkinsci/helm-charts/issues/659
-#  # https://github.com/jenkinsci/helm-charts/issues/64
-#  # ref: https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/
-#  # -- Existing data source to clone PVC from
-#  volumes: # mount local repo pipeline script to jenkins, have jcasc read/configure it afterward
-#  - name: jenkins-groovy-scripts # arbitrary name
-#    configMap:
-#      name: jenkins-scripts  # This should match the generated ConfigMap (kustomization.yaml)
-#  mounts:
-#  - mountPath: /var/jenkins_home/groovy_scripts
-#    name: jenkins-groovy-scripts # arbitrary name
-#    readOnly: true
+persistence:
+  enabled: true #
+  storageClass: "gp3"
+  size: "9Gi"
+  accessMode: "ReadWriteOnce" # RWO can be mounted as read-write by a single node. ReadWriteMany for HA/efs
+  #existingClaim: jenkins
+  # https://github.com/jenkinsci/helm-charts/issues/659
+  # https://github.com/jenkinsci/helm-charts/issues/64
+  # ref: https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/
+  # -- Existing data source to clone PVC from
+  volumes: # mount local repo pipeline script to jenkins, have jcasc read/configure it afterward
+  - name: jenkins-groovy-scripts # arbitrary name
+    configMap:
+      name: jenkins-scripts  # This should match the generated ConfigMap (kustomization.yaml)
+  mounts:
+  - mountPath: /var/jenkins_home/groovy_scripts
+    name: jenkins-groovy-scripts # arbitrary name
+    readOnly: true
 
-#agent:
-#  podName: default # default # Agent Pod base name
-#  args: "" # leave blank as kubernetes plugin provides these as env variables
-#  defaultsProviderTemplate: "" # default: blank # The name of the pod template to use for providing default values
-#  workingDir: "/home/jenkins/agent" # default
-#  nodeUsageMode: "NORMAL" # default
-#  TTYEnabled: true
-#  namespace: jenkins # where agents are launched
-#  privileged: false # Agent privileged container # default: false
-##  nodeSelector: # breaks install. might not be related to ec2 instance, and break agent connection
-##    role: ci-cd
-#  websocket: true # (websocket and directConnection are mutually exclusive)
-#  directConnection: false #  (websocket and directConnection are mutually exclusive)
-#  additionalContainers:
-#    - sideContainerName: "kaniko"
-#      image:
-#        repository: "gcr.io/kaniko-project/executor" # debug release required for tty
-#        tag: "v1.23.1-debug"
-#      command: "sleep" # required
-#      args: "9999999" # required
-#      privileged: false
-#      ttyEnabled: true
-#  envVars:
-#    - name: AWS_DEFAULT_REGION
-#      value: "us-east-1"
-#    - name: ECR_URL
-#      value: "350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
+agent:
+  podName: default # default # Agent Pod base name
+  args: "" # leave blank as kubernetes plugin provides these as env variables
+  defaultsProviderTemplate: "" # default: blank # The name of the pod template to use for providing default values
+  workingDir: "/home/jenkins/agent" # default
+  nodeUsageMode: "NORMAL" # default
+  TTYEnabled: true
+  namespace: jenkins # where agents are launched
+  privileged: false # Agent privileged container # default: false
+#  nodeSelector: # breaks install. might not be related to ec2 instance, and break agent connection
+#    role: ci-cd
+  websocket: true # (websocket and directConnection are mutually exclusive)
+  directConnection: false #  (websocket and directConnection are mutually exclusive)
+  additionalContainers:
+    - sideContainerName: "kaniko"
+      image:
+        repository: "gcr.io/kaniko-project/executor" # debug release required for tty
+        tag: "v1.23.1-debug"
+      command: "sleep" # required
+      args: "9999999" # required
+      privileged: false
+      ttyEnabled: true
+  envVars:
+    - name: AWS_DEFAULT_REGION
+      value: "us-east-1"
+    - name: ECR_URL
+      value: "350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
 
 serviceAccount:
   create: true
@@ -103,8 +103,8 @@ serviceAccount:
   annotations:
     eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/JenkinsRole"
 
-#serviceAccountAgent:
-#  create: false
-#  name: jenkins # necessary for agent pod to connect to controller
-#  annotations:
-#    eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/JenkinsRole"
+serviceAccountAgent:
+  create: false
+  name: jenkins # necessary for agent pod to connect to controller
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/JenkinsRole"
