@@ -82,15 +82,15 @@ agent:
 #    role: ci-cd
   websocket: true # (websocket and directConnection are mutually exclusive)
   directConnection: false #  (websocket and directConnection are mutually exclusive)
-  additionalContainers:
-    - sideContainerName: "kaniko"
-      image:
-        repository: "gcr.io/kaniko-project/executor" # debug release required for tty
-        tag: "v1.23.1-debug"
-      command: "sleep" # required
-      args: "9999999" # required
-      privileged: false
-      ttyEnabled: true
+#  additionalContainers:
+#    - sideContainerName: "kaniko"
+#      image:
+#        repository: "gcr.io/kaniko-project/executor" # debug release required for tty
+#        tag: "v1.23.1-debug"
+#      command: "sleep" # required
+#      args: "9999999" # required
+#      privileged: false
+#      ttyEnabled: true
   envVars:
     - name: AWS_DEFAULT_REGION
       value: "us-east-1"
