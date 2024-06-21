@@ -19,4 +19,5 @@ from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', root_redirect),  # needed for default welcome page to be served remotely in eks?
 ]

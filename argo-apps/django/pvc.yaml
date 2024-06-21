@@ -25,4 +25,3 @@ spec:
     - ReadWriteMany
   hostPath:
     path: "/static"
-# nginx
