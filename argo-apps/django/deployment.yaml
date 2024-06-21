@@ -68,4 +68,4 @@ spec:
         - name: nginx-config
           configMap:
             name: nginx-config # reference to configMapGenerator is kustomization.yaml
-      serviceAccountName: nginx
+      serviceAccountName: django # check
