@@ -48,8 +48,8 @@ controller:
                 }
               }
   serviceType: ClusterIP
-  ingress: #If you are using SSL termination on the ALB, with a self-signed certificate, you need also to build a custom inbound-agent base image (see here) with the CA certificate.
-    enabled: false
+  ingress: # If you are using SSL termination on the ALB, with a self-signed certificate, you need also to build a custom inbound-agent base image with the CA certificate.
+    enabled: false # disabled in chart, supplied by kustomize as a resource
 persistence:
   enabled: true #
   storageClass: "gp3"
@@ -81,7 +81,7 @@ agent:
 #    role: ci-cd
   websocket: true # (websocket and directConnection are mutually exclusive)
   directConnection: false #  (websocket and directConnection are mutually exclusive)
-  additionalContainers:
+  additionalContainers: # this adds kaniko to the default pod template (which already has jnlp required by kubernetes plugin)
     - sideContainerName: "kaniko"
       image:
         repository: "gcr.io/kaniko-project/executor" # debug release required for tty
