@@ -6,7 +6,7 @@ controller:
       enabled: false # require pod restart for config change. false allows to view current temporary jcasc
   image:
     repository: "jenkins/jenkins"
-    tag: 2.452.2 # ?
+    tag: 2.452.2 #  Chart v5.3.1, App 2.452.2 # Chart v5.1.6, App v2.440.3 (chart ver is defined in kustomization.yaml)
   javaOpts: "-Xmx1536m -Xms512m -Dcasc.jenkins.config=/var/jenkins_home/casc_configs -Dorg.csanchez.jenkins.plugins.kubernetes.clients.cacheExpiration=60" # -Dcasc.jenkins.config=/var/jenkins_home/casc_configs prevent memory limit issues, define jcasc config path
   admin:
     username: "admin" # check
@@ -30,7 +30,7 @@ controller:
     - credentials:latest # 1337.v60b_d7b_c7b_c9f
     - job-dsl:latest # 1.87
     - amazon-ecr:latest # 1.114.vfd22430621f5
-  installLatestPlugins: false # maybe this keeps it from breaking even when pinning plugin versions
+  installLatestPlugins: true # set to `false` to attempt it from breaking even when pinning plugin versions (not guaranteed)
   JCasC:
     enabled: true
     defaultConfig: true # `false` required with custom config (conflicting/duplicate definitions crashes jenkins install)
@@ -103,7 +103,7 @@ serviceAccount:
     eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/JenkinsRole"
 
 serviceAccountAgent:
-  create: false
+  create: false # defines serviceAccount in agents without creating a new one (setting the name below)
   name: jenkins # necessary for agent pod to connect to controller
   annotations:
     eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/JenkinsRole"

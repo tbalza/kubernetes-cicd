@@ -6,7 +6,7 @@ namespace: jenkins # crucial for configMapGenerator
 helmCharts:
   - name: jenkins
     repo: https://charts.jenkins.io
-    version: 5.1.6  # Chart v5.1.6, App v2.440.3
+    version: 5.3.1  # Chart v5.1.6, App v2.440.3
     releaseName: jenkins
     namespace: jenkins
     includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
@@ -19,6 +19,6 @@ resources:
   - ingress.yaml # upstream helm ingress is stringent/finicky. kustomize is going to patch environments anyway
 
 configMapGenerator:
-- name: jenkins-scripts
-  files:
-  - Jenkinsfile.groovy # SCM Sync Configuration Plugin, which can help version control Jenkins job configurations.
+  - name: jenkins-scripts
+    files:
+    - Jenkinsfile.groovy # pending. check SCM Sync Configuration Plugin, which can help version control Jenkins job configurations.
