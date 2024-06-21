@@ -12,6 +12,6 @@ resources:
   - serviceaccount.yaml
 
 configMapGenerator:
-- name: nginx-config
-  files:
-    - ../../django/nginx/default.conf # load the nginx default.conf from the django project directory
+  - name: nginx-config
+    files:
+      - ../../django/nginx/default.conf # load the nginx default.conf from the django project directory
