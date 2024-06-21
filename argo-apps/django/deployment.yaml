@@ -31,6 +31,8 @@ spec:
           persistentVolumeClaim:
             claimName: staticfiles-pvc
       serviceAccountName: django
+      nodeSelector:
+        role: "django" # defined in tf, eks module (node groups)
 ---
 # nginx
 apiVersion: apps/v1
@@ -69,3 +71,5 @@ spec:
           configMap:
             name: nginx-config # reference to configMapGenerator is kustomization.yaml
       serviceAccountName: django # check
+      nodeSelector:
+        role: "django" # defined in tf, eks module (node groups)
