@@ -24,7 +24,7 @@ spec:
           ports:
             - containerPort: 8000 # Match the port exposed in your Dockerfile (django)
           volumeMounts:
-            - mountPath: "/static"
+            - mountPath: "/app/static"
               name: staticfiles
       volumes:
         - name: staticfiles
@@ -61,7 +61,7 @@ spec:
               subPath: default.conf
               name: nginx-config
               readOnly: true
-            - mountPath: "/static"
+            - mountPath: "/app/static"
               name: staticfiles
       volumes:
         - name: staticfiles
