@@ -16,8 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("Hello, world. You're at the root.")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-#    path('', root_redirect),  # needed for default welcome page to be served remotely in eks?
+    path('', home, name='home'),  # needed for default welcome page to be served remotely in eks?
 ]
