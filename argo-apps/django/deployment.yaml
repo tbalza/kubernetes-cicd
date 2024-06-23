@@ -73,3 +73,9 @@ spec:
       serviceAccountName: django # check
       nodeSelector:
         role: "django" # defined in tf, eks module (node groups)
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations: # enable ServerSideDiff to prevent `error calculating structured merge diff: error building typed value from live resource: .status.lastPhaseTransitionTime: field not declared in schema`
+    argocd.argoproj.io/compare-options: ServerSideDiff=true
