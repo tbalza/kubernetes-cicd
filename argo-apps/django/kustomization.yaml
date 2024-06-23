@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: django # crucial for configMapGenerator
 
 resources:
+  - app.yaml
   - deployment.yaml
   - ingress.yaml
   - pvc.yaml
