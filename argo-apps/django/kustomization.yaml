@@ -25,4 +25,4 @@ patches:
       group: argoproj.io
       version: v1alpha1
       kind: Application
-      name: "*"  # This targets all Application resources
+      name: "django"  # This targets all Application resources
