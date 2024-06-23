@@ -39,7 +39,14 @@ EXPOSE 8000
 #ENV PATH="/home/myuser/.local/bin:${PATH}"
 
 # Define the command to run your app using Gunicorn
-CMD ["gunicorn", "myproject.wsgi:application", "--bind", "0.0.0.0:8000"]
+#CMD ["gunicorn", "myproject.wsgi:application", "--bind", "0.0.0.0:8000"]
 # change to entrypoint
+# Add execution permissions to the entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Use entrypoint to run collectstatic and start the server
+ENTRYPOINT ["/entrypoint.sh"]
+
 
 # https://liberbear.com/posts/python-nonroot-dockerfile/
