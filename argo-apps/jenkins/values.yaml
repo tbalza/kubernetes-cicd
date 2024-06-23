@@ -30,7 +30,7 @@ controller:
     - credentials:1337.v60b_d7b_c7b_c9f # not activated by default 1337.v60b_d7b_c7b_c9f
     - job-dsl:1.87 # 1.87
     - amazon-ecr:1.114.vfd22430621f5 # 1.114.vfd22430621f5
-  installLatestPlugins: false # set to `false` to attempt it from breaking even when pinning plugin versions (not guaranteed)
+  installLatestPlugins: true # set to `false` to attempt it from breaking even when pinning plugin versions (not guaranteed)
   JCasC:
     enabled: true
     defaultConfig: true # `false` required with custom config (conflicting/duplicate definitions crashes jenkins install)
