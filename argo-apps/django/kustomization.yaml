@@ -4,7 +4,6 @@ kind: Kustomization
 namespace: django # crucial for configMapGenerator
 
 resources:
-  - app.yaml
   - deployment.yaml
   - ingress.yaml
   - pvc.yaml
@@ -16,3 +15,6 @@ configMapGenerator:
   - name: nginx-config
     files:
       - ../../django/nginx/default.conf # load the nginx default.conf from the django project directory
+
+patchesStrategicMerge:
+  - app.yaml # server side diff patch
