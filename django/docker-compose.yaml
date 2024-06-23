@@ -42,6 +42,7 @@ services:
 
 volumes: # named volumes
   postgres_data:
+    driver: local
 #  static_volume:
 
 # Passing secrets in using a shared volume is a better solution the ENV, but they should be encrypted, via KMS
