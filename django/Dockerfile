@@ -26,14 +26,9 @@ EXPOSE 8000
 # Required for gunicorn
 #ENV PATH="/home/myuser/.local/bin:${PATH}"
 
-# Define the command to run your app using Gunicorn
-#CMD ["gunicorn", "myproject.wsgi:application", "--bind", "0.0.0.0:8000"]
-# change to entrypoint
 # Add execution permissions to the entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-
-CMD ["gunicorn", "myproject.wsgi:application", "--bind", "0.0.0.0:8000"]
 
 # Use entrypoint to run collectstatic and start the server
 ENTRYPOINT ["/entrypoint.sh"]
