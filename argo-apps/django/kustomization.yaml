@@ -17,14 +17,12 @@ configMapGenerator:
       - ../../django/nginx/default.conf # load the nginx default.conf from the django project directory
 
 patches:
-  - target:
-      group: argoproj.io
-      version: v1alpha1
-      kind: Application
-      name: "django"
-    patch: |-
+  - patch: |-
       - op: add
         path: /metadata/annotations/argocd.argoproj.io~1compare-options
         value: ServerSideDiff=true
-    options:
-      patchType: json
+    target:
+      group: argoproj.io
+      version: v1alpha1
+      kind: Application
+      name: "*"  # This targets all Application resources
