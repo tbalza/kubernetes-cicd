@@ -16,5 +16,15 @@ configMapGenerator:
     files:
       - ../../django/nginx/default.conf # load the nginx default.conf from the django project directory
 
-patchesStrategicMerge:
-  - app.yaml # server side diff patch
+patches:
+  - target:
+      group: argoproj.io
+      version: v1alpha1
+      kind: Application
+      name: "*"
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1compare-options
+        value: ServerSideDiff=true
+#    options:
+#      patchType: json
