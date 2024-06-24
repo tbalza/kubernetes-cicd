@@ -26,11 +26,6 @@ spec:
           volumeMounts:
             - mountPath: "/static"
               name: staticfiles
-          readinessProbe: # ?
-            exec:
-              command: [ "sh", "-c", "test -d /static" ]
-            initialDelaySeconds: 5
-            periodSeconds: 10
       volumes:
         - name: staticfiles
           persistentVolumeClaim:
@@ -68,11 +63,6 @@ spec:
               readOnly: true
             - mountPath: /static
               name: staticfiles
-          readinessProbe: # ?
-            exec:
-              command: [ "sh", "-c", "test -d /static" ]
-            initialDelaySeconds: 5
-            periodSeconds: 10
       volumes:
         - name: staticfiles
           persistentVolumeClaim:
