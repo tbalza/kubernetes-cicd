@@ -46,8 +46,12 @@ locals {
     }
 
     "rds_endpoint" = {
-      value = module.db.db_instance_endpoint # circular ref issue? # maybe store as secret directly as with ExternalDNS
+      value = split(":", module.db.db_instance_endpoint)[0] # default output prints dns:port, this sets just dns
     }
+
+#    "rds_endpoint" = {
+#      value = module.db.db_instance_endpoint # circular ref issue? # maybe store as secret directly as with ExternalDNS
+#    }
 
     "django_secretkey" = {
       value = random_password.django_secretkey.result
@@ -1889,7 +1893,7 @@ output "db_instance_availability_zone" {
 
 output "db_instance_endpoint" {
   description = "The connection endpoint"
-  value       = module.db.db_instance_endpoint
+  value       = split(":", module.db.db_instance_endpoint)[0] # regular output includes `endpoint:port`, this filters out the port
 }
 
 output "db_instance_engine" {
