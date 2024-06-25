@@ -30,6 +30,10 @@ locals {
       value = local.domain
     }
 
+    "region" = {
+      value = local.region
+    }
+
     # (used by Jenkins/Kaniko)
     "ecr_repo" = {
       value = module.ecr.repository_url

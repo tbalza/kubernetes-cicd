@@ -91,11 +91,11 @@ agent:
       args: "9999999" # required
       privileged: false
       ttyEnabled: true
-  envVars:
-    - name: AWS_DEFAULT_REGION
-      value: "us-east-1"
-    - name: ECR_URL
-      value: "350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
+#  envVars:
+#    - name: AWS_DEFAULT_REGION
+#      value: "us-east-1"
+#    - name: ECR_URL
+#      value: "350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
 
 serviceAccount:
   create: true
