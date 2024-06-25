@@ -1,13 +1,10 @@
 pipeline {
     agent {
         kubernetes {
-            inheritFrom 'default' // created in helm chart
+            inheritFrom 'default' // `default` created in upstream helm chart by default, Kaniko container config added to default via `additionalContainers` in values.yaml
         }
     }
-//     environment {
-//         AWS_DEFAULT_REGION = 'us-east-1' // Specify the AWS region
-//         ECR_URL = "350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production" // Use the direct ECR URL
-//     }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -30,8 +27,8 @@ pipeline {
         }
         stage('Build and Push Image') {
             steps {
-                container('kaniko') { // using --destination ${ECR_REPO}:latest for testing deployment before configuring argocd image updater. ${ECR_REPO}:${COMMIT_ID}
-                    script {
+                container('kaniko') { // pending argocd image updater. ${ECR_REPO}:${COMMIT_ID}
+                    script { // ${ECR_REPO} defined in secrets.yaml using ESO, and loaded as env var in agent pod via `secretEnvVars` in values.yaml
                         sh """
                         /kaniko/executor --dockerfile /home/jenkins/agent/workspace/build-django/django/Dockerfile \
                                           --context /home/jenkins/agent/workspace/build-django/django/ \
