@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: delete-hook
+  annotations:
+    "helm.sh/hook": "pre-delete"
+spec:
+  template:
+    metadata:
+      annotations:
+        "eks.amazonaws.com/role-arn": "arn:aws:iam::350206045032:role/ArgoCDRole"  # Role with permissions to manage resources
+    spec:
+      serviceAccountName: argocd  # Assuming this account is linked to the necessary IAM role
+      restartPolicy: Never
+      containers:
+      - name: cleanup
+        image: bitnami/kubectl  # Or another image with kubectl
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            kubectl delete all,cm,secrets,pvc --all-namespaces --selector=app.kubernetes.io/managed-by=argocd
+            # Additional cleanup commands can be added here

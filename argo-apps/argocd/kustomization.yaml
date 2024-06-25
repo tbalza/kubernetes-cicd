@@ -18,6 +18,7 @@ helmCharts:
 resources:
   - applicationset.yaml
   - ingress.yaml
+  - delete-hook.yaml
 
 #vars:
 #  - name: ARGOCD_ROLE_ARN

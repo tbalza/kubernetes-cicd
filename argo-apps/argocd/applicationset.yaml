@@ -21,7 +21,9 @@ spec:
         repoURL: https://github.com/tbalza/kubernetes-cicd.git
         targetRevision: HEAD
         path: '{{.path.path}}'
-        # kustomize: {} commonAnnotations can be used to pass build numbers to kustomize
+        kustomize:
+          commonAnnotations:
+            app.kubernetes.io/managed-by: argocd # delete-hook test
       destination:
         server: https://kubernetes.default.svc # pending make dynamic from repo files
         namespace: '{{.path.basename}}' # pending make dynamic from repo files
