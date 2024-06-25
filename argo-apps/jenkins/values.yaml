@@ -1,4 +1,7 @@
 controller:
+  containerEnvFrom: # ? load all the secrets in one go as ENV instead of using https://external-secrets.io/v0.4.2/examples-jenkins-kubernetes-credentials/ or kubernetes-credentials-provider-plugin
+    - secretRef:
+        name: jenkins-secrets
   nodeSelector:
     role: ci-cd
   sidecars:
