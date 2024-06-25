@@ -95,8 +95,8 @@ agent:
       privileged: false
       ttyEnabled: true
   secretEnvVars:
-    - key: ECR_URL
-      secretKey: ECR_URL
+    - key: ECR_REPO
+      secretKey: ECR_REPO
       secretName: jenkins-secrets
       optional: false # default: false
 
