@@ -1,7 +1,7 @@
 controller:
   containerEnvFrom: # ? load all the secrets in one go as ENV instead of using https://external-secrets.io/v0.4.2/examples-jenkins-kubernetes-credentials/ or kubernetes-credentials-provider-plugin
     - secretRef:
-        name: jenkins-secrets
+        name: jenkins-secrets # ? this loads the ENV in the controller, not the agent
   nodeSelector:
     role: ci-cd
   sidecars:
@@ -94,11 +94,11 @@ agent:
       args: "9999999" # required
       privileged: false
       ttyEnabled: true
-#  envVars:
-#    - name: AWS_DEFAULT_REGION
-#      value: "us-east-1"
-#    - name: ECR_URL
-#      value: "350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
+  secretEnvVars:
+    - key: ECR_URL
+      secretKey: ECR_URL
+      secretName: jenkins-secrets
+      optional: false # default: false
 
 serviceAccount:
   create: true

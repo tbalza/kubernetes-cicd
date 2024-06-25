@@ -30,12 +30,12 @@ pipeline {
         }
         stage('Build and Push Image') {
             steps {
-                container('kaniko') { // using --destination ${ECR_URL}:latest for testing deployment before configuring argocd image updater. ${ECR_URL}:${COMMIT_ID}
+                container('kaniko') { // using --destination ${ECR_REPO}:latest for testing deployment before configuring argocd image updater. ${ECR_REPO}:${COMMIT_ID}
                     script {
                         sh """
                         /kaniko/executor --dockerfile /home/jenkins/agent/workspace/build-django/django/Dockerfile \
                                           --context /home/jenkins/agent/workspace/build-django/django/ \
-                                          --destination ${ECR_URL}:latest \
+                                          --destination ${ECR_REPO}:latest \
                                           --cache=true
                         """
                     }
