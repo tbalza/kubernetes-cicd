@@ -98,7 +98,7 @@ agent:
     - key: ECR_REPO
       secretKey: ECR_REPO
       secretName: jenkins-secrets
-      optional: true # default: false # timing issue blocking agent pod to launch?
+      optional: false # default: false # timing issue blocking agent pod to launch?
 
 serviceAccount:
   create: true
