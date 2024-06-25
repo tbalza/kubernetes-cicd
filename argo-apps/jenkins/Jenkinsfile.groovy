@@ -4,7 +4,6 @@ pipeline {
             inheritFrom 'default' // `default` created in upstream helm chart by default, Kaniko container config added to default via `additionalContainers` in values.yaml
         }
     }
-
     stages {
         stage('Checkout Code') {
             steps {

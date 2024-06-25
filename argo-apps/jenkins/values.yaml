@@ -1,7 +1,7 @@
 controller:
-  containerEnvFrom: # loads all the secrets in one go as ENV instead of using https://external-secrets.io/v0.4.2/examples-jenkins-kubernetes-credentials/ or kubernetes-credentials-provider-plugin
-    - secretRef:
-        name: jenkins-secrets # loads the ENV in the controller, not the agent
+#  containerEnvFrom: # loads all the secrets in one go as ENV instead of using https://external-secrets.io/v0.4.2/examples-jenkins-kubernetes-credentials/ or kubernetes-credentials-provider-plugin
+#    - secretRef:
+#        name: jenkins-secrets # loads the ENV in the controller, not the agent
   nodeSelector:
     role: ci-cd
   sidecars:
@@ -94,11 +94,11 @@ agent:
       args: "9999999" # required
       privileged: false
       ttyEnabled: true
-  secretEnvVars: # pending. this will be to be taken out of the chart when testing environments
-    - key: ECR_REPO
-      secretKey: ECR_REPO
-      secretName: jenkins-secrets
-      optional: false # default: false # timing issue blocking agent pod to launch?
+#  secretEnvVars: # pending. this will be to be taken out of the chart when testing environments
+#    - key: ECR_REPO
+#      secretKey: ECR_REPO
+#      secretName: jenkins-secrets
+#      optional: false # default: false # timing issue blocking agent pod to launch?
 
 serviceAccount:
   create: true
