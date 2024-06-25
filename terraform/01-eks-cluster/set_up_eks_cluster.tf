@@ -24,11 +24,18 @@ locals {
 
   # SSM Parameter values
   parameters = {
-    # Service Account IAM Role ARNs to pass to ArgoCD via external secrets. (helm chart substitutions)
+
+    # e.g. tbalza.net (used by ExternalDNS)
+    "domain" = {
+      value = local.domain
+    }
+
+    # (used by Jenkins/Kaniko)
     "ecr_repo" = {
       value = module.ecr.repository_url
     }
 
+    # Django's params
     "rds_user" = {
       value = local.rds_user
     }
@@ -46,20 +53,35 @@ locals {
     }
 
     "rds_endpoint" = {
-      value = split(":", module.db.db_instance_endpoint)[0] # default output prints dns:port, this sets just dns
+      value = split(":", module.db.db_instance_endpoint)[0] # regular output includes `endpoint:port`, this filters out the port
     }
-
-#    "rds_endpoint" = {
-#      value = module.db.db_instance_endpoint # circular ref issue? # maybe store as secret directly as with ExternalDNS
-#    }
 
     "django_secretkey" = {
       value = random_password.django_secretkey.result
     }
 
-    #    "django_irsa_arn" = {
-    #      value = aws_iam_role.django.arn
-    #    }
+    # ServiceAccounts ARN
+    "argo_cd_iam_role_arn" = {
+      value = aws_iam_role.argo_cd.arn
+    }
+
+    "jenkins_iam_role_arn" = {
+      value = aws_iam_role.jenkins.arn
+    }
+
+    "prometheus_iam_role_arn" = {
+      value = aws_iam_role.prometheus.arn
+    }
+
+    "external_secrets_iam_role_arn" = {
+      value = aws_iam_role.external_secrets.arn
+    }
+
+    "django_iam_role_arn" = {
+      value = aws_iam_role.django.arn
+    }
+
+
   }
 
   # argocd "internal" secret, generated randomly and set by default, not related to login passwords, apparently can drift and break the install
@@ -1352,7 +1374,7 @@ resource "aws_iam_role_policy_attachment" "django_read_attach" { # check
   policy_arn = aws_iam_policy.django_ssm_read.arn
 }
 
-#######
+####### check
 
 #resource "aws_iam_policy" "jenkins_admin" {
 #  name   = "JenkinsAdminPolicy"
