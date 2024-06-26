@@ -48,6 +48,6 @@ patches:
     target:
 #      group: argoproj.io
 #      version: v1alpha1
-#      kind: Application
+      kind: Application
 #      apiVersion: argoproj.io/v1alpha1
-      name: django
+#      name: django
