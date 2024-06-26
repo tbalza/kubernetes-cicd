@@ -94,11 +94,11 @@ agent:
       args: "9999999" # required
       privileged: false
       ttyEnabled: true
-  secretEnvVars: # pending. this will be to be taken out of the chart when testing environments
-    - key: ECR_REPO
-      secretKey: ECR_REPO
-      secretName: jenkins-secrets
-      optional: true # default: false # timing issue blocking agent pod to launch?
+#  secretEnvVars: # pending. this will be to be taken out of the chart when testing environments
+#    - key: ECR_REPO
+#      secretKey: ECR_REPO
+#      secretName: jenkins-secrets
+#      optional: true # default: false # timing issue blocking agent pod to launch?
 
 serviceAccount:
   create: true
