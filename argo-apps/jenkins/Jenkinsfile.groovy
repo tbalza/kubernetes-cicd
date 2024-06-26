@@ -31,7 +31,7 @@ pipeline {
                         sh """
                         /kaniko/executor --dockerfile /home/jenkins/agent/workspace/build-django/django/Dockerfile \
                                           --context /home/jenkins/agent/workspace/build-django/django/ \
-                                          --destination ${ECR_REPO}:latest \
+                                          --destination ${ECR_REPO}:${COMMIT_ID} \
                                           --cache=true
                         """
                     }
