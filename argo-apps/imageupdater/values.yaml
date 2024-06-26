@@ -1,0 +1,6 @@
+nodeSelector:
+  role: ci-cd
+
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole"

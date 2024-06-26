@@ -16,13 +16,25 @@ configMapGenerator:
     files:
       - ../../django/nginx/default.conf # load the nginx default.conf from the django project directory
 
+#patches:
+#  - patch: |-
+#      - op: add
+#        path: /metadata/annotations/argocd.argoproj.io~1compare-options
+#        value: ServerSideDiff=true
+#    target:
+#      kind: Application
+#      name: django # pending. make dynamic
+
 patches:
   - patch: |-
       - op: add
-        path: /metadata/annotations/argocd.argoproj.io~1compare-options
-        value: ServerSideDiff=true
+        path: /metadata/annotations
+        value:
+          argocd-image-updater.argoproj.io/image-list: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
+          argocd-image-updater.argoproj.io/django.update-strategy: "latest"
+          argocd-image-updater.argoproj.io/django.allow-tags: "regexp:^.*"
     target:
-      group: argoproj.io
-      version: v1alpha1
+#      group: argoproj.io
+#      version: v1alpha1
       kind: Application
-      name: django # pending. make dynamic
+      name: django
