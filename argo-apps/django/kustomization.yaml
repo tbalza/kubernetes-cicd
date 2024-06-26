@@ -34,7 +34,7 @@ patches:
           argocd-image-updater.argoproj.io/django.update-strategy: "latest"
           argocd-image-updater.argoproj.io/django.allow-tags: "regexp:^.*"
     target:
-#      group: argoproj.io
-#      version: v1alpha1
+      group: argoproj.io
+      version: v1alpha1
       kind: Application
       name: django
