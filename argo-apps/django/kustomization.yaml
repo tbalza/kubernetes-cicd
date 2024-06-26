@@ -57,6 +57,7 @@ patches:
   target:
     name: django
     kind: Application
+    namespace: argocd
   options:
-#    allowNameChange: true
+    allowNameChange: true
     allowKindChange: true
