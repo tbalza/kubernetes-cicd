@@ -56,7 +56,7 @@ patches:
 - path: imageupdater.yaml
   target:
     name: django
-#    kind: Application
+    kind: Application
   options:
-    allowNameChange: true
+#    allowNameChange: true
     allowKindChange: true
