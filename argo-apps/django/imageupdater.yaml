@@ -3,6 +3,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: django
+  namespace: argocd
   annotations:
     argocd-image-updater.argoproj.io/image-list: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
     argocd-image-updater.argoproj.io/django.update-strategy: "latest"
