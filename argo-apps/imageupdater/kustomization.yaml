@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: argocd
+
+helmCharts:
+  - name: argo-cd
+    repo: https://argoproj.github.io/argo-helm
+    version: 0.10.2 # Chart 0.10.2, App v0.13.1
+    releaseName: argocd-image-updater
+    namespace: argocd
+    includeCRDs: true # check if necessary ( as it should be defined in values.yaml)
+    valuesFile: values.yaml
+    valuesMerge: replace # specifies how to treat valuesInline with respect to Values. Legal values: ‘merge’, ‘override’, ‘replace’. Defaults to ‘override’. # check
