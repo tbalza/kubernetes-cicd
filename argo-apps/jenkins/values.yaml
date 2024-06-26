@@ -24,15 +24,24 @@ controller:
   service:
     port: 8080
   installPlugins:
-    - kubernetes:4246.v5a_12b_1fe120e # 4203.v1dd44f5b_1cf9
-    - workflow-aggregator:596.v8c21c963d92d # (displayed as `Pipeline`)# 596.v8c21c963d92d
-    - git:5.2.2 # 5.2.1
-    - configuration-as-code:1810.v9b_c30a_249a_4c  # 1775.v810dc950b_514
-    - ansible:403.v8d0ca_dcb_b_502 # 307.va_1f3ef06575a_
-    - docker-workflow:580.vc0c340686b_54 # (displayed as `Docker Pipeline`) # 580.vc0c340686b_54
-    - credentials:1337.v60b_d7b_c7b_c9f # not activated by default 1337.v60b_d7b_c7b_c9f
-    - job-dsl:1.87 # 1.87
-    - amazon-ecr:1.114.vfd22430621f5 # 1.114.vfd22430621f5
+    - kubernetes:latest # 4203.v1dd44f5b_1cf9
+    - workflow-aggregator:latest # (displayed as `Pipeline`)# 596.v8c21c963d92d
+    - git:latest # 5.2.1
+    - configuration-as-code:latest  # 1775.v810dc950b_514
+    - ansible:latest # 307.va_1f3ef06575a_
+    - docker-workflow:latest # (displayed as `Docker Pipeline`) # 580.vc0c340686b_54
+    - credentials:latest # not activated by default 1337.v60b_d7b_c7b_c9f
+    - job-dsl:latest # 1.87
+    - amazon-ecr:latest # 1.114.vfd22430621f5
+#    - kubernetes:4246.v5a_12b_1fe120e # 4203.v1dd44f5b_1cf9
+#    - workflow-aggregator:596.v8c21c963d92d # (displayed as `Pipeline`)# 596.v8c21c963d92d
+#    - git:5.2.2 # 5.2.1
+#    - configuration-as-code:1810.v9b_c30a_249a_4c  # 1775.v810dc950b_514
+#    - ansible:403.v8d0ca_dcb_b_502 # 307.va_1f3ef06575a_
+#    - docker-workflow:580.vc0c340686b_54 # (displayed as `Docker Pipeline`) # 580.vc0c340686b_54
+#    - credentials:1337.v60b_d7b_c7b_c9f # not activated by default 1337.v60b_d7b_c7b_c9f
+#    - job-dsl:1.87 # 1.87
+#    - amazon-ecr:1.114.vfd22430621f5 # 1.114.vfd22430621f5
   installLatestPlugins: true # set to `false` to attempt it from breaking even when pinning plugin versions (not guaranteed)
   # pending plugin ver pinning which working combination
   JCasC:

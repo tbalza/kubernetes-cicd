@@ -1,4 +1,4 @@
-
+sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
 
 set Cloudflare API token as an environment variable (that will be used by ExternalDNS)
 # export TF_VAR_CFL_API_TOKEN=123example
