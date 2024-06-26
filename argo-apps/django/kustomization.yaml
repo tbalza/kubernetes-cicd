@@ -55,4 +55,4 @@ configMapGenerator:
 patches:
 - path: imageupdater.yaml
   target:
-    name: *
+    name: django
