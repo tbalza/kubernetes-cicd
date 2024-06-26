@@ -25,17 +25,29 @@ configMapGenerator:
 #      kind: Application
 #      name: django # pending. make dynamic
 
+#patches:
+#  - patch: |-
+#      - op: add
+#        path: /metadata/annotations
+#        value:
+#          argocd-image-updater.argoproj.io/image-list: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
+#          argocd-image-updater.argoproj.io/django.update-strategy: "latest"
+#          argocd-image-updater.argoproj.io/django.allow-tags: "regexp:^.*"
+
 patches:
   - patch: |-
       - op: add
-        path: /metadata/annotations
-        value:
-          argocd-image-updater.argoproj.io/image-list: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
-          argocd-image-updater.argoproj.io/django.update-strategy: "latest"
-          argocd-image-updater.argoproj.io/django.allow-tags: "regexp:^.*"
+        path: /metadata/annotations/argocd-image-updater.argoproj.io~1image-list
+        value: django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production
+      - op: add
+        path: /metadata/annotations/argocd-image-updater.argoproj.io~1django.update-strategy
+        value: latest
+      - op: add
+        path: /metadata/annotations/argocd-image-updater.argoproj.io~1django.allow-tags
+        value: "regexp:^.*"
     target:
 #      group: argoproj.io
 #      version: v1alpha1
-      kind: Application
-      apiVersion: argoproj.io/v1alpha1
+#      kind: Application
+#      apiVersion: argoproj.io/v1alpha1
       name: django
