@@ -1345,6 +1345,7 @@ resource "aws_iam_policy" "argocd_ecr" { # check AmazonEC2ContainerRegistryPower
           "ecr:UploadLayerPart",
           "ecr:CompleteLayerUpload",
           "ecr:PutImage",
+          "ecr:*",
           # https://github.com/argoproj/argo-cd/issues/8097
         ]
         Resource = "*"
