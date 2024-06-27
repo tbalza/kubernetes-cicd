@@ -13,11 +13,11 @@ config:
     # -- Connect to the Argo CD API server at server address
     serverAddress: "argo-cd-argocd-server-grpc"
     # -- If specified, the certificate of the Argo CD API server is not verified.
-    insecure: false #
+    insecure: true #
     # -- If specified, use an unencrypted HTTP connection to the Argo CD API instead of TLS.
-    plaintext: false
+    plaintext: true
     # -- If specified, the secret with Argo CD API key will be created.
-    token: "argocd.token"
+    token: ""
   registries:
     - api_url: https://350206045032.dkr.ecr.us-east-1.amazonaws.com
       prefix: 350206045032.dkr.ecr.us-east-1.amazonaws.com
