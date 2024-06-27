@@ -18,6 +18,7 @@ spec:
       annotations:
         argocd-image-updater.argoproj.io/image-list: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
         argocd-image-updater.argoproj.io/django.update-strategy: "newest-build"
+        argocd-image-updater.argoproj.io/myimage.ignore-tags: latest, master
         #argocd-image-updater.argoproj.io/django.allow-tags: "regexp:^.*"
     spec:
       project: "default" # check
