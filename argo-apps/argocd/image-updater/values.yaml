@@ -21,7 +21,7 @@ config:
 #    token: ""
   registries:
     - api_url: https://350206045032.dkr.ecr.us-east-1.amazonaws.com
-      prefix: 350206045032.dkr.ecr.us-east-1.amazonaws.com
+      #prefix: 350206045032.dkr.ecr.us-east-1.amazonaws.com
       name: ECR
       ping: true
       insecure: false
