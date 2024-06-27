@@ -75,6 +75,7 @@ resource "kubernetes_namespace" "argo_cd" {
 resource "helm_release" "argo_cd" {
 
   # IDE may show "unresolved reference" even though it's linked correctly in tf.
+  # referencing kustomization.yaml from argocd (inside /argo-apps/argocd)
   name       = local.argocd_helm_chart.name # "argo-cd"
   repository = local.argocd_helm_chart.repo # "https://argoproj.github.io/argo-helm"
   chart      = local.argocd_helm_chart.releaseName # "argo-cd"
