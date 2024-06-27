@@ -6,18 +6,18 @@ serviceAccount:
     eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole"
 
 config:
-  applicationsAPIKind: "argocd"
-  argocd:
-    # -- Use the gRPC-web protocol to connect to the Argo CD API
-    grpcWeb: true
-    # -- Connect to the Argo CD API server at server address
-    serverAddress: "argo-cd-argocd-server-grpc"
-    # -- If specified, the certificate of the Argo CD API server is not verified.
-    insecure: true #
-    # -- If specified, use an unencrypted HTTP connection to the Argo CD API instead of TLS.
-    plaintext: true
-    # -- If specified, the secret with Argo CD API key will be created.
-    token: ""
+  applicationsAPIKind: "kubernetes"
+#  argocd:
+#    # -- Use the gRPC-web protocol to connect to the Argo CD API
+#    grpcWeb: true
+#    # -- Connect to the Argo CD API server at server address
+#    serverAddress: "argo-cd-argocd-server-grpc"
+#    # -- If specified, the certificate of the Argo CD API server is not verified.
+#    insecure: true #
+#    # -- If specified, use an unencrypted HTTP connection to the Argo CD API instead of TLS.
+#    plaintext: true
+#    # -- If specified, the secret with Argo CD API key will be created.
+#    token: ""
   registries:
     - api_url: https://350206045032.dkr.ecr.us-east-1.amazonaws.com
       prefix: 350206045032.dkr.ecr.us-east-1.amazonaws.com
