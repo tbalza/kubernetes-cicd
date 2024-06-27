@@ -15,8 +15,8 @@ spec:
   template:
     metadata:
       name: '{{.path.basename}}'
-      annotations:
-        argocd-image-updater.argoproj.io/app.update-strategy: latest
+      annotations: {}
+#        argocd-image-updater.argoproj.io/app.update-strategy: latest
     spec:
       project: "default" # check
       source:
