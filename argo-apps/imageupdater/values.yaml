@@ -20,7 +20,7 @@ config:
 authScripts:
   enabled: true
   scripts:
-    ecr-login2.sh: |
+    ecr-login.sh: |
       #!/bin/sh
       # Retrieve the authorization token from AWS ECR
       auth_token=$(aws ecr get-authorization-token --region us-east-1 --output text --query 'authorizationData[].authorizationToken')
@@ -34,6 +34,6 @@ authScripts:
       
       # Output username and password
       echo "$username:$password"
-    ecr-login.sh: |
+    ecr-login2.sh: |
       #!/bin/sh
       aws ecr --region "us-east-1" get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 -d
