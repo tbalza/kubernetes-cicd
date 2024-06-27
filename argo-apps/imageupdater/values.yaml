@@ -31,7 +31,7 @@ config:
 authScripts:
   enabled: true
   scripts:
-    ecr-login2.sh: |
+    ecr-login.sh: |
       #!/bin/sh
       
       # Set AWS CLI to use the /tmp directory for any temporary storage
@@ -50,6 +50,6 @@ authScripts:
       
       # Output username and password
       echo "$username:$password"
-    ecr-login.sh: |
+    ecr-login2.sh: |
       #!/bin/sh
       aws ecr --region "us-east-1" get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 -d
