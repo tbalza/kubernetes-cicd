@@ -11,7 +11,7 @@ spec:
       repoURL: https://github.com/tbalza/kubernetes-cicd.git
       revision: HEAD
       directories:
-      - path: argo-apps/*
+      - path: argo-apps/* # add an exclude for django, create Application.yaml separately ?
   template:
     metadata:
       name: '{{.path.basename}}'
@@ -28,9 +28,9 @@ spec:
         server: https://kubernetes.default.svc # pending make dynamic from repo files
         namespace: '{{.path.basename}}' # pending make dynamic from repo files
       syncPolicy:
-        automated:
-          selfHeal: true
-          prune: true  # Enables the deletion of resources that are no longer in source
+#        automated:
+#          selfHeal: true
+#          prune: true  # Enables the deletion of resources that are no longer in source
         syncOptions:
         - CreateNamespace=true
         - ServerSideApply=true

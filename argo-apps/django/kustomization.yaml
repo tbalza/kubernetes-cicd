@@ -52,12 +52,12 @@ configMapGenerator:
 ##      apiVersion: argoproj.io/v1alpha1
 #      name: django
 
-patches:
-- path: imageupdater.yaml
-  target:
-    name: django
-    kind: Application
-    namespace: argocd
-  options:
-    allowNameChange: true
-    allowKindChange: true
+#patches:
+#- path: imageupdater.yaml
+#  target:
+#    name: django
+#    kind: Application
+#    namespace: argocd
+#  options:
+#    allowNameChange: true
+#    allowKindChange: true
