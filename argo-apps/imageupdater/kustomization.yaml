@@ -3,6 +3,9 @@ kind: Kustomization
 
 namespace: argocd
 
+resources:
+  - rbac.yaml
+
 helmCharts:
   - name: argocd-image-updater
     repo: https://argoproj.github.io/argo-helm

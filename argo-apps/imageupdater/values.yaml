@@ -6,6 +6,7 @@ serviceAccount:
     eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole"
 
 config:
+  logLevel: "debug" # default info #
   applicationsAPIKind: "kubernetes"
 #  argocd:
 #    # -- Use the gRPC-web protocol to connect to the Argo CD API
