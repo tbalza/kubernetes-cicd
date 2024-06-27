@@ -23,21 +23,22 @@ spec:
         repoURL: https://github.com/tbalza/kubernetes-cicd.git # check
         targetRevision: HEAD # check
         path: '{{.path.path}}'
-        kustomize:
-          patches:
-            - target:
-                kind: ApplicationSet
-                name: '{{.path.basename}}'
-              patch: |-
-                - op: add
-                  path: /metadata/annotations/argocd-image-updater.argoproj.io~1image-list
-                  value: '{{.path.basename}}=350206045032.dkr.ecr.us-east-1.amazonaws.com/{{.path.basename}}-production'
-                - op: add
-                  path: /metadata/annotations/argocd-image-updater.argoproj.io~1{{.path.basename}}.update-strategy
-                  value: 'latest'
-                - op: add
-                  path: /metadata/annotations/argocd-image-updater.argoproj.io~1{{.path.basename}}.allow-tags
-                  value: 'regexp:^.*'
+#        kustomize:
+#          patches:
+#            - target:
+#                kind: ApplicationSet
+#                name: '{{.path.basename}}'
+#              patch: |-
+#                - op: add
+#                  path: /metadata/annotations/argocd-image-updater.argoproj.io~1image-list
+#                  value: '{{.path.basename}}=350206045032.dkr.ecr.us-east-1.amazonaws.com/{{.path.basename}}-production'
+#                - op: add
+#                  path: /metadata/annotations/argocd-image-updater.argoproj.io~1{{.path.basename}}.update-strategy
+#                  value: 'latest'
+#                - op: add
+#                  path: /metadata/annotations/argocd-image-updater.argoproj.io~1{{.path.basename}}.allow-tags
+#                  value: 'regexp:^.*'
+
 #        kustomize:
 #          commonAnnotations:
 #            app.kubernetes.io/managed-by: argocd # delete-hook test
