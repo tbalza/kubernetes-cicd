@@ -8,18 +8,19 @@ serviceAccount:
 config:
   applicationsAPIKind: "kubernetes"
   registries:
-    - name: ECR
-      api_url: https://350206045032.dkr.ecr.us-east-1.amazonaws.com
+    - api_url: https://350206045032.dkr.ecr.us-east-1.amazonaws.com
       prefix: 350206045032.dkr.ecr.us-east-1.amazonaws.com
-      ping: yes
-      insecure: no
+      name: ECR
+      ping: true
+      insecure: false
+      default: true
       credentials: ext:/scripts/ecr-login.sh
       credsexpire: 6h
 
 authScripts:
   enabled: true
   scripts:
-    ecr-login.sh: |
+    ecr-login2.sh: |
       #!/bin/sh
       # Retrieve the authorization token from AWS ECR
       auth_token=$(aws ecr get-authorization-token --region us-east-1 --output text --query 'authorizationData[].authorizationToken')
@@ -33,3 +34,6 @@ authScripts:
       
       # Output username and password
       echo "$username:$password"
+    ecr-login.sh: |
+      #!/bin/sh
+      aws ecr --region "us-east-1" get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 -d

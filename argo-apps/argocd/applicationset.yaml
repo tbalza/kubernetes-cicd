@@ -16,9 +16,9 @@ spec:
     metadata:
       name: '{{.path.basename}}'
       annotations:
-        argocd-image-updater.argoproj.io/app.update-strategy: "latest"
         argocd-image-updater.argoproj.io/image-list: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
-        argocd-image-updater.argoproj.io/django.allow-tags: "regexp:^.*"
+        argocd-image-updater.argoproj.io/django.update-strategy: "latest"
+        #argocd-image-updater.argoproj.io/django.allow-tags: "regexp:^.*"
     spec:
       project: "default" # check
       source:
