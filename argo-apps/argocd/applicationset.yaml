@@ -26,7 +26,7 @@ spec:
         kustomize:
           patches:
             - target:
-                kind: Application
+                kind: ApplicationSet
                 name: '{{.path.basename}}'
               patch: |-
                 - op: add
