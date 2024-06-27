@@ -28,7 +28,7 @@ patches:
           argocd-image-updater.argoproj.io/django.allow-tags: "regexp:^.*"
     target:
       kind: Application
-#      name: django
+      name: django
 
 
 #patches:
