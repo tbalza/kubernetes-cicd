@@ -10,12 +10,28 @@ resources:
   - secrets.yaml
   - service.yaml
   - serviceaccount.yaml
-#  - imageupdater.yaml
+  - application.yaml
 
 configMapGenerator:
   - name: nginx-config
     files:
       - ../../django/nginx/default.conf # load the nginx default.conf from the django project directory
+
+#patches:
+#  - patch: |-
+#      - op: add
+#        path: /metadata/annotations/argocd-image-updater.argoproj.io~1image-list
+#        value: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
+#      - op: add
+#        path: /metadata/annotations/argocd-image-updater.argoproj.io~1django.update-strategy
+#        value: "latest"
+#      - op: add
+#        path: /metadata/annotations/argocd-image-updater.argoproj.io~1django.allow-tags
+#        value: "regexp:^.*"
+#    target:
+#      kind: ApplicationSet
+#      apiVersion: argoproj.io/v1alpha1
+#      name: django
 
 #patches:
 #  - patch: |-
@@ -34,24 +50,6 @@ configMapGenerator:
 #          argocd-image-updater.argoproj.io/image-list: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
 #          argocd-image-updater.argoproj.io/django.update-strategy: "latest"
 #          argocd-image-updater.argoproj.io/django.allow-tags: "regexp:^.*"
-
-#patches:
-#  - patch: |-
-#      - op: add
-#        path: /metadata/annotations/argocd-image-updater.argoproj.io~1image-list
-#        value: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
-#      - op: add
-#        path: /metadata/annotations/argocd-image-updater.argoproj.io~1django.update-strategy
-#        value: "latest"
-#      - op: add
-#        path: /metadata/annotations/argocd-image-updater.argoproj.io~1django.allow-tags
-#        value: "regexp:^.*"
-#    target:
-#      group: argoproj.io
-#      version: v1alpha1
-#      kind: Application
-##      apiVersion: argoproj.io/v1alpha1
-#      name: django
 
 #patches:
 #- path: imageupdater.yaml
