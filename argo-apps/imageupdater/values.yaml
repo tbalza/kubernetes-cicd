@@ -35,8 +35,7 @@ authScripts:
       #!/bin/sh
       
       # Set AWS CLI to use the /tmp directory for any temporary storage
-      export AWS_CONFIG_FILE=/tmp/aws_config
-      export AWS_SHARED_CREDENTIALS_FILE=/tmp/aws_credentials
+      export HOME=/tmp
       
       # Retrieve the authorization token from AWS ECR
       auth_token=$(aws ecr get-authorization-token --region us-east-1 --output text --query 'authorizationData[].authorizationToken')
@@ -50,6 +49,16 @@ authScripts:
       
       # Output username and password
       echo "$username:$password"
-    ecr-login2.sh: |
+    ecr-login32.sh: |
       #!/bin/sh
       aws ecr --region "us-east-1" get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 -d
+    ecr-login3.sh: |
+      #!/bin/sh
+
+      # Retrieve the authorization token from AWS ECR and output the username and password in the required format
+      TOKEN=$(aws ecr get-authorization-token --region us-east-1 --output text --query 'authorizationData[].authorizationToken' | base64 --decode)
+      USERNAME=$(echo $TOKEN | cut -d: -f1)
+      PASSWORD=$(echo $TOKEN | cut -d: -f2)
+
+      # Output username and password in the required format for Argo CD Image Updater
+      echo "$USERNAME:$PASSWORD"
