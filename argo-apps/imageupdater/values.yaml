@@ -27,6 +27,7 @@ config:
       default: true
       credentials: ext:/scripts/ecr-login.sh
       credsexpire: 6h
+      tagsortmode: none # ?
 
 authScripts:
   enabled: true
