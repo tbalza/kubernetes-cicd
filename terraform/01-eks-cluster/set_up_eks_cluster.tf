@@ -604,16 +604,28 @@ resource "aws_iam_role" "argo_cd" {
   name = "ArgoCDRole"
 
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+    Version = "2012-10-17",
     Statement = [
       {
-        Action = "sts:AssumeRole"
+        Effect = "Allow",
+        Action = "sts:AssumeRole",
         Principal = {
           Service = "eks.amazonaws.com"
+        },
+      },
+      # External Secrets Operator reqs (jwt auth)
+      {
+        Effect = "Allow",
+        Action = "sts:AssumeRoleWithWebIdentity",
+        Principal = {
+          Federated = module.eks.oidc_provider_arn
+        },
+        Condition = {
+          StringEquals = {
+            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:argocd:argocd-image-updater" # check
+          }
         }
-        Effect = "Allow"
-        Sid    = ""
-      }
+      },
     ]
   })
 }
@@ -1270,6 +1282,43 @@ resource "aws_iam_role_policy_attachment" "jenkins_ecr_attach" {
   policy_arn = aws_iam_policy.jenkins_ecr.arn
 }
 
+#########
+
+resource "aws_iam_policy" "django_ecr" { # check AmazonEC2ContainerRegistryPowerUser
+  name        = "DjangoECRPolicy"
+  path        = "/"
+  description = "Allows Django to list ECR artifacts" # pending
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetAuthorizationToken", # req
+          "ecr:BatchCheckLayerAvailability", # req
+          "ecr:GetDownloadUrlForLayer", # req
+          "ecr:GetRepositoryPolicy",
+          "ecr:DescribeRepositories",
+          "ecr:ListImages",
+          "ecr:DescribeImages",
+          "ecr:BatchGetImage", # req
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload",
+          "ecr:PutImage",
+          # https://github.com/argoproj/argo-cd/issues/8097
+        ]
+        Resource = "*"
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "django_ecr_attach" {
+  role       = aws_iam_role.django.name # Assumes `aws_iam_role.jenkins` is defined elsewhere in your Terraform code
+  policy_arn = aws_iam_policy.django_ecr.arn
+}
 
 
 output "repository_name" {
