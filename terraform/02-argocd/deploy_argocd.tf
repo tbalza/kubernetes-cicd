@@ -112,6 +112,20 @@ resource "kubectl_manifest" "example_applicationset" {
   ]
 }
 
+# print argocd password after apply
+resource "null_resource" "get_argocd_admin_password" {
+  # Triggers the provisioner when apply is called
+  triggers = {
+    always_run = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 --decode
+    EOT
+  }
+}
+
 # Fix interdependencies for graceful provisioning and teardown ### check
 
 #Yes absolutely, using depends_on in an output is 100% valid

@@ -25,7 +25,7 @@ config:
       name: ECR
       ping: true
       insecure: false
-      default: true
+      #default: true
       credentials: ext:/scripts/ecr-login.sh
       credsexpire: 6h
       tagsortmode: none # ?
@@ -37,7 +37,7 @@ authScripts:
       #!/bin/sh
       
       # Save the original HOME directory
-      original_home=$HOME
+      #original_home=$HOME
       
       # Set HOME to the /tmp directory for AWS CLI operations
       export HOME=/tmp
@@ -56,4 +56,4 @@ authScripts:
       echo "$username:$password"
 
       # Restore the original HOME directory
-      export HOME=$original_home
+      #export HOME=$original_home
