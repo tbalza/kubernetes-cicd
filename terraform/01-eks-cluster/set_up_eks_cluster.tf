@@ -790,6 +790,10 @@ output "django_iam_role_arn" {
   value = aws_iam_role.django.arn
 }
 
+output "image_updater_role_arn" {
+  value = aws_iam_role.image_updater.arn
+}
+
 ## Allow Jenkins to push images to ECR
 #resource "aws_iam_policy" "jenkins_ecr_policy" {
 #  name        = "JenkinsECRAccessPolicy"
@@ -1327,6 +1331,82 @@ resource "aws_iam_role_policy_attachment" "jenkins_ecr_attach" {
 }
 
 #####
+resource "aws_iam_policy" "django_ecr" { # check AmazonEC2ContainerRegistryPowerUser
+  name        = "DjangoECRPolicy"
+  path        = "/"
+  description = "Allows Django to list ECR artifacts" # pending
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetAuthorizationToken", # req
+          "ecr:BatchCheckLayerAvailability", # req
+          "ecr:GetDownloadUrlForLayer", # req
+          "ecr:GetRepositoryPolicy",
+          "ecr:DescribeRepositories",
+          "ecr:ListImages",
+          "ecr:DescribeImages",
+          "ecr:BatchGetImage", # req
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload",
+          "ecr:PutImage",
+          "ecr:*",
+          # https://github.com/argoproj/argo-cd/issues/8097
+        ]
+        Resource = "*"
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "django_ecr_attach" {
+  role       = aws_iam_role.django.name
+  policy_arn = aws_iam_policy.django_ecr.arn
+}
+
+#####
+
+resource "aws_iam_policy" "argocd_ecr" { # check AmazonEC2ContainerRegistryPowerUser
+  name        = "ArgoCDECRPolicy"
+  path        = "/"
+  description = "Allows argoCD to list ECR artifacts" # pending
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetAuthorizationToken", # req
+          "ecr:BatchCheckLayerAvailability", # req
+          "ecr:GetDownloadUrlForLayer", # req
+          "ecr:GetRepositoryPolicy",
+          "ecr:DescribeRepositories",
+          "ecr:ListImages",
+          "ecr:DescribeImages",
+          "ecr:BatchGetImage", # req
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload",
+          "ecr:PutImage",
+          # https://github.com/argoproj/argo-cd/issues/8097
+        ]
+        Resource = "*"
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "argocd_ecr_attach" {
+  role       = aws_iam_role.argo_cd.name
+  policy_arn = aws_iam_policy.argocd_ecr.arn
+}
+
+
 
 # ArgoCD Image Updater is going to read ECR
 resource "aws_iam_policy" "imageupdater_ecr" { # check AmazonEC2ContainerRegistryPowerUser
