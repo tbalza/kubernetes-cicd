@@ -530,6 +530,20 @@ module "eks" {
       }
     }
 
+    imageupdater = {
+      principal_arn     = aws_iam_role.image_updater.arn
+      kubernetes_groups = []
+
+      policy_associations = {
+        admin_policy = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
+          access_scope = {
+            type = "cluster" # check
+          }
+        }
+      }
+    }
+
     jenkins = {
       principal_arn     = aws_iam_role.jenkins.arn
       kubernetes_groups = []
@@ -622,7 +636,37 @@ resource "aws_iam_role" "argo_cd" {
         },
         Condition = {
           StringEquals = {
-            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:argocd:argocd-image-updater" # check
+            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:argocd:argocd" #"namespace:service-account-name"
+          }
+        }
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role" "image_updater" {
+  name = "ImageUpdaterRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = "sts:AssumeRole",
+        Principal = {
+          Service = "eks.amazonaws.com"
+        },
+      },
+      # External Secrets Operator reqs (jwt auth)
+      {
+        Effect = "Allow",
+        Action = "sts:AssumeRoleWithWebIdentity",
+        Principal = {
+          Federated = module.eks.oidc_provider_arn
+        },
+        Condition = {
+          StringEquals = {
+            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:argocd:argocd-image-updater" #"namespace:service-account-name"
           }
         }
       },
@@ -652,7 +696,7 @@ resource "aws_iam_role" "jenkins" {
         },
         Condition = {
           StringEquals = {
-            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:jenkins:jenkins"
+            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:jenkins:jenkins" #"namespace:service-account-name"
           }
         }
       },
@@ -682,7 +726,7 @@ resource "aws_iam_role" "django" {
         },
         Condition = {
           StringEquals = {
-            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:django:django"
+            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:django:django" #"namespace:service-account-name"
           }
         }
       },
@@ -1246,7 +1290,7 @@ module "ecr" {
   tags = local.tags
 }
 
-
+# Jenkins is going to push images to ECR
 resource "aws_iam_policy" "jenkins_ecr" {
   name        = "jenkinsECRPolicy"
   path        = "/"
@@ -1282,48 +1326,11 @@ resource "aws_iam_role_policy_attachment" "jenkins_ecr_attach" {
   policy_arn = aws_iam_policy.jenkins_ecr.arn
 }
 
-#########
-
-resource "aws_iam_policy" "django_ecr" { # check AmazonEC2ContainerRegistryPowerUser
-  name        = "DjangoECRPolicy"
-  path        = "/"
-  description = "Allows Django to list ECR artifacts" # pending
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "ecr:GetAuthorizationToken", # req
-          "ecr:BatchCheckLayerAvailability", # req
-          "ecr:GetDownloadUrlForLayer", # req
-          "ecr:GetRepositoryPolicy",
-          "ecr:DescribeRepositories",
-          "ecr:ListImages",
-          "ecr:DescribeImages",
-          "ecr:BatchGetImage", # req
-          "ecr:InitiateLayerUpload",
-          "ecr:UploadLayerPart",
-          "ecr:CompleteLayerUpload",
-          "ecr:PutImage",
-          # https://github.com/argoproj/argo-cd/issues/8097
-        ]
-        Resource = "*"
-      },
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "django_ecr_attach" {
-  role       = aws_iam_role.django.name
-  policy_arn = aws_iam_policy.django_ecr.arn
-}
-
 #####
 
-resource "aws_iam_policy" "argocd_ecr" { # check AmazonEC2ContainerRegistryPowerUser
-  name        = "ArgoCDECRPolicy"
+# ArgoCD Image Updater is going to read ECR
+resource "aws_iam_policy" "imageupdater_ecr" { # check AmazonEC2ContainerRegistryPowerUser
+  name        = "ImageUpdaterECRpolicy"
   path        = "/"
   description = "Allows argoCD to list ECR artifacts" # pending
 
@@ -1333,9 +1340,9 @@ resource "aws_iam_policy" "argocd_ecr" { # check AmazonEC2ContainerRegistryPower
       {
         Effect = "Allow"
         Action = [
-          "ecr:GetAuthorizationToken", # req
+          "ecr:GetAuthorizationToken",       # req
           "ecr:BatchCheckLayerAvailability", # req
-          "ecr:GetDownloadUrlForLayer", # req
+          "ecr:GetDownloadUrlForLayer",      # req
           "ecr:GetRepositoryPolicy",
           "ecr:DescribeRepositories",
           "ecr:ListImages",
@@ -1354,9 +1361,9 @@ resource "aws_iam_policy" "argocd_ecr" { # check AmazonEC2ContainerRegistryPower
   })
 }
 
-resource "aws_iam_role_policy_attachment" "argocd_ecr_attach" {
-  role       = aws_iam_role.argo_cd.name
-  policy_arn = aws_iam_policy.argocd_ecr.arn
+resource "aws_iam_role_policy_attachment" "imageupdater_ecr_attach" {
+  role       = aws_iam_role.image_updater.name
+  policy_arn = aws_iam_policy.imageupdater_ecr.arn
 }
 
 

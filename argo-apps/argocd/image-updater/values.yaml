@@ -3,7 +3,7 @@ nodeSelector:
 
 serviceAccount:
   annotations:
-    eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole"
+    eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ImageUpdaterRole" # pending dynamic values
 
 config:
   logLevel: "trace" # default info # debug # trace
@@ -20,7 +20,7 @@ config:
 #    # -- If specified, the secret with Argo CD API key will be created.
 #    token: ""
   registries:
-    - api_url: https://350206045032.dkr.ecr.us-east-1.amazonaws.com
+    - api_url: https://350206045032.dkr.ecr.us-east-1.amazonaws.com # pending dynamic values
       #prefix: 350206045032.dkr.ecr.us-east-1.amazonaws.com
       name: ECR
       ping: true
@@ -32,11 +32,14 @@ config:
 
 authScripts:
   enabled: true
-  scripts: # $AWS_REGION # https://github.com/argoproj-labs/argocd-image-updater/issues/112 # credentials: env:REGISTRY_SECRET
+  scripts: # $AWS_REGION # https://github.com/argoproj-labs/argocd-image-updater/issues/112 # credentials: env:REGISTRY_SECRET # pending dynamic values
     ecr-login.sh: |
       #!/bin/sh
       
-      # Set AWS CLI to use the /tmp directory for any temporary storage
+      # Save the original HOME directory
+      original_home=$HOME
+      
+      # Set HOME to the /tmp directory for AWS CLI operations
       export HOME=/tmp
       
       # Retrieve the authorization token from AWS ECR
@@ -51,3 +54,6 @@ authScripts:
       
       # Output username and password
       echo "$username:$password"
+
+      # Restore the original HOME directory
+      export HOME=$original_home
