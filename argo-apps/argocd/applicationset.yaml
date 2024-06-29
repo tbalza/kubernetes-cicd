@@ -20,7 +20,7 @@ spec:
         argocd-image-updater.argoproj.io/django.update-strategy: "newest-build" # digest # "newest-build" # sem ver
         argocd-image-updater.argoproj.io/django.kustomize.image-name: django-production
         #argocd-image-updater.argoproj.io/django.kustomize.tag-name: doesntexist # tag-name doesn't exist for kustomize param (?)
-        argocd-image-updater.argoproj.io/write-back-target: kustomization # ???
+        #argocd-image-updater.argoproj.io/write-back-target: kustomization # ???
         argocd-image-updater.argoproj.io/write-back-method: argocd # `argocd`/`git`
         argocd-image-updater.argoproj.io/git-branch: main # important for git writeback
         #argocd-image-updater.argoproj.io/webhook.helm.image-name: webhook.image.repository
