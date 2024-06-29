@@ -17,7 +17,7 @@ spec:
       name: '{{.path.basename}}'
       annotations: # image list has `app name` prepended before an `=` (django) and the ecr repo. corresponding annotations are prepended with the same app name (django.xxx)
         argocd-image-updater.argoproj.io/image-list: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
-        argocd-image-updater.argoproj.io/django.update-strategy: "newest-build" # digest # "newest-build"
+        argocd-image-updater.argoproj.io/django.update-strategy: "digest" # digest # "newest-build" # sem ver
         argocd-image-updater.argoproj.io/django.kustomize.image-name: "350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
         #argocd-image-updater.argoproj.io/django.kustomize.tag-name: "sample-tag"
         argocd-image-updater.argoproj.io/write-back-target: kustomization
