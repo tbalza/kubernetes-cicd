@@ -19,8 +19,9 @@ spec:
         argocd-image-updater.argoproj.io/image-list: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
         argocd-image-updater.argoproj.io/django.update-strategy: "newest-build" # digest # "newest-build"
         argocd-image-updater.argoproj.io/django.kustomize.image-name: "350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
+        argocd-image-updater.argoproj.io/write-back-target: kustomization
         argocd-image-updater.argoproj.io/write-back-method: argocd # `argocd`/`git`
-        #argocd-image-updater.argoproj.io/git-branch: main # important for git writeback
+        argocd-image-updater.argoproj.io/git-branch: main # important for git writeback
         #argocd-image-updater.argoproj.io/django.force-update: "true"
         #argocd-image-updater.argoproj.io/django.allow-tags: any
         #argocd-image-updater.argoproj.io/django.ignore-tags: latest, master
