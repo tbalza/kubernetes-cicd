@@ -1269,7 +1269,7 @@ module "ecr" {
 
   repository_name = local.name
 
-  repository_read_write_access_arns = [aws_iam_role.jenkins.arn] # pending . not attaching policy
+  repository_read_write_access_arns = [aws_iam_role.jenkins.arn] # pending . not attaching policy # depends on not set!!! arns could be list, # pending
   create_lifecycle_policy           = true
   repository_lifecycle_policy = jsonencode({
     rules = [
@@ -1292,6 +1292,11 @@ module "ecr" {
   repository_force_delete = true
 
   tags = local.tags
+
+  depends_on = [
+  module.eks,
+  ]
+
 }
 
 # Jenkins is going to push images to ECR
