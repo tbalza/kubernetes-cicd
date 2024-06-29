@@ -17,7 +17,7 @@ configMapGenerator:
       - ../../django/nginx/default.conf # load the nginx default.conf from the django project directory
 
 images: # argocd image-updater
-  - name: django # containers name?
+  - name: django-production # containers name?
     newName: django-production # 350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production
     newTag: latest # This is a placeholder that will be updated.
 
