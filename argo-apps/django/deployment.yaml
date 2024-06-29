@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: django
-          image: 350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production:8d5a9bb224a291bff208a846ef45149a38ebb949 # django-production:latest # pending . ESO
+          image: 350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production # django-production:latest # pending . ESO
           imagePullPolicy: Always
           envFrom: # this loads all the secrets as ENV variables
             - secretRef:
