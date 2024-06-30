@@ -16,10 +16,10 @@ configMapGenerator:
     files:
       - ../../django/nginx/default.conf # load the nginx default.conf from the django project directory
 
-images: # argocd image-updater
-  - name: django-production-kustomize
-    newName: django-production # django-production # 350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production
-    newTag: django-production
+#images: # argocd image-updater
+#  - name: django-production-kustomize
+#    newName: django-production # django-production # 350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production
+#    newTag: django-production
     # kustomize image tag # kustomize image tag: https://github.com/kubernetes-sigs/kustomize/issues/4375
 
 #patches:
