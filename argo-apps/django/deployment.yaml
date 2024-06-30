@@ -15,7 +15,7 @@ spec:
         app: django
     spec:
       containers:
-        - name: django-production-random-container-name
+        - name: django-production-kustomize
           image: django-production-kustomize # django-production:latest # pending . ESO # will be replaced by kustomize?
           imagePullPolicy: Always
           envFrom: # this loads all the secrets as ENV variables
