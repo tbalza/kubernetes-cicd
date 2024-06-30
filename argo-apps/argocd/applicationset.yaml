@@ -21,9 +21,9 @@ spec:
         argocd-image-updater.argoproj.io/django.kustomize.image-name: django-production-kustomize
         # kustomize image tag: https://github.com/kubernetes-sigs/kustomize/issues/4375
         argocd-image-updater.argoproj.io/write-back-method: argocd # `argocd`/`git`
+        #argocd-image-updater.argoproj.io/write-back-target: kustomization # ???
         argocd-image-updater.argoproj.io/git-branch: main # important for git writeback
         #argocd-image-updater.argoproj.io/django.kustomize.tag-name: doesntexist # tag-name doesn't exist for kustomize param (?)
-        #argocd-image-updater.argoproj.io/write-back-target: kustomization # ???
         #argocd-image-updater.argoproj.io/webhook.helm.image-name: webhook.image.repository
         #argocd-image-updater.argoproj.io/webhook.helm.image-tag: webhook.image.tag
 
