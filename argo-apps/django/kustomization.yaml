@@ -1,6 +1,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+
 namespace: django # crucial for configMapGenerator
+
 resources:
 - deployment.yaml
 - ingress.yaml
@@ -8,14 +10,16 @@ resources:
 - secrets.yaml
 - service.yaml
 - serviceaccount.yaml
+
 configMapGenerator:
 - name: nginx-config
   files:
   - ../../django/nginx/default.conf # load the nginx default.conf from the django project directory
+
 images: # argocd image-updater
 - name: django-production-kustomize
-  newName: 350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production
-  newTag: 9942aeefcd23c15b0785216ccee889336b5735e1
+#  newName: 350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production
+#  newTag: 9942aeefcd23c15b0785216ccee889336b5735e1
 
 #patches:
 #  - patch: |-
