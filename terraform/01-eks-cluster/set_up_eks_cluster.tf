@@ -21,6 +21,7 @@ locals {
   rds_user   = "django"
   rds_dbname = "postgres"
   rds_port   = 5432 # postgres default
+  repo_url   = "https://github.com/tbalza/kubernetes-cicd.git"
 
   # SSM Parameter values
   parameters = {
@@ -37,6 +38,18 @@ locals {
     # (used by Jenkins/Kaniko)
     "ecr_repo" = {
       value = module.ecr.repository_url
+    }
+
+    "ecr_repo_name" = {
+      value = local.name # right now the name of the cluster is being used for the app name # pending
+    }
+
+    "ecr_region" = {
+      value = local.region # right now the name of the cluster is being used for the app name # pending
+    }
+
+    "repo_url" = {
+      value = local.repo_url # right now the name of the cluster is being used for the app name # pending
     }
 
     # Django's params

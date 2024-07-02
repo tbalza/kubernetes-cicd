@@ -4,33 +4,42 @@ pipeline {
             inheritFrom 'default'
         }
     }
+    triggers {
+        pollSCM('H/2 * * * *')  // Poll every 2 minutes
+    }
     stages {
         stage('Checkout Code') {
             steps {
                 container('jnlp') {
+                    // Checkout code
+                    git branch: 'main', url: "${REPO_URL}"
+                }
+            }
+        }
+        stage('Initialize') {
+            steps {
+                container('jnlp') {
                     script {
-                        checkout scm: [
-                            $class: 'GitSCM',
-                            userRemoteConfigs: [[url: 'https://github.com/tbalza/kubernetes-cicd.git']],
-                            branches: [[name: '*/main']]
-                        ]
+                        // Capture the current Git commit ID after checkout
                         env.GIT_COMMIT = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
                     }
                 }
             }
         }
-        stage('Check ECR for Images') {
+        stage('Check ECR for Latest Image Commit') {
             steps {
-                container('jnlp') {
+                container('aws-cli-installer') {
                     script {
-                        // Check if there are any images in the ECR repository
-                        def imageCount = sh(
-                            script: "aws ecr describe-images --repository-name django-production --region us-east-1 | jq '.imageDetails | length'",
+                        // Fetch the most recent image tag from ECR, which should be a commit ID
+                        env.LATEST_ECR_COMMIT = sh(
+                            script: "aws ecr describe-images --repository-name ${ECR_REPO_NAME} --region ${REGION} --query 'sort_by(imageDetails, &imagePushedAt)[-1].imageTags[0]' --output text || echo ''",
                             returnStdout: true
                         ).trim()
-                        if (imageCount == "0") {
-                            echo "No images found in ECR, initiating build."
-                            env.BUILD_NEEDED = 'true'
+                    }
+                    echo env.LATEST_ECR_COMMIT ? "Latest ECR Image Commit ID: ${LATEST_ECR_COMMIT}" : "No images found in ECR. Proceeding with build."
+                    script {
+                        if (env.LATEST_ECR_COMMIT == '') {
+                            env.BUILD_NEEDED = 'true' // If no images found in ECR, build
                         }
                     }
                 }
@@ -40,17 +49,18 @@ pipeline {
             steps {
                 container('jnlp') {
                     script {
-                        // Determine if changes affect the Django directory
-                        def changesInDjango = sh(
-                            script: "git diff --name-only HEAD^ HEAD | grep '^django/'",
-                            returnStdout: true
-                        ).trim()
-                        if (changesInDjango.isEmpty() && env.BUILD_NEEDED != 'true') {
-                            echo "No changes in the Django app, skipping build"
-                            currentBuild.result = 'ABORTED'
-                        } else {
-                            echo "Changes detected in Django or no images in repo, proceeding with build."
-                            env.BUILD_NEEDED = 'true'
+                        if (env.LATEST_ECR_COMMIT) {
+                            def changesInDjango = sh(
+                                script: "git diff --name-only ${LATEST_ECR_COMMIT} ${GIT_COMMIT} | grep '^django/'",
+                                returnStdout: true
+                            ).trim()
+                            if (changesInDjango.isEmpty()) {
+                                echo "No changes in the Django directory since last ECR image commit. Skipping build."
+                                currentBuild.result = 'NOT_BUILT'
+                            } else {
+                                echo "Changes detected in Django. Proceeding with build."
+                                env.BUILD_NEEDED = 'true'
+                            }
                         }
                     }
                 }
@@ -59,20 +69,17 @@ pipeline {
         stage('Build and Push Image') {
             when {
                 expression {
-                    // Proceed only if changes are detected in the Django directory or no images are present in ECR
                     return env.BUILD_NEEDED == 'true'
                 }
             }
             steps {
                 container('kaniko') {
-                    script {
-                        sh """
-                        /kaniko/executor --dockerfile /home/jenkins/agent/workspace/build-django/django/Dockerfile \
-                                          --context /home/jenkins/agent/workspace/build-django/django/ \
-                                          --destination ${ECR_REPO}:${GIT_COMMIT} \
-                                          --cache=true
-                        """
-                    }
+                    sh """
+                    /kaniko/executor --dockerfile /home/jenkins/agent/workspace/build-django/django/Dockerfile \
+                                      --context /home/jenkins/agent/workspace/build-django/django/ \
+                                      --destination ${ECR_REPO}:${GIT_COMMIT} \
+                                      --cache=true
+                    """
                 }
             }
         }
