@@ -100,7 +100,7 @@ agent:
         repository: "gcr.io/kaniko-project/executor" # debug release required for tty
         tag: "v1.23.1-debug"
       command: "sleep" # required
-      args: "9999999" # required
+      #args: "9999999" # required
       privileged: false
       ttyEnabled: true
     - sideContainerName: "aws-cli-installer"

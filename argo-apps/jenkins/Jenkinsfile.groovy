@@ -1,7 +1,7 @@
 pipeline {
     agent {
         kubernetes {
-            inheritFrom 'default'
+            inheritFrom 'default' // `default` created in upstream helm chart by default, Kaniko container config added to default via `additionalContainers` in values.yaml
         }
     }
     triggers {
