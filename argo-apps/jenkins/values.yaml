@@ -109,15 +109,15 @@ agent:
         tag: "latest"
       command: "sh"
       args:
-          - -c
-          - |
-            set -e
-            echo "Installing AWS CLI..."
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-            echo "AWS CLI Installation Complete!"
-            sleep 9999999  # Keeps the container running.
+        - -c
+        - |
+          set -e
+          echo "Installing AWS CLI..."
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+          echo "AWS CLI Installation Complete!"
+          sleep 9999999  # Keeps the container running.
       privileged: false
       ttyEnabled: true
   secretEnvVars: # pending. this will be to be taken out of the chart when testing environments
