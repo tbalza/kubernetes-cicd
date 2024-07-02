@@ -12,7 +12,7 @@ pipeline {
             steps {
                 container('jnlp') {
                     // Checkout code
-                    git branch: 'main', url: ${REPO_URL}
+                    git branch: 'main', url: "${REPO_URL}"
                 }
             }
         }
