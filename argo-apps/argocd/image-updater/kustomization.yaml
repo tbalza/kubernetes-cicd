@@ -5,7 +5,6 @@ namespace: argocd
 
 resources:
   - rbac.yaml
-  - secrets.yaml
 
 helmCharts:
   - name: argocd-image-updater

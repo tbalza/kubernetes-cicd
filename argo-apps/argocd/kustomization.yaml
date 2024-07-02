@@ -18,7 +18,7 @@ helmCharts:
 resources:
   - applicationset.yaml
   - ingress.yaml
-#  - secrets.yaml
+  - secrets.yaml
   - image-updater/
 #  - delete-hook.yaml
 
