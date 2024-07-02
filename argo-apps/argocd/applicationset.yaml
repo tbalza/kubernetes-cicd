@@ -21,7 +21,7 @@ spec:
         argocd-image-updater.argoproj.io/django.kustomize.image-name: django-production-kustomize
         # kustomize image tag: https://github.com/kubernetes-sigs/kustomize/issues/4375
         #argocd-image-updater.argoproj.io/write-back-method: argocd # `argocd`/`git`
-        argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-secrets#argocd-github-app-secret # secret:<namespace>/<secret> # ? argocd-secrets#argocd-github-app-secret
+        argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-github-app-secret # secret:<namespace>/<secret> # ? argocd-secrets#argocd-github-app-secret
         argocd-image-updater.argoproj.io/write-back-target: kustomization
         argocd-image-updater.argoproj.io/git-branch: main # where the git writeback will be created
 
