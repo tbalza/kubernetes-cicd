@@ -64,6 +64,12 @@ locals {
       value = random_password.django_secretkey.result
     }
 
+    #ArgoCD Image Updater Github App Secret
+
+    "argo_cd_github_app_token" = {
+      value = var.ARGOCD_GITHUB_TOKEN
+    }
+
     # ServiceAccounts ARN
     "argo_cd_iam_role_arn" = {
       value = aws_iam_role.argo_cd.arn
@@ -95,6 +101,16 @@ locals {
   tags = {
     Example = local.name
   }
+}
+
+## ArgoCD ImageUpdater Github App Token
+## must be set before tf apply
+# export TF_VAR_ARGOCD_GITHUB_TOKEN=123example
+## Import environment variables as TF variable
+variable "ARGOCD_GITHUB_TOKEN" {
+  description = "API token for Cloudflare"
+  type        = string
+  sensitive   = true
 }
 
 ###############################################################################

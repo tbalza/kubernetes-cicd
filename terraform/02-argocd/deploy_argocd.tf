@@ -112,7 +112,42 @@ resource "kubectl_manifest" "example_applicationset" {
   ]
 }
 
-# print argocd password after apply
+########################################################
+
+### must be set before tf apply
+## export TF_VAR_ARGOCD_GITHUB_TOKEN=123example
+#
+### Import environment variables as TF variable
+#variable "ARGOCD_GITHUB_TOKEN" {
+#  description = "API token for Cloudflare"
+#  type        = string
+#  sensitive   = true
+#}
+
+
+### Pass CF API token to k8s Secret
+## kubectl create secret generic cloudflare-api-key --from-literal=apiKey=123example -n kube-system
+#resource "kubectl_manifest" "cloudflare_api_key" { # pending. change name to token for clarity
+#  yaml_body = <<-YAML
+#apiVersion: v1
+#kind: Secret
+#metadata:
+#  name: argocd-github-app-secret
+#  namespace: argocd
+#type: Opaque
+#data:
+#  apiToken: ${base64encode(var.ARGOCD_GITHUB_TOKEN)}
+#  YAML
+#
+##  depends_on = [
+##    #helm_release.aws_load_balancer_controller,
+##    module.eks
+##  ]
+#}
+
+########################################################
+
+# print argocd password after tf apply
 resource "null_resource" "get_argocd_admin_password" {
   # Triggers the provisioner when apply is called
   triggers = {
@@ -125,6 +160,8 @@ resource "null_resource" "get_argocd_admin_password" {
     EOT
   }
 }
+
+########################################################
 
 # Fix interdependencies for graceful provisioning and teardown ### check
 

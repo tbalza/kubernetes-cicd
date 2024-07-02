@@ -1,6 +1,9 @@
-serviceAccount:
-  annotations:
-    eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole"
+controller:
+  serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
+    annotations:
+      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole"
+  nodeSelector:
+    role: ci-cd
 # init containers or sidecars that configure or bootstrap the main containers based on dynamic inputs from secrets.
 
 crds:
@@ -62,10 +65,6 @@ notifications:
   controller:
     nodeSelector:
       role: ci-cd
-
-controller:
-  nodeSelector:
-    role: ci-cd
 
 repoServer:
   nodeSelector:
