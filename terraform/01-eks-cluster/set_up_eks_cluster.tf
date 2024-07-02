@@ -66,7 +66,11 @@ locals {
 
     #ArgoCD Image Updater Github App Secret
 
-    "argo_cd_github_app_token" = {
+    "argo_cd_github_app_user" = { # check
+      value = var.ARGOCD_GITHUB_USER
+    }
+
+    "argo_cd_github_app_token" = { # check
       value = var.ARGOCD_GITHUB_TOKEN
     }
 
@@ -108,7 +112,13 @@ locals {
 # export TF_VAR_ARGOCD_GITHUB_TOKEN=123example
 ## Import environment variables as TF variable
 variable "ARGOCD_GITHUB_TOKEN" {
-  description = "API token for Cloudflare"
+  description = "ArgoCD Image Updater Github Personal Token"
+  type        = string
+  sensitive   = true
+}
+
+variable "ARGOCD_GITHUB_USER" {
+  description = "ArgoCD Image Updater Github username"
   type        = string
   sensitive   = true
 }

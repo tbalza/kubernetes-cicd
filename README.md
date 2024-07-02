@@ -7,7 +7,7 @@ set Cloudflare Zone ID as an environment variable (that will be used by ACM)
 
 # ArgoCD Image Updater GitHub Personal Access Token
 export TF_VAR_ARGOCD_GITHUB_TOKEN=123example
-
+export TF_VAR_ARGOCD_GITHUB_USER=123user
 
 # Django local vars
 
