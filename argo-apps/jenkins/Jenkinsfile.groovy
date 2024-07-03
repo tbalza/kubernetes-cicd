@@ -1,63 +1,78 @@
 pipeline {
     agent {
         kubernetes {
-            inheritFrom 'default' // `default` created in upstream helm chart by default, Kaniko container config added to default via `additionalContainers` in values.yaml
+            inheritFrom 'default'
         }
+    }
+    triggers {
+        // Poll SCM every 5 minutes
+        pollSCM('H/5 * * * *')
     }
     stages {
         stage('Checkout Code') {
             steps {
                 container('jnlp') {
-                    // Checkout code
-                    git branch: 'main', url: "${REPO_URL}"
+                    script {
+                        // Clone the repository and check out the main branch
+                        sh "git clone ${REPO_URL} ."
+                        sh "git checkout main"
+                        env.GIT_COMMIT = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
+                        echo "Current GIT COMMIT: ${env.GIT_COMMIT}"
+                    }
                 }
             }
         }
-        stage('Initialize') {
+        stage('Check ECR for Latest Image Commit') { // pipeline-aws plugin outputs ecr images in a non-standard way, that needs to be filtered
             steps {
                 container('jnlp') {
                     script {
-                        // Capture the current Git commit ID after checkout
-                        env.GIT_COMMIT = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
-                    }
-                }
-            }
-        }
-        stage('Check ECR for Latest Image Commit') {
-            steps {
-                container('aws-cli') {
-                    script {
-                        // Fetch the most recent image tag from ECR, which should be a commit ID
-                        env.LATEST_ECR_COMMIT = sh(
-                            script: "aws ecr describe-images --repository-name ${ECR_REPO_NAME} --region ${REGION} --query 'sort_by(imageDetails, &imagePushedAt)[-1].imageTags[0]' --output text || echo ''",
-                            returnStdout: true
-                        ).trim()
-                    }
-                    echo env.LATEST_ECR_COMMIT ? "Latest ECR Image Commit ID: ${LATEST_ECR_COMMIT}" : "No images found in ECR. Proceeding with build."
-                    script {
-                        if (env.LATEST_ECR_COMMIT == '') {
-                            env.BUILD_NEEDED = 'true' // If no images found in ECR, build
+                        def images = ecrListImages(repositoryName: 'django-production')
+                        def tagList = []
+
+                        if (images) {
+                            echo "Images Object: ${images}"
+                            images.each { item ->
+                                if (item && item.imageTag) {
+                                    echo "Found Tag: ${item.imageTag}"
+                                    tagList << item.imageTag
+                                }
+                            }
+                        } else {
+                            echo "Images Object is null or unavailable"
+                        }
+
+                        if (tagList.isEmpty()) {
+                            echo "No tagged images found in ECR. Proceeding with build."
+                            env.LATEST_ECR_COMMIT = ''
+                            env.BUILD_NEEDED = 'true'
+                        } else {
+                            tagList.each {
+                                echo "Extracted Image Tag: $it"
+                            }
+                            env.LATEST_ECR_COMMIT = tagList.last()
+                            echo "Latest ECR Image Commit ID: ${env.LATEST_ECR_COMMIT}"
                         }
                     }
                 }
             }
         }
-        stage('Check for Django Changes') {
+        stage('Check for Django Changes') { // check the diff of the the commit id (which is the name of image tag) vs. the current comment and check for changes in django
             steps {
                 container('jnlp') {
                     script {
                         if (env.LATEST_ECR_COMMIT) {
-                            def changesInDjango = sh(
-                                script: "git diff --name-only ${LATEST_ECR_COMMIT} ${GIT_COMMIT} | grep '^django/'",
-                                returnStdout: true
-                            ).trim()
-                            if (changesInDjango.isEmpty()) {
-                                echo "No changes in the Django directory since last ECR image commit. Skipping build."
-                                currentBuild.result = 'NOT_BUILT'
+                            def changes = sh(script: "git diff --name-only ${env.LATEST_ECR_COMMIT} ${env.GIT_COMMIT} | grep '^django/' || true", returnStdout: true).trim()
+                            echo "Git diff completed between ${env.LATEST_ECR_COMMIT} and ${env.GIT_COMMIT}."
+                            if (changes.isEmpty()) {
+                                echo "No changes in the Django directory since the last ECR image commit. No build needed."
+                                env.BUILD_NEEDED = 'false' // Explicitly marking no build needed
                             } else {
                                 echo "Changes detected in Django. Proceeding with build."
                                 env.BUILD_NEEDED = 'true'
                             }
+                        } else {
+                            echo "No valid ECR image commit found or no image tags available. Proceeding with build as fallback."
+                            env.BUILD_NEEDED = 'true'
                         }
                     }
                 }
@@ -65,16 +80,14 @@ pipeline {
         }
         stage('Build and Push Image') {
             when {
-                expression {
-                    return env.BUILD_NEEDED == 'true'
-                }
+                expression { env.BUILD_NEEDED == 'true' }
             }
             steps {
                 container('kaniko') {
                     sh """
                     /kaniko/executor --dockerfile /home/jenkins/agent/workspace/build-django/django/Dockerfile \
                                       --context /home/jenkins/agent/workspace/build-django/django/ \
-                                      --destination ${ECR_REPO}:${GIT_COMMIT} \
+                                      --destination ${ECR_REPO}:${env.GIT_COMMIT} \
                                       --cache=true
                     """
                 }
@@ -83,7 +96,7 @@ pipeline {
     }
     post {
         always {
-            echo "Cleaning up post build"
+            echo "Build completed successfully."
         }
     }
 }
