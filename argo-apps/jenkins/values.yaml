@@ -46,18 +46,30 @@ controller:
         jobs:
           - script: >
               pipelineJob('build-django') {
-                triggers {
-                  // Trigger this job at Jenkins startup
-                  cron('@startup')
-                }
                 definition {
                   cps {
-                    // Load the script from the Jenkins home directory
                     script(new File('/var/jenkins_home/groovy_scripts/Jenkinsfile.groovy').text)
                     sandbox(true)
                   }
                 }
               }
+  initScripts:
+    triggerBuildDjango: |-
+      import jenkins.model.Jenkins
+      import hudson.model.Job
+      import hudson.model.Cause
+
+      Jenkins.instance.whenLoaded {
+          // Ensure the system is fully up and configuration is loaded
+          Jenkins.instance.waitUntilNoActivity()
+          def job = Jenkins.instance.getItemByFullName('build-django', Job.class)
+          if (job) {
+              job.scheduleBuild(0, new Cause.UserIdCause(new hudson.model.User('startup-trigger')))
+              println("Scheduled 'build-django' job at startup.")
+          } else {
+              println("Job 'build-django' not found.")
+          }
+      }
   serviceType: ClusterIP
   ingress: # If you are using SSL termination on the ALB, with a self-signed certificate, you need also to build a custom inbound-agent base image with the CA certificate.
     enabled: false # disabled in chart, supplied by kustomize as a resource
