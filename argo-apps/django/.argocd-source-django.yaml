@@ -1,3 +1,3 @@
 kustomize:
   images:
-  - django-production-kustomize=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production:5eb2a8978dbcbafe2bc1dd08ed1157d84e1f8f00
+  - django-production-kustomize=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production:c4f81719ea8eee75fcd0334c7753d44e7e96e7c1
