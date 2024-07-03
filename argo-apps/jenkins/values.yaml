@@ -19,7 +19,7 @@ controller:
       cpu: "500m"
       memory: "1Gi"
     limits:
-      cpu: "1"
+      cpu: "2000m"
       memory: "2Gi"
   service:
     port: 8080
@@ -94,6 +94,14 @@ agent:
 #    role: ci-cd
   websocket: true # (websocket and directConnection are mutually exclusive)
   directConnection: false #  (websocket and directConnection are mutually exclusive)
+  resources:
+    requests:
+      cpu: "512m"
+      memory: "512Mi"
+      # ephemeralStorage:
+    limits:
+      cpu: "2000m"
+      memory: "2Gi"
   additionalContainers: # this adds kaniko to the default pod template (which already has jnlp required by kubernetes plugin)
     - sideContainerName: "kaniko"
       image:
