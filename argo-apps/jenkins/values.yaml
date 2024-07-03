@@ -111,14 +111,14 @@ agent:
       args: "9999999" # required
       privileged: false
       ttyEnabled: true
-    - sideContainerName: "aws-cli"
-      image:
-        repository: "amazon/aws-cli"
-        tag: "latest"
-      command: "echo"
-      args: "9999999"
-      privileged: false
-      ttyEnabled: true
+#    - sideContainerName: "aws-cli"
+#      image:
+#        repository: "amazon/aws-cli"
+#        tag: "latest"
+#      command: "echo"
+#      args: "9999999"
+#      privileged: false
+#      ttyEnabled: true
   secretEnvVars: # pending. this will be to be taken out of the chart when testing environments
     - key: ECR_REPO
       secretKey: ECR_REPO
