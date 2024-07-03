@@ -132,7 +132,7 @@ agent:
       secretName: jenkins-secrets
       optional: true # default: false # timing issue blocking agent pod to launch?
     - key: REPO_URL
-      secretKey: repo_url
+      secretKey: REPO_URL
       secretName: jenkins-secrets
       optional: true # default: false # timing issue blocking agent pod to launch?
 
