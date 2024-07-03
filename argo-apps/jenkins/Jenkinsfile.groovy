@@ -4,9 +4,6 @@ pipeline {
             inheritFrom 'default' // `default` created in upstream helm chart by default, Kaniko container config added to default via `additionalContainers` in values.yaml
         }
     }
-    triggers {
-        pollSCM('H/2 * * * *')  // Poll every 2 minutes
-    }
     stages {
         stage('Checkout Code') {
             steps {

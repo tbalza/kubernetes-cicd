@@ -107,7 +107,7 @@ agent:
       image:
         repository: "amazon/aws-cli"
         tag: "latest"
-      command: "sleep"
+      command: "echo"
       args: "9999999"
       privileged: false
       ttyEnabled: true
