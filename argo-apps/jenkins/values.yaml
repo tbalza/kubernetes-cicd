@@ -57,13 +57,12 @@ controller:
     triggerBuildDjango: |-
       import jenkins.model.Jenkins
       import hudson.model.Job
-      import hudson.model.Cause
-      import jenkins.model.Cause.UserIdCause
+      import hudson.model.Cause.UserIdCause
 
       Jenkins.instance.waitUntilNoActivity()  // Ensures Jenkins has completed all loading and job configuration
       def job = Jenkins.instance.getItemByFullName('build-django', Job.class)
       if (job) {
-          // Using UserIdCause correctly, directly from the jenkins.model package
+          // Schedule the job with a new user ID cause to log the system user initiating it
           job.scheduleBuild(0, new UserIdCause())
           println("Scheduled 'build-django' job at startup.")
       } else {
