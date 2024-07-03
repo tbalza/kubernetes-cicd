@@ -58,12 +58,13 @@ controller:
       import jenkins.model.Jenkins
       import hudson.model.Job
       import hudson.model.Cause
+      import jenkins.model.Cause.UserIdCause
 
-      // No 'whenLoaded()' necessary, execute directly within the script's operational context
       Jenkins.instance.waitUntilNoActivity()  // Ensures Jenkins has completed all loading and job configuration
       def job = Jenkins.instance.getItemByFullName('build-django', Job.class)
       if (job) {
-          job.scheduleBuild(0, new Cause.UserIdCause(new hudson.model.User('startup-trigger')))
+          // Using UserIdCause correctly, directly from the jenkins.model package
+          job.scheduleBuild(0, new UserIdCause())
           println("Scheduled 'build-django' job at startup.")
       } else {
           println("Job 'build-django' not found.")
