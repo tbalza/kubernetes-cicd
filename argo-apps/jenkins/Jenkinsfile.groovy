@@ -28,7 +28,7 @@ pipeline {
         }
         stage('Check ECR for Latest Image Commit') {
             steps {
-                container('aws-cli-installer') {
+                container('aws-cli') {
                     script {
                         // Fetch the most recent image tag from ECR, which should be a commit ID
                         env.LATEST_ECR_COMMIT = sh(
