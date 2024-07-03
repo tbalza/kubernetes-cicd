@@ -59,16 +59,14 @@ controller:
       import hudson.model.Job
       import hudson.model.Cause
 
-      Jenkins.instance.whenLoaded {
-          // Ensure the system is fully up and configuration is loaded
-          Jenkins.instance.waitUntilNoActivity()
-          def job = Jenkins.instance.getItemByFullName('build-django', Job.class)
-          if (job) {
-              job.scheduleBuild(0, new Cause.UserIdCause(new hudson.model.User('startup-trigger')))
-              println("Scheduled 'build-django' job at startup.")
-          } else {
-              println("Job 'build-django' not found.")
-          }
+      // No 'whenLoaded()' necessary, execute directly within the script's operational context
+      Jenkins.instance.waitUntilNoActivity()  // Ensures Jenkins has completed all loading and job configuration
+      def job = Jenkins.instance.getItemByFullName('build-django', Job.class)
+      if (job) {
+          job.scheduleBuild(0, new Cause.UserIdCause(new hudson.model.User('startup-trigger')))
+          println("Scheduled 'build-django' job at startup.")
+      } else {
+          println("Job 'build-django' not found.")
       }
   serviceType: ClusterIP
   ingress: # If you are using SSL termination on the ALB, with a self-signed certificate, you need also to build a custom inbound-agent base image with the CA certificate.
