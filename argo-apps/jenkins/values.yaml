@@ -129,19 +129,27 @@ agent:
     - key: ECR_REPO
       secretKey: ECR_REPO
       secretName: jenkins-secrets
-      optional: true # default: false # timing issue blocking agent pod to launch?
+      optional: true
     - key: ECR_REPO_NAME
       secretKey: ECR_REPO_NAME
       secretName: jenkins-secrets
-      optional: true # default: false # timing issue blocking agent pod to launch?
+      optional: true
     - key: REGION
       secretKey: REGION
       secretName: jenkins-secrets
-      optional: true # default: false # timing issue blocking agent pod to launch?
+      optional: true
     - key: REPO_URL
       secretKey: REPO_URL
       secretName: jenkins-secrets
-      optional: true # default: false # timing issue blocking agent pod to launch?
+      optional: true
+    - key: GITHUB_USER
+      secretKey: GITHUB_USER
+      secretName: jenkins-secrets
+      optional: true
+    - key: GITHUB_TOKEN
+      secretKey: GITHUB_TOKEN
+      secretName: jenkins-secrets
+      optional: true
 
 serviceAccount:
   create: true

@@ -45,11 +45,19 @@ locals {
     }
 
     "ecr_region" = {
-      value = local.region # right now the name of the cluster is being used for the app name # pending
+      value = local.region
     }
 
     "repo_url" = {
       value = local.repo_url # right now the name of the cluster is being used for the app name # pending
+    }
+
+    "jenkins_github_app_user" = {
+      value = var.ARGOCD_GITHUB_USER
+    }
+
+    "jenkins_github_app_token" = {
+      value = var.ARGOCD_GITHUB_TOKEN
     }
 
     # Django's params
