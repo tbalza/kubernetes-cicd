@@ -6,7 +6,8 @@ pipeline {
     }
     triggers {
         // Poll SCM every 5 minutes
-        pollSCM('H/5 * * * *')
+        //pollSCM('H/5 * * * *')
+        githubPush()
     }
     stages {
         stage('Checkout Code') {
