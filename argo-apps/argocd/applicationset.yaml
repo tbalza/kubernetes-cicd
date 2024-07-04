@@ -31,7 +31,6 @@ spec:
         #argocd-image-updater.argoproj.io/django.ignore-tags: latest, master
         #argocd-image-updater.argoproj.io/django.allow-tags: "regexp:^.*"
 
-        #regex test /django #
     spec:
       project: "default" # check
       source:
