@@ -42,6 +42,11 @@ spec:
       destination:
         server: https://kubernetes.default.svc # pending make dynamic from repo files
         namespace: '{{.path.basename}}' # pending make dynamic from repo files
+      ignoreDifferences:
+        - group: apps
+          kind: Deployment
+          jsonPointers:
+            - /metadata/managedFields
       syncPolicy:
         automated:
           selfHeal: true
