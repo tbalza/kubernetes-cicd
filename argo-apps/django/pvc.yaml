@@ -22,6 +22,7 @@ spec:
   storageClassName: "gp3"
   capacity:
     storage: 10Gi
+  persistentVolumeReclaimPolicy: Retain
   accessModes:
     - ReadWriteMany
   hostPath:
