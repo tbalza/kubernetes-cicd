@@ -7,16 +7,18 @@ pipeline {
     triggers {
         // Poll SCM every 5 minutes
         //pollSCM('H/5 * * * *')
-        githubPush()
+        githubPush() // this sets up the pipeline to receive a github webhook
     }
     stages {
         stage('Checkout Code') {
             steps {
                 container('jnlp') {
-                    script {
-                        // Clone the repository and check out the main branch
-                        sh "git clone ${REPO_URL} ."
-                        sh "git checkout main"
+                    checkout scm: [
+                        $class: 'GitSCM',
+                        branches: [[name: '*/main']],
+                        userRemoteConfigs: [[url: "${REPO_URL}"]] // this lets jenkins/github-plugin know the webhook ping is related to the repo
+                    ]
+                    script {  // correct usage of script block to handle Groovy scripting
                         env.GIT_COMMIT = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
                         echo "Current GIT COMMIT: ${env.GIT_COMMIT}"
                     }
