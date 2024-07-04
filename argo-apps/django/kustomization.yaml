@@ -10,7 +10,6 @@ resources:
 - secrets.yaml
 - service.yaml
 - serviceaccount.yaml
-- .argocd-source-django.yaml
 
 configMapGenerator:
 - name: nginx-config
@@ -18,5 +17,5 @@ configMapGenerator:
   - ../../django/nginx/default.conf # load the nginx default.conf from the django project directory
 
 # ArgoCD Image Updater, creates/updates `.argocd-source-django.yaml` and uses that file to update the image according to update-strategy annotation
-images: # argocd image-updater
-- name: django-production-kustomize
+#images: # argocd image-updater
+#- name: django-production-kustomize
