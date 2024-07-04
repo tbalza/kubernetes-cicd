@@ -26,7 +26,7 @@ spec:
         #argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{.SHA256}}
         # https://argocd-image-updater.readthedocs.io/en/stable/basics/update-methods/
 
-        #argocd-image-updater.argoproj.io/django.force-update: "true"
+        argocd-image-updater.argoproj.io/django.force-update: "true"
         #argocd-image-updater.argoproj.io/django.allow-tags: any
         #argocd-image-updater.argoproj.io/django.ignore-tags: latest, master
         #argocd-image-updater.argoproj.io/django.allow-tags: "regexp:^.*"
@@ -43,7 +43,7 @@ spec:
         server: https://kubernetes.default.svc # pending make dynamic from repo files
         namespace: '{{.path.basename}}' # pending make dynamic from repo files
       ignoreDifferences: # argocd diff customization, meant for django, calculating structured merge diff: error building typed value from live resource: .status.lastPhaseTransitionTime: field not declared in schema
-        - kind: PersistentVolume
+        - kind: PersistentVolume # https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/ # https://github.com/argoproj/argo-cd/issues/16640
           jsonPointers:
             - /spec/claimRef/resourceVersion
             - /spec/claimRef/uid
