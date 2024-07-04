@@ -20,4 +20,4 @@ configMapGenerator:
 images: # argocd image-updater # required for argocd to sync
 - name: django-production-kustomize
 
-# foo
+# foo #
