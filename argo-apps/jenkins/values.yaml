@@ -34,14 +34,15 @@ controller:
     - docker-workflow:latest # (displayed as `Docker Pipeline`) # 580.vc0c340686b_54
     - credentials:latest # not activated by default 1337.v60b_d7b_c7b_c9f
     - job-dsl:latest # 1.87
-    - pipeline-aws:latest # (displayed as `Pipeline: AWS Steps`)
+    - pipeline-aws:latest # (displayed as `Pipeline: AWS Steps`) # used to list ECR images. (pending replacement with aws-cli pod template)
+    - github:latest
   installLatestPlugins: true # set to `false` to attempt it from breaking even when pinning plugin versions (not guaranteed)
   # pending plugin ver pinning which working combination
   JCasC:
     enabled: true
     defaultConfig: true # `false` required with custom config (conflicting/duplicate definitions crashes jenkins install)
     overwriteConfiguration: false # related to PVC. requires pod restart (or sidecars: configAutoReload: )
-    configScripts: # loads pipeline located in repo, loaded to volume via configmap
+    configScripts: # initiates `build-django` pipeline located in custom directory (itself loaded to volume via configmap in kustomize)
       job-dsl: | # pending # mount and make into jcasc, also iterate all configs in the directory
         jobs:
           - script: >
@@ -53,7 +54,7 @@ controller:
                   }
                 }
               }
-  initScripts: # triggers the pipeline to be executed on first launch
+  initScripts: # triggers the `build-django` pipeline to be executed on first launch
     triggerBuildDjango: |-
       import jenkins.model.Jenkins
       import hudson.model.Job
