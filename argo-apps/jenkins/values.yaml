@@ -153,13 +153,9 @@ agent:
       optional: true
 
 serviceAccount:
-  create: true
+  create: false
   name: jenkins
-  annotations:
-    eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/JenkinsRole"
 
 serviceAccountAgent:
   create: false # defines serviceAccount in agents without creating a new one (setting the name below)
   name: jenkins # necessary for agent pod to connect to controller
-  annotations:
-    eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/JenkinsRole"
