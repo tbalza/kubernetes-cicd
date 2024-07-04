@@ -49,3 +49,4 @@ spec:
         syncOptions:
         - CreateNamespace=true
         - ServerSideApply=true
+        - ServerSideDiff=true # ? calculating structured merge diff: error building typed value from live resource: .status.lastPhaseTransitionTime: field not declared in schema
