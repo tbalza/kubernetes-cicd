@@ -65,12 +65,12 @@ output "argocd_helm_chart" {
   value = local.argocd_helm_chart
 }
 
-# Create namespace
-resource "kubernetes_namespace" "argo_cd" {
-  metadata {
-    name = "argocd"
-  }
-}
+## Create namespace
+#resource "kubernetes_namespace" "argo_cd" {
+#  metadata {
+#    name = "argocd"
+#  }
+#}
 
 resource "helm_release" "argo_cd" {
 
@@ -82,7 +82,7 @@ resource "helm_release" "argo_cd" {
   version    = local.argocd_helm_chart.version # "6.7.14" # pending reference this dynamically to argo-apps/argocd/config.yaml
   namespace = local.argocd_helm_chart.namespace # "argocd"
 
-#  create_namespace = true
+  create_namespace = true
 
   values = [file("../../${path.module}/argo-apps/argocd/values.yaml")]
 
@@ -93,7 +93,7 @@ resource "helm_release" "argo_cd" {
 
   # Ensure that the Kubernetes namespace exists before deploying
   depends_on = [
-    kubernetes_namespace.argo_cd,
+    #kubernetes_namespace.argo_cd,
     #helm_release.cert_manager
     #data.terraform_remote_state.eks.outputs.eks, # pending. wait until node groups are provisioned before deploying argocd
     #data.terraform_remote_state.eks.outputs.eks_managed_node_groups # pending. wait until node groups are provisioned before deploying argocd
