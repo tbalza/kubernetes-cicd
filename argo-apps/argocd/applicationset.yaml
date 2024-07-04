@@ -26,7 +26,7 @@ spec:
         #argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{.SHA256}}
         # https://argocd-image-updater.readthedocs.io/en/stable/basics/update-methods/
 
-        argocd-image-updater.argoproj.io/django.force-update: "true"
+        #argocd-image-updater.argoproj.io/django.force-update: "true"
         #argocd-image-updater.argoproj.io/django.allow-tags: any
         #argocd-image-updater.argoproj.io/django.ignore-tags: latest, master
         #argocd-image-updater.argoproj.io/django.allow-tags: "regexp:^.*"
