@@ -53,11 +53,11 @@ locals {
     }
 
     "jenkins_github_app_user" = {
-      value = var.ARGOCD_GITHUB_USER
+      value = var.ARGOCD_GITHUB_USER # not yet setup since repo is public
     }
 
     "jenkins_github_app_token" = {
-      value = var.ARGOCD_GITHUB_TOKEN
+      value = var.ARGOCD_GITHUB_TOKEN # not yet setup since repo is public
     }
 
     # Django's params
