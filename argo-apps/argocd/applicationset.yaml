@@ -42,11 +42,12 @@ spec:
       destination:
         server: https://kubernetes.default.svc # pending make dynamic from repo files
         namespace: '{{.path.basename}}' # pending make dynamic from repo files
-      ignoreDifferences:
-        - group: apps
-          kind: Deployment
+      ignoreDifferences: # argocd diff customization, meant for django, calculating structured merge diff: error building typed value from live resource: .status.lastPhaseTransitionTime: field not declared in schema
+        - kind: PersistentVolume
           jsonPointers:
-            - /metadata/managedFields
+            - /spec/claimRef/resourceVersion
+            - /spec/claimRef/uid
+            - /status/lastPhaseTransitionTime
       syncPolicy:
         automated:
           selfHeal: true
@@ -55,3 +56,4 @@ spec:
         - CreateNamespace=true
         - ServerSideApply=true
         - ServerSideDiff=true # ? calculating structured merge diff: error building typed value from live resource: .status.lastPhaseTransitionTime: field not declared in schema
+        - RespectIgnoreDifferences=true # ? calculating structured merge diff: error building typed value from live resource: .status.lastPhaseTransitionTime: field not declared in schema
