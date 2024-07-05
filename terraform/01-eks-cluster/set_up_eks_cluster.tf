@@ -2217,3 +2217,44 @@ output "db_instance_port" {
   description = "The database port"
   value       = module.db.db_instance_port
 }
+
+# ArgoCD AWS Account
+
+output "account_id" {
+  description = "The AWS account ID."
+  value       = data.aws_caller_identity.current.account_id
+}
+
+resource "kubectl_manifest" "aws_account_secret" { # pending. change name to token for clarity
+  yaml_body = <<-YAML
+apiVersion: v1
+kind: Secret
+metadata:
+  name: aws-account
+  namespace: kube-system
+type: Opaque
+data:
+  aws-account: ${base64encode(data.aws_caller_identity.current.account_id)}
+  YAML
+
+  depends_on = [
+    #helm_release.aws_load_balancer_controller,
+    module.eks
+  ]
+}
+
+resource "kubectl_manifest" "aws_account_configmap" {
+  yaml_body = <<-YAML
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-account
+  namespace: kube-system
+data:
+  aws-account: "${data.aws_caller_identity.current.account_id}"
+  YAML
+
+  depends_on = [
+    module.eks
+  ]
+}

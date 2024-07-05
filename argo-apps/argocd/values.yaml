@@ -5,6 +5,9 @@ controller:
   nodeSelector:
     role: ci-cd
 # init containers or sidecars that configure or bootstrap the main containers based on dynamic inputs from secrets.
+#  envFrom:
+#   - configMapRef:
+#       name: aws-account
 
 crds:
   keep: true # check # Keep CRDs on chart uninstall
@@ -21,6 +24,9 @@ configs:
     server.insecure: true # necessary when SSL termination is handled by ALB
 
 server:
+#  envFrom:
+#    - configMapRef:
+#        name: aws-account
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
     enabled: false # true
 #    controller: aws # Specifies that this is managed by AWS ALB
