@@ -39,4 +39,4 @@ configMapGenerator:
 #          - metadata.annotations.eks\.amazonaws\.com/role-arn
 #        options:
 #          delimiter: ":"
-#          index: 5
+#          index: 5 #
