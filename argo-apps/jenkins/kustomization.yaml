@@ -25,18 +25,18 @@ configMapGenerator:
     files:
     - Jenkinsfile.groovy # pending. check SCM Sync Configuration Plugin, which can help version control Jenkins job configurations.
 
-replacements:
-  - source:
-      kind: ConfigMap
-      name: aws-account
-      namespace: jenkins
-      fieldPath: data.aws-account
-    targets:
-      - select:
-          kind: ServiceAccount
-          name: jenkins
-        fieldPaths:
-          - metadata.annotations.eks\.amazonaws\.com/role-arn
-        options:
-          delimiter: ":"
-          index: 5
+#replacements:
+#  - source:
+#      kind: ConfigMap
+#      name: aws-account
+#      namespace: jenkins
+#      fieldPath: data.aws-account
+#    targets:
+#      - select:
+#          kind: ServiceAccount
+#          name: jenkins
+#        fieldPaths:
+#          - metadata.annotations.eks\.amazonaws\.com/role-arn
+#        options:
+#          delimiter: ":"
+#          index: 5
