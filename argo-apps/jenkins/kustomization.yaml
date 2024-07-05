@@ -29,7 +29,7 @@ replacements:
   - source:
       kind: ConfigMap
       name: aws-account
-      namespace: argocd
+      namespace: jenkins
       fieldPath: data.aws-account
     targets:
       - select:

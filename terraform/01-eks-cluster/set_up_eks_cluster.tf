@@ -2249,7 +2249,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: aws-account
-  namespace: kube-system
+  namespace: jenkins
 data:
   aws-account: "${data.aws_caller_identity.current.account_id}"
   YAML
