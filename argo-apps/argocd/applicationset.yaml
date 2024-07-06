@@ -38,7 +38,7 @@ spec:
         targetRevision: HEAD # check
         path: '{{.path.path}}'
         plugin:
-          name: aws-account-substitution # cmp plugin. allows setting dynamic values in kustomize that come from tf. env not set below, since it's defined in values.yaml
+          name: substitution # cmp plugin. allows setting dynamic values in kustomize that come from tf. env not set below, since it's defined in values.yaml
 #        kustomize:
 #          commonAnnotations:
 #            app.kubernetes.io/managed-by: argocd # delete-hook test
