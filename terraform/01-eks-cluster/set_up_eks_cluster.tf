@@ -2234,3 +2234,19 @@ output "db_instance_port" {
 #    #module.eks
 #  ]
 #}
+
+#resource "kubectl_manifest" "aws_account_configmap" { # "${data.aws_caller_identity.current.account_id}"
+#  yaml_body = <<-YAML
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  name: aws-account
+#  namespace: argocd
+#data:
+#  AWS_ACCOUNT_ID: "${data.aws_caller_identity.current.account_id}"
+#  YAML
+#
+#  depends_on = [
+#    #module.eks
+#  ]
+#}

@@ -34,10 +34,13 @@ configs:
           args: ["-c", "echo 'Initializing AWS Account Substitution Plugin'"]
         generate:
           command: ["/bin/sh"]
-          args: ["-c", "find . -type f -name \"*.yaml\" | xargs sed -i \"s/PLACEHOLDER_ACCOUNT_ID/${ARGOCD_ENV_AWS_ACCOUNT_ID}/g\""]
+          args: ["-c", "find . -type f -name '*.yaml' | grep 'PLACEHOLDER_ACCOUNT_ID' | xargs sed -i 's/PLACEHOLDER_ACCOUNT_ID/${ARGOCD_ENV_AWS_ACCOUNT_ID}/g'"] # argocd prepends ARGOCD_ENV_ to configmap key
         discover:
-          fileName: "./*.yaml"
-       #second-plugin-example:
+          #fileName: "./*.yaml"
+          find:
+            command: [ "/bin/sh", "-c", "find . -type f -name '*.yaml' | grep -l 'PLACEHOLDER_ACCOUNT_ID'" ]
+
+        #second-plugin-example:
 #           find:
 #           glob: "**/Chart.yaml"
 #           command: [sh, -c, find . -name env.yaml]
@@ -71,9 +74,9 @@ notifications:
 repoServer:
   nodeSelector:
     role: ci-cd
-  envFrom:
+  envFrom: # set environment variable from configmap
     - configMapRef:
-        name: aws-account # aws account dynamically previously set as configmap in terraform, for argocd cmp to consume # pending. Use ESO, SSM parameter
+        name: aws-account # previously set as configmap in terraform (with key AWS_ACCOUNT_ID) which dynamically sets aws acct number, for argocd cmp to consume # pending. Use ESO, SSM parameter
   # all of this is default required installation params for cmp, only the plugin yaml name needs to be defined
   volumes:
     - name: argocd-cmp-cm
