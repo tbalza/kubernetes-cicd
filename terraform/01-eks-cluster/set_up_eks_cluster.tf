@@ -35,7 +35,7 @@ locals {
       value = local.region
     }
 
-    "aws_account" = {
+    "account" = {
       value = data.aws_caller_identity.current.account_id
     }
 
