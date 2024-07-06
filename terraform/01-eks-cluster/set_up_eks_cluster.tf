@@ -11,7 +11,7 @@ data "aws_availability_zones" "available" {}
 
 locals {
   name            = "django-production2" # cluster name
-  cluster_version = "1.29"              # 1.29
+  cluster_version = "1.29"               # 1.29
   region          = "us-east-1"
   domain          = "tbalza.net"
 
@@ -26,13 +26,21 @@ locals {
   # SSM Parameter values
   parameters = {
 
-    # e.g. tbalza.net (used by ExternalDNS)
+    # e.g. tbalza.net (used by ExternalDNS) (and argocd)
     "domain" = {
       value = local.domain
     }
 
     "region" = {
       value = local.region
+    }
+
+    "aws_account" = {
+      value = data.aws_caller_identity.current.account_id
+    }
+
+    "cluster_name" = {
+      value = local.name
     }
 
     # (used by Jenkins/Kaniko)
@@ -142,6 +150,11 @@ variable "ARGOCD_GITHUB_USER" {
   description = "ArgoCD Image Updater Github username"
   type        = string
   sensitive   = true
+}
+
+output "domain" {
+  value       = local.domain
+  description = "The name of domain"
 }
 
 ###############################################################################
@@ -1341,7 +1354,7 @@ module "ecr" {
   tags = local.tags
 
   depends_on = [
-  module.eks,
+    module.eks,
   ]
 
 }
@@ -1394,9 +1407,9 @@ resource "aws_iam_policy" "django_ecr" { # check AmazonEC2ContainerRegistryPower
       {
         Effect = "Allow"
         Action = [
-          "ecr:GetAuthorizationToken", # req
+          "ecr:GetAuthorizationToken",       # req
           "ecr:BatchCheckLayerAvailability", # req
-          "ecr:GetDownloadUrlForLayer", # req
+          "ecr:GetDownloadUrlForLayer",      # req
           "ecr:GetRepositoryPolicy",
           "ecr:DescribeRepositories",
           "ecr:ListImages",
@@ -1433,9 +1446,9 @@ resource "aws_iam_policy" "argocd_ecr" { # check AmazonEC2ContainerRegistryPower
       {
         Effect = "Allow"
         Action = [
-          "ecr:GetAuthorizationToken", # req
+          "ecr:GetAuthorizationToken",       # req
           "ecr:BatchCheckLayerAvailability", # req
-          "ecr:GetDownloadUrlForLayer", # req
+          "ecr:GetDownloadUrlForLayer",      # req
           "ecr:GetRepositoryPolicy",
           "ecr:DescribeRepositories",
           "ecr:ListImages",

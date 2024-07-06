@@ -28,6 +28,11 @@ output "name" {
   description = "Cluster name."
 }
 
+output "aws_account" {
+  description = "Aws account"
+  value       = data.aws_caller_identity.current.account_id
+}
+
 output "access_entries" {
   value       = module.eks.access_entries
   description = "Security group entries that allow access to the EKS cluster."
