@@ -11,7 +11,7 @@ spec:
       repoURL: https://github.com/tbalza/kubernetes-cicd.git
       revision: HEAD # branch for git write back?
       directories:
-      - path: argo-apps/* # add an exclude for django, create Application.yaml separately ?
+      - path: argo-apps/* # pending : switch to file mode, define each manifest.
   template:
     metadata:
       name: '{{.path.basename}}'
@@ -37,6 +37,8 @@ spec:
         repoURL: https://github.com/tbalza/kubernetes-cicd.git # check
         targetRevision: HEAD # check
         path: '{{.path.path}}'
+        plugin:
+          name: aws-account-substitution # cmp plugin. allows setting dynamic values in kustomize that come from tf. env not set below, since it's defined in values.yaml
 #        kustomize:
 #          commonAnnotations:
 #            app.kubernetes.io/managed-by: argocd # delete-hook test
@@ -44,7 +46,7 @@ spec:
         server: https://kubernetes.default.svc # pending make dynamic from repo files
         namespace: '{{.path.basename}}' # pending make dynamic from repo files
       ignoreDifferences: # argocd diff customization, meant for django, calculating structured merge diff: error building typed value from live resource: .status.lastPhaseTransitionTime: field not declared in schema
-        - kind: PersistentVolume # https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/ # https://github.com/argoproj/argo-cd/issues/16640
+        - kind: PersistentVolume # (custom diffing) fixes syncing error: .status.lastPhaseTransitionTime: field not declared in schema # https://github.com/argoproj/argo-cd/issues/16640
           jsonPointers:
             - /spec/claimRef/resourceVersion
             - /spec/claimRef/uid
@@ -52,9 +54,9 @@ spec:
       syncPolicy:
         automated:
           selfHeal: true
-          prune: true  # Enables the deletion of resources that are no longer in source
+          prune: true  # enables the deletion of resources that are no longer in source
         syncOptions:
         - CreateNamespace=true
         - ServerSideApply=true
-        - ServerSideDiff=true # ? calculating structured merge diff: error building typed value from live resource: .status.lastPhaseTransitionTime: field not declared in schema
-        - RespectIgnoreDifferences=true # ? calculating structured merge diff: error building typed value from live resource: .status.lastPhaseTransitionTime: field not declared in schema
+        - ServerSideDiff=true
+        - RespectIgnoreDifferences=true # (custom diffing) fixes syncing error: .status.lastPhaseTransitionTime: field not declared in schema
