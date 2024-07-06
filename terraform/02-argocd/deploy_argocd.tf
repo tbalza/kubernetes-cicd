@@ -114,21 +114,21 @@ resource "kubectl_manifest" "example_applicationset" {
 
 # ArgoCD AWS Account
 
-resource "kubectl_manifest" "aws_account_configmap" {
-  yaml_body = <<-YAML
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: aws-account
-  namespace: argocd
-data:
-  AWS_ACCOUNT_ID: "350206045032"
-  YAML
-
-  depends_on = [
-    helm_release.argo_cd
-  ]
-}
+#resource "kubectl_manifest" "aws_account_configmap" {
+#  yaml_body = <<-YAML
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  name: aws-account
+#  namespace: argocd
+#data:
+#  AWS_ACCOUNT_ID: "350206045032"
+#  YAML
+#
+#  depends_on = [
+#    helm_release.argo_cd
+#  ]
+#}
 
 
 #output "account_id" {
