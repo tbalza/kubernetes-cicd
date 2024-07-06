@@ -82,7 +82,7 @@ resource "helm_release" "argo_cd" {
   version    = local.argocd_helm_chart.version # "6.7.14" # pending reference this dynamically to argo-apps/argocd/config.yaml
   namespace = local.argocd_helm_chart.namespace # "argocd"
 
-  create_namespace = true
+  #create_namespace = true
 
   values = [file("../../${path.module}/argo-apps/argocd/values.yaml")]
 
@@ -114,26 +114,26 @@ resource "kubectl_manifest" "example_applicationset" {
 
 # ArgoCD AWS Account
 
-resource "kubectl_manifest" "aws_account_configmap" { # global variables that come from tf make sense not to be committed to repo, to be consumed by kustomize itself, not pods, through argocd cmp
-  # pending. `terraform_remote_state` stuff will change when on the same tf (infra and argocd bootstrap should be spun/destroyed without scripts)
-  yaml_body = <<-YAML
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: global-variables
-  namespace: argocd
-data:
-  ACCOUNT_ID: "${data.terraform_remote_state.eks.outputs.aws_account}"
-  CLUSTER_NAME: "${data.terraform_remote_state.eks.outputs.name}"
-  REGION: "${data.terraform_remote_state.eks.outputs.region}"
-  ECR_REPO: "${data.terraform_remote_state.eks.outputs.repository_url}"
-  DOMAIN: "${data.terraform_remote_state.eks.outputs.domain}"
-  YAML
-
-  depends_on = [
-    helm_release.argo_cd
-  ]
-}
+#resource "kubectl_manifest" "aws_account_configmap" { # global variables that come from tf make sense not to be committed to repo, to be consumed by kustomize itself, not pods, through argocd cmp
+#  # pending. `terraform_remote_state` stuff will change when on the same tf (infra and argocd bootstrap should be spun/destroyed without scripts)
+#  yaml_body = <<-YAML
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  name: global-variables
+#  namespace: argocd
+#data:
+#  ACCOUNT_ID: "${data.terraform_remote_state.eks.outputs.aws_account}"
+#  CLUSTER_NAME: "${data.terraform_remote_state.eks.outputs.name}"
+#  REGION: "${data.terraform_remote_state.eks.outputs.region}"
+#  ECR_REPO: "${data.terraform_remote_state.eks.outputs.repository_url}"
+#  DOMAIN: "${data.terraform_remote_state.eks.outputs.domain}"
+#  YAML
+#
+#  depends_on = [
+#    #helm_release.argo_cd
+#  ]
+#}
 
 
 #output "account_id" {

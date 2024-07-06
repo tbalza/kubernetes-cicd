@@ -31,10 +31,11 @@ configs:
       substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
         init:
           command: ["/bin/sh"]
-          args: ["-c", "kubectl get configmap global-variables -o=jsonpath='{.data}' | while read -r key value; do export $key=$value; done"]
+#          args: ["-c", "kubectl get configmap global-variables -o=jsonpath='{.data}' | while read -r key value; do export $key=$value; done"]
+#          args: ["-c", "kubectl get configmap global-variables -n argocd -o=jsonpath='{.data}' > /etc/config/env; source /etc/config/env; env > /shared/env-vars"]
         generate:
-          command: ["/bin/sh"]
-          args: ["-c", "kustomize build . | envsubst"]
+          command: ["/bin/sh"] # command: ["sh", "-c"]
+          args: ["-c", "kustomize build . | envsubst"] # ["kustomize build --load-restrictor LoadRestrictionsNone --enable-helm . | envsubst"]
         discover:
           glob: "argo-apps/**/*.yaml"
         #secondpluginexample:
@@ -95,7 +96,7 @@ repoServer:
         name: argocd-cmp-cm
     - name: cmp-tmp
       emptyDir: { }
-#  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
-#    - configMapRef:
-#        name: aws-account # previously set as configmap in terraform (with key AWS_ACCOUNT_ID) which dynamically sets aws acct number, for argocd cmp to consume # pending. Use ESO, SSM parameter
+  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
+    - configMapRef:
+        name: global-variables # previously set as configmap in terraform (with key AWS_ACCOUNT_ID) which dynamically sets aws acct number, for argocd cmp to consume # pending. Use ESO, SSM parameter
 
