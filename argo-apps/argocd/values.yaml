@@ -28,7 +28,7 @@ configs:
   cmp: # aws-account-substitution plugin. needed since kustomize can't retrieve remote values (secrets/configmaps) for its own installation (only for resulting pods etc.)
     create: true
     plugins: # Plugin yaml files to be added to argocd-cmp-cm
-      substitution:
+      substitution: # name can't have hyphens
         init:
           command: ["/bin/sh"]
           args: ["-c", "echo 'Initializing AWS Account Substitution Plugin'"]
@@ -37,10 +37,10 @@ configs:
           args: ["-c", "find . -type f -name '*.yaml' | grep 'PLACEHOLDER_ACCOUNT_ID' | xargs sed -i 's/PLACEHOLDER_ACCOUNT_ID/${ARGOCD_ENV_AWS_ACCOUNT_ID}/g'"] # argocd prepends ARGOCD_ENV_ to configmap key
         discover:
           fileName: "./*.yaml"
-          find:
-            command: [ "/bin/sh", "-c", "find . -type f -name '*.yaml' | grep -l 'PLACEHOLDER_ACCOUNT_ID'" ]
+#          find:
+#            command: [ "/bin/sh", "-c", "find . -type f -name '*.yaml' | grep -l 'PLACEHOLDER_ACCOUNT_ID'" ]
 
-        #second-plugin-example:
+        #secondpluginexample:
 #           find:
 #           glob: "**/Chart.yaml"
 #           command: [sh, -c, find . -name env.yaml]
