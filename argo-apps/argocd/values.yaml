@@ -74,9 +74,9 @@ notifications:
 repoServer:
   nodeSelector:
     role: ci-cd
-  envFrom: # set environment variable from configmap
-    - configMapRef:
-        name: aws-account # previously set as configmap in terraform (with key AWS_ACCOUNT_ID) which dynamically sets aws acct number, for argocd cmp to consume # pending. Use ESO, SSM parameter
+#  envFrom: # set environment variable from configmap
+#    - configMapRef:
+#        name: aws-account # previously set as configmap in terraform (with key AWS_ACCOUNT_ID) which dynamically sets aws acct number, for argocd cmp to consume # pending. Use ESO, SSM parameter
   # all of this is default required installation params for cmp, only the plugin yaml name needs to be defined
 #  volumes:
 #    - name: argocd-cmp-cm
