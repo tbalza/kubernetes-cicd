@@ -32,14 +32,14 @@ configs:
         init:
           command: ["/bin/sh"]
           args: ["-c", "echo 'Initializing AWS Account Substitution Plugin'"]
-        generate:
-          command: ["/bin/sh"]
-          args:
-            - |
-              for file in $(find . -type f -name '*.yaml'); do
-                yq eval 'walk(if type == "string" then sub("{AWS_ACCOUNT_ID}", strenv(ARGOCD_ENV_AWS_ACCOUNT_ID)) else . end)' -i "$file"
-              done
-              find . -type f -name '*.yaml' -exec cat {} +
+#        generate:
+#          command: ["/bin/sh"]
+#          args:
+#            - |
+#              for file in $(find . -type f -name '*.yaml'); do
+#                yq eval 'walk(if type == "string" then sub("{AWS_ACCOUNT_ID}", strenv(ARGOCD_ENV_AWS_ACCOUNT_ID)) else . end)' -i "$file"
+#              done
+#              find . -type f -name '*.yaml' -exec cat {} +
         discover:
           glob: "argo-apps/**/*.yaml"
 #          find:
