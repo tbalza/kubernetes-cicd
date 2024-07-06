@@ -34,11 +34,11 @@ configs:
           args: ["-c", "echo 'Initializing AWS Account Substitution Plugin'"]
         generate:
           command: ["/bin/sh"]
-          args: ["-c", "find . -type f -name '*.yaml' | grep 'PLACEHOLDER_ACCOUNT_ID' | xargs -I{} sed -i'' 's/PLACEHOLDER_ACCOUNT_ID/${ARGOCD_ENV_AWS_ACCOUNT_ID}/g' {}"] # argocd prepends ARGOCD_ENV_ to configmap key
+          args: ["-c", "find . -type f -name '*.yaml' -exec sed -i 's/{AWS_ACCOUNT_ID}/'$ARGOCD_ENV_AWS_ACCOUNT_ID'/g' {} +"] # argocd prepends ARGOCD_ENV_ to configmap key
         discover:
-          #fileName: "./*.yaml"
-          find:
-            command: [ "/bin/sh", "-c", "find . -type f -name '*.yaml' | grep -l 'PLACEHOLDER_ACCOUNT_ID'" ]
+          fileName: "./*.yaml"
+#          find:
+#            command: [ "/bin/sh", "-c", "find . -type f -name '*.yaml' | grep -l 'PLACEHOLDER_ACCOUNT_ID'" ]
 
         #secondpluginexample:
 #           find:
