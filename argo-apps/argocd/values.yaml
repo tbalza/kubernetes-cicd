@@ -33,6 +33,7 @@ configs:
           command: ["/bin/sh"]
           args: ["-c", "kubectl get configmap global-variables -o=jsonpath='{.data}' | while read -r key value; do export $key=$value; done"]
         generate:
+          command: ["/bin/sh"]
           args: ["-c", "kustomize build . | envsubst"]
         discover:
           glob: "argo-apps/**/*.yaml"
