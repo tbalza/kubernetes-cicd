@@ -25,13 +25,13 @@ configs:
     kustomize.buildOptions: "--load-restrictor LoadRestrictionsNone --enable-helm" # Enable Kustomize to install helm charts
   params:
     server.insecure: true # necessary when SSL termination is handled by ALB
-  cmp: # aws-account-substitution plugin. needed since kustomize can't retrieve remote values (secrets/configmaps) for its own installation (only for resulting pods etc.)
-    create: true
-    plugins: # Plugin yaml files to be added to argocd-cmp-cm
-      substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
-        init:
-          command: ["/bin/sh"]
-          args: ["-c", "echo 'Initializing AWS Account Substitution Plugin'"]
+#  cmp: # aws-account-substitution plugin. needed since kustomize can't retrieve remote values (secrets/configmaps) for its own installation (only for resulting pods etc.)
+#    create: true
+#    plugins: # Plugin yaml files to be added to argocd-cmp-cm
+#      substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
+#        init:
+#          command: ["/bin/sh"]
+#          args: ["-c", "echo 'Initializing AWS Account Substitution Plugin'"]
 #        generate:
 #          command: ["/bin/sh"]
 #          args:
@@ -40,8 +40,8 @@ configs:
 #                yq eval 'walk(if type == "string" then sub("{AWS_ACCOUNT_ID}", strenv(ARGOCD_ENV_AWS_ACCOUNT_ID)) else . end)' -i "$file"
 #              done
 #              find . -type f -name '*.yaml' -exec cat {} +
-        discover:
-          glob: "argo-apps/**/*.yaml"
+#        discover:
+#          glob: "argo-apps/**/*.yaml"
 #          find:
 #            command: [ "/bin/sh", "-c", "find . -type f -name '*.yaml' | grep -l 'PLACEHOLDER_ACCOUNT_ID'" ]
 
@@ -83,28 +83,28 @@ repoServer:
 #    - configMapRef:
 #        name: aws-account # previously set as configmap in terraform (with key AWS_ACCOUNT_ID) which dynamically sets aws acct number, for argocd cmp to consume # pending. Use ESO, SSM parameter
    #all of this is default required installation params for cmp, only the plugin yaml name needs to be defined
-  extraContainers:
-    - name: cmp-my-plugin
-      command:
-        - "/var/run/argocd/argocd-cmp-server"
-      image: busybox
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 999
-      volumeMounts:
-        - mountPath: /var/run/argocd
-          name: var-files
-        - mountPath: /home/argocd/cmp-server/plugins
-          name: plugins
-        - mountPath: /home/argocd/cmp-server/config/plugin.yaml  # Comment about the necessity of this mount
-          subPath: substitution.yaml  # Maps the specific config file for this plugin
-          name: argocd-cmp-cm
-        - mountPath: /tmp
-          name: cmp-tmp
-  volumes:
-    - name: argocd-cmp-cm
-      configMap:
-        name: argocd-cmp-cm
-    - name: cmp-tmp
-      emptyDir: { }
+#  extraContainers:
+#    - name: substitution
+#      command:
+#        - "/var/run/argocd/argocd-cmp-server"
+#      image: busybox
+#      securityContext:
+#        runAsNonRoot: true
+#        runAsUser: 999
+#      volumeMounts:
+#        - mountPath: /var/run/argocd
+#          name: var-files
+#        - mountPath: /home/argocd/cmp-server/plugins
+#          name: plugins
+#        - mountPath: /home/argocd/cmp-server/config/plugin.yaml  # Comment about the necessity of this mount
+#          subPath: substitution.yaml  # Maps the specific config file for this plugin
+#          name: argocd-cmp-cm
+#        - mountPath: /tmp
+#          name: cmp-tmp
+#  volumes:
+#    - name: argocd-cmp-cm
+#      configMap:
+#        name: argocd-cmp-cm
+#    - name: cmp-tmp
+#      emptyDir: { }
 
