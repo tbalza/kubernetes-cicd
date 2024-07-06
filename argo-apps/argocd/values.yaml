@@ -10,7 +10,7 @@ controller:
 #       name: aws-account
 
 crds:
-  keep: true # check # Keep CRDs on chart uninstall
+  keep: false # check # Keep CRDs on chart uninstall
 
 global:
   domain: argocd.tbalza.net # Used for ingresses, certificates, SSO, notifications, etc. (blank allows all domains) # check if it can be replaced by ingress
