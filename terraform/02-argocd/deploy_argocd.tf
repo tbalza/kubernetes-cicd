@@ -120,14 +120,14 @@ resource "kubectl_manifest" "aws_account_configmap" { # global variables that co
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: aws-account
+  name: global-variables
   namespace: argocd
 data:
-  AWS_ACCOUNT_ID: "${data.terraform_remote_state.eks.outputs.aws_account}"
-  AWS_CLUSTER_NAME: "${data.terraform_remote_state.eks.outputs.name}"
-  AWS_REGION: "${data.terraform_remote_state.eks.outputs.region}"
-  AWS_ECR_REPO: "${data.terraform_remote_state.eks.outputs.repository_url}"
-  AWS_DOMAIN: "${data.terraform_remote_state.eks.outputs.domain}"
+  ACCOUNT_ID: "${data.terraform_remote_state.eks.outputs.aws_account}"
+  CLUSTER_NAME: "${data.terraform_remote_state.eks.outputs.name}"
+  REGION: "${data.terraform_remote_state.eks.outputs.region}"
+  ECR_REPO: "${data.terraform_remote_state.eks.outputs.repository_url}"
+  DOMAIN: "${data.terraform_remote_state.eks.outputs.domain}"
   YAML
 
   depends_on = [

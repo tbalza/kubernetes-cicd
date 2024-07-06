@@ -25,21 +25,17 @@ configs:
     kustomize.buildOptions: "--load-restrictor LoadRestrictionsNone --enable-helm" # Enable Kustomize to install helm charts
   params:
     server.insecure: true # necessary when SSL termination is handled by ALB
-#  cmp: # aws-account-substitution plugin. needed since kustomize can't retrieve remote values (secrets/configmaps) for its own installation (only for resulting pods etc.)
-#    create: true
-#    plugins: # Plugin yaml files to be added to argocd-cmp-cm
-#      substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
-#        init:
-#          command: ["/bin/sh"]
-#          args: ["-c", "echo 'Initializing AWS Account Substitution Plugin'"]
-#        generate:
-#          command: ["/bin/sh"]
-#          args:
-#        discover:
-#          glob: "argo-apps/**/*.yaml"
-#          find:
-#            command: [ "/bin/sh", "-c", "find . -type f -name '*.yaml' | grep -l 'PLACEHOLDER_ACCOUNT_ID'" ]
-
+  cmp: # aws-account-substitution plugin. needed since kustomize can't retrieve remote values (secrets/configmaps) for its own installation (only for resulting pods etc.)
+    create: true
+    plugins: # Plugin yaml files to be added to argocd-cmp-cm
+      substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
+        init:
+          command: ["/bin/sh"]
+          args: ["-c", "kubectl get configmap global-variables -o=jsonpath='{.data}' | while read -r key value; do export $key=$value; done"]
+        generate:
+          args: ["-c", "kustomize build . | envsubst"]
+        discover:
+          glob: "argo-apps/**/*.yaml"
         #secondpluginexample:
 #           find:
 #           glob: "**/Chart.yaml"
