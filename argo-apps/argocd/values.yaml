@@ -16,8 +16,8 @@ global:
   domain: argocd.tbalza.net # Used for ingresses, certificates, SSO, notifications, etc. (blank allows all domains) # check if it can be replaced by ingress
   image:
     tag: "v2.11.4" # Overrides the global Argo CD image tag whose default is the chart appVersion
-  nodeSelector:
-    role: ci-cd
+#  nodeSelector:
+#    role: ci-cd
   # use global node selector # pending
 
 configs:
