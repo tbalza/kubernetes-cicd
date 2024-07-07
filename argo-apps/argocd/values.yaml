@@ -80,7 +80,7 @@ repoServer:
     - name: substitution
       command:
         - "/var/run/argocd/argocd-cmp-server"
-      image: busybox
+      image: bitnami/kubectl
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
