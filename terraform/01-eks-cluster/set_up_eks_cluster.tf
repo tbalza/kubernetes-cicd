@@ -10,7 +10,7 @@ data "aws_availability_zones" "available" {}
 # aws kubernetes v1.29
 
 locals {
-  name            = "django-production5" # cluster name
+  name            = "django-production5234234" # cluster name
   cluster_version = "1.29"               # 1.29
   region          = "us-east-1"
   domain          = "tbalza.net"
@@ -2231,18 +2231,18 @@ output "db_instance_port" {
   value       = module.db.db_instance_port
 }
 
-# Create namespace
-resource "kubernetes_namespace" "argo_cd" {
-  metadata {
-    name = "argocd"
-  }
-
-  depends_on = [
-    #helm_release.argo_cd
-    module.eks
-  ]
-
-}
+## Create namespace
+#resource "kubernetes_namespace" "argo_cd" {
+#  metadata {
+#    name = "argocd"
+#  }
+#
+#  depends_on = [
+#    #helm_release.argo_cd
+#    module.eks
+#  ]
+#
+#}
 
 # pending. `terraform_remote_state` stuff will change when on the same tf (infra and argocd bootstrap should be spun/destroyed without scripts)
 resource "kubectl_manifest" "aws_account_configmap" { # global variables that come from tf make sense not to be committed to repo, to be consumed by kustomize itself, not pods, through argocd cmp
