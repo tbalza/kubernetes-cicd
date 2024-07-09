@@ -34,7 +34,7 @@ configs:
 #          args: #
         generate:
           command: ["sh", "-c"] # ["/bin/sh"]
-          args: ["set -o pipefail; kustomize build . | cat"] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
+          args: ["set -o pipefail; kustomize build --enable-helm . | cat"] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
           #args: ["source /etc/config/env && kustomize build --load-restrictor LoadRestrictionsNone --enable-helm . | envsubst"]
         discover:
           find:
