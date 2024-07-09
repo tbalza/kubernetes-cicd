@@ -83,7 +83,7 @@ repoServer:
       args:
         - |
           # Download and install envsubst
-          curl -o /usr/local/bin/envsubst https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64
+          #curl -o /usr/local/bin/envsubst https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64
           
           # Download and install Kustomize
           curl -L "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.4.2/kustomize_v5.4.2_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin
