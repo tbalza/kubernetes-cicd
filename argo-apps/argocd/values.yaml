@@ -33,7 +33,7 @@ configs:
 #          command: #
 #          args: #
         generate:
-          command: ["sh", "-c"] # ["/bin/sh"]
+          command: ["/bin/sh", "-c"] # ["/bin/sh"]
           args: ["set -o pipefail; kustomize build --load-restrictor LoadRestrictionsNone --enable-helm . | cat"] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
           #args: ["source /etc/config/env && kustomize build --load-restrictor LoadRestrictionsNone --enable-helm . | envsubst"]
         discover:
@@ -76,26 +76,26 @@ repoServer:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
   nodeSelector:
     role: ci-cd
-  initContainers:
-    - name: install-tools
-      image: olegstepura/glibc-envsubst:latest
-      command: ["/bin/sh", "-c"]
-      args:
-        - |
-          # Ensure envsubst is available
-          cp /usr/bin/envsubst /usr/local/bin/
-          
-          # Download and install Kustomize
-          curl -L "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.4.2/kustomize_v5.4.2_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin
-          
-          # Download and install Helm
-          curl -L "https://get.helm.sh/helm-v3.15.1-linux-amd64.tar.gz" | tar -xz -C /usr/local/bin --strip-components=1 linux-amd64/helm
-          
-          # Ensure the tools are executable
-          chmod +x /usr/local/bin/kustomize /usr/local/bin/envsubst /usr/local/bin/helm
-      volumeMounts:
-        - mountPath: /usr/local/bin
-          name: tool-bin
+#  initContainers:
+#    - name: install-tools
+#      image: olegstepura/glibc-envsubst:latest
+#      command: ["/bin/sh", "-c"]
+#      args:
+#        - |
+#          # Ensure envsubst is available
+#          cp /usr/bin/envsubst /usr/local/bin/
+#
+#          # Download and install Kustomize
+#          curl -L "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.4.2/kustomize_v5.4.2_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin
+#
+#          # Download and install Helm
+#          curl -L "https://get.helm.sh/helm-v3.15.1-linux-amd64.tar.gz" | tar -xz -C /usr/local/bin --strip-components=1 linux-amd64/helm
+#
+#          # Ensure the tools are executable
+#          chmod +x /usr/local/bin/kustomize /usr/local/bin/envsubst /usr/local/bin/helm
+#      volumeMounts:
+#        - mountPath: /usr/local/bin
+#          name: tool-bin
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name needs to be defined
     - name: substitution
       command:
