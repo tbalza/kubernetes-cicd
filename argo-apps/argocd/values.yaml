@@ -55,9 +55,9 @@ applicationSet:
   enabled: true
   nodeSelector:
     role: ci-cd
-  extraEnvFrom:
-     - configMapRef:
-         name: global-variables
+#  extraEnvFrom:
+#     - configMapRef:
+#         name: global-variables
 
 dex:
   enabled: false # This is for SSO
