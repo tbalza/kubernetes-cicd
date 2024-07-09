@@ -37,7 +37,7 @@ spec:
         repoURL: https://github.com/tbalza/kubernetes-cicd.git # check
         targetRevision: HEAD # check
         path: '{{.path.path}}'
-        plugin: {}
+        #plugin: {}
           #name: substitution # cmp plugin. allows setting dynamic values in kustomize that come from tf. env not set below, since it's defined in values.yaml
 
 #        plugin:
