@@ -19,7 +19,7 @@ resources:
   - ingress.yaml # upstream helm ingress is stringent/finicky. kustomize is going to patch environments anyway
   - secrets.yaml
   - serviceaccount.yaml
-  - application.yaml
+#  - application.yaml
 
 configMapGenerator:
   - name: jenkins-scripts
