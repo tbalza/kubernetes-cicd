@@ -30,15 +30,11 @@ configs:
     plugins: # Plugin yaml files to be added to argocd-cmp-cm
       substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
 #        init:
-#          command: [ "/bin/sh" ]
-#          args: [ "kubectl get configmap global-variables -n argocd -o=jsonpath='{.data}' > /etc/config/env; source /etc/config/env; env > /shared/env-vars" ]
-#        init:
-#          command: ["/bin/sh"]
-#          args: ["-c", "kubectl get configmap global-variables -o=jsonpath='{.data}' | while read -r key value; do export $key=$value; done"]
-#          args: ["-c", "kubectl get configmap global-variables -n argocd -o=jsonpath='{.data}' > /etc/config/env; source /etc/config/env; env > /shared/env-vars"]
+#          command: #
+#          args: #
         generate:
           command: ["sh", "-c"] # ["/bin/sh"]
-          args: ["kustomize build . | envsubst"] # ["-c", "kustomize build . | envsubst"]
+          args: ["set -o pipefail; kustomize build . | envsubst"] # ["-c", "kustomize build . | envsubst"]
           #args: ["source /etc/config/env && kustomize build --load-restrictor LoadRestrictionsNone --enable-helm . | envsubst"]
         discover:
           find:
