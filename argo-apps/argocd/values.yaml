@@ -73,13 +73,33 @@ notifications:
 repoServer:
   nodeSelector:
     role: ci-cd
+  initContainers:
+    - name: install-tools
+      image: alpine:latest
+      command: [ "/bin/sh", "-c" ]
+      args:
+        - |
+          # Update and install necessary packages
+          apk add --no-cache curl gettext
+          
+          # Download and install Kustomize
+          curl -L "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.4.2/kustomize_v5.4.2_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin
+          
+          # Ensure envsubst is available from gettext
+          ln -s /usr/bin/envsubst /usr/local/bin/envsubst
+          
+          # Ensure the tools are executable
+          chmod +x /usr/local/bin/kustomize /usr/local/bin/envsubst
+      volumeMounts:
+        - mountPath: /usr/local/bin
+          name: tool-bin
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name needs to be defined
     - name: substitution
       command:
         - "/bin/sh"
         - "-c"
         - "/var/run/argocd/argocd-cmp-server"
-      image: bitnami/kubectl
+      image: alpine:latest
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
@@ -93,11 +113,15 @@ repoServer:
           name: argocd-cmp-cm
         - mountPath: /tmp
           name: cmp-tmp
+        - mountPath: /usr/local/bin
+          name: tool-bin
   volumes:
     - name: argocd-cmp-cm
       configMap:
         name: argocd-cmp-cm
-    - name: cmp-tmp
+    - name: cmp-tmp # scratch space for any temporary processing
+      emptyDir: { }
+    - name: tool-bin
       emptyDir: { }
   envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
     - configMapRef:
