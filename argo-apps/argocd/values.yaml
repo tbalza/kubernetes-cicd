@@ -26,8 +26,7 @@ configs:
           command: ["/bin/sh", "-c"] # ["/bin/sh"]
           args: ["kustomize build --enable-helm . | cat"] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
         discover:
-          find:
-            glob: "**/serviceaccount.yaml"
+          fileName: "*.yaml"
 
 server:
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
@@ -59,8 +58,7 @@ repoServer:
     - name: substitution
       command:
         - "/var/run/argocd/argocd-cmp-server"
-      args: [--loglevel, debug]
-      image: olegstepura/glibc-envsubst:latest
+      image: buxybox
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
@@ -74,17 +72,13 @@ repoServer:
           name: argocd-cmp-cm
         - mountPath: /tmp
           name: cmp-tmp
-        - mountPath: /usr/local/bin
-          name: tool-bin
   volumes:
     - name: argocd-cmp-cm
       configMap:
         name: argocd-cmp-cm
     - name: cmp-tmp # scratch space for any temporary processing
       emptyDir: { }
-    - name: tool-bin
-      emptyDir: { }
-  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
-    - configMapRef:
-        name: global-variables # previously set as configmap in terraform (with key AWS_ACCOUNT_ID) which dynamically sets aws acct number, for argocd cmp to consume # pending. Use ESO, SSM parameter
+#  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
+#    - configMapRef:
+#        name: global-variables # previously set as configmap in terraform (with key AWS_ACCOUNT_ID) which dynamically sets aws acct number, for argocd cmp to consume # pending. Use ESO, SSM parameter
 
