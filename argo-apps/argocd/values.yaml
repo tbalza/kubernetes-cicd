@@ -28,6 +28,7 @@ configs:
         discover:
           find:
             glob: "**/serviceaccount.yaml"
+
 server:
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
     enabled: false # true
