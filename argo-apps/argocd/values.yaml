@@ -58,9 +58,9 @@ applicationSet:
   enabled: true
   nodeSelector:
     role: ci-cd
-#  extraEnvFrom:
-#     - configMapRef:
-#         name: aws-account
+  extraEnvFrom:
+     - configMapRef:
+         name: global-variables
 
 dex:
   enabled: false # This is for SSO
