@@ -102,6 +102,7 @@ repoServer:
 #        - "/bin/sh"
 #        - "-c"
         - "/var/run/argocd/argocd-cmp-server"
+      args: [--loglevel, debug]
       image: alpine:latest
       securityContext:
         runAsNonRoot: true
