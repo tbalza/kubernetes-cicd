@@ -38,7 +38,7 @@ configs:
 #          args: ["-c", "kubectl get configmap global-variables -n argocd -o=jsonpath='{.data}' > /etc/config/env; source /etc/config/env; env > /shared/env-vars"]
         generate:
           command: ["sh", "-c"] # ["/bin/sh"]
-          args: ["kustomize build --load-restrictor LoadRestrictionsNone --enable-helm . | envsubst"] # ["-c", "kustomize build . | envsubst"]
+          args: ["kustomize build . | envsubst"] # ["-c", "kustomize build . | envsubst"]
           #args: ["source /etc/config/env && kustomize build --load-restrictor LoadRestrictionsNone --enable-helm . | envsubst"]
         discover:
           glob: "argo-apps/**/*.yaml"

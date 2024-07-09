@@ -1,0 +1,10 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: jenkins
+  namespace: jenkins
+spec:
+    spec:
+      source:
+        plugin:
+          name: substitution # cmp plugin. allows setting dynamic values in kustomize that come from tf. env not set below, since it's defined in values.yaml

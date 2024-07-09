@@ -20,6 +20,7 @@ resources:
   - ingress.yaml
   - secrets.yaml
   - image-updater/
+  - application.yaml
 #  - delete-hook.yaml
 
 #vars:
