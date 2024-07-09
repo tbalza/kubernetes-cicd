@@ -99,8 +99,8 @@ repoServer:
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name needs to be defined
     - name: substitution
       command:
-        - "/bin/sh"
-        - "-c"
+#        - "/bin/sh"
+#        - "-c"
         - "/var/run/argocd/argocd-cmp-server"
       image: alpine:latest
       securityContext:
