@@ -91,8 +91,11 @@ repoServer:
           # Ensure envsubst is available from gettext
           ln -s /usr/bin/envsubst /usr/local/bin/envsubst
           
+          # Download and install Helm
+          curl -L "https://get.helm.sh/helm-v3.15.1-linux-amd64.tar.gz" | tar -xz -C /usr/local/bin --strip-components=1 linux-amd64/helm
+          
           # Ensure the tools are executable
-          chmod +x /usr/local/bin/kustomize /usr/local/bin/envsubst
+          chmod +x /usr/local/bin/kustomize /usr/local/bin/envsubst /usr/local/bin/helm
       volumeMounts:
         - mountPath: /usr/local/bin
           name: tool-bin
