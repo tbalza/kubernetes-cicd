@@ -38,7 +38,7 @@ configs:
           #args: ["source /etc/config/env && kustomize build --load-restrictor LoadRestrictionsNone --enable-helm . | envsubst"]
         discover:
           find:
-            glob: "argo-apps/jenkins/serviceaccount.yaml"
+            glob: "**/serviceaccount.yaml"
         #secondpluginexample:
 #           find:
 #           glob: "**/Chart.yaml"
