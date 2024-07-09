@@ -4,10 +4,6 @@ controller:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
   nodeSelector:
     role: ci-cd
-# init containers or sidecars that configure or bootstrap the main containers based on dynamic inputs from secrets.
-#  envFrom:
-#   - configMapRef:
-#       name: aws-account
 
 crds:
   keep: false # check # Keep CRDs on chart uninstall
@@ -16,9 +12,6 @@ global:
   domain: argocd.tbalza.net # Used for ingresses, certificates, SSO, notifications, etc. (blank allows all domains) # check if it can be replaced by ingress
   image:
     tag: "v2.11.4" # Overrides the global Argo CD image tag whose default is the chart appVersion
-#  nodeSelector:
-#    role: ci-cd
-  # use global node selector # pending
 
 configs:
   cm:
@@ -29,25 +22,13 @@ configs:
     create: true
     plugins: # Plugin yaml files to be added to argocd-cmp-cm
       substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
-#        init:
-#          command: #
-#          args: #
         generate:
           command: ["/bin/sh", "-c"] # ["/bin/sh"]
-          args: ["set -o pipefail; kustomize build --enable-helm . | cat"] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
-          #args: ["source /etc/config/env && kustomize build --load-restrictor LoadRestrictionsNone --enable-helm . | envsubst"]
+          args: ["kustomize build --enable-helm . | cat"] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
         discover:
           find:
             glob: "**/serviceaccount.yaml"
-        #secondpluginexample:
-#           find:
-#           glob: "**/Chart.yaml"
-#           command: [sh, -c, find . -name env.yaml]
-
 server:
-#  envFrom:
-#    - configMapRef:
-#        name: aws-account
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
     enabled: false # true
 
@@ -55,9 +36,6 @@ applicationSet:
   enabled: true
   nodeSelector:
     role: ci-cd
-#  extraEnvFrom:
-#     - configMapRef:
-#         name: global-variables
 
 dex:
   enabled: false # This is for SSO
@@ -76,31 +54,9 @@ repoServer:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
   nodeSelector:
     role: ci-cd
-#  initContainers:
-#    - name: install-tools
-#      image: olegstepura/glibc-envsubst:latest
-#      command: ["/bin/sh", "-c"]
-#      args:
-#        - |
-#          # Ensure envsubst is available
-#          cp /usr/bin/envsubst /usr/local/bin/
-#
-#          # Download and install Kustomize
-#          curl -L "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.4.2/kustomize_v5.4.2_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin
-#
-#          # Download and install Helm
-#          curl -L "https://get.helm.sh/helm-v3.15.1-linux-amd64.tar.gz" | tar -xz -C /usr/local/bin --strip-components=1 linux-amd64/helm
-#
-#          # Ensure the tools are executable
-#          chmod +x /usr/local/bin/kustomize /usr/local/bin/envsubst /usr/local/bin/helm
-#      volumeMounts:
-#        - mountPath: /usr/local/bin
-#          name: tool-bin
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name needs to be defined
     - name: substitution
       command:
-#        - "/bin/sh"
-#        - "-c"
         - "/var/run/argocd/argocd-cmp-server"
       args: [--loglevel, debug]
       image: olegstepura/glibc-envsubst:latest
