@@ -54,30 +54,30 @@ repoServer:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
   nodeSelector:
     role: ci-cd
-  extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name needs to be defined
-    - name: substitution
-      command:
-        - "/var/run/argocd/argocd-cmp-server"
-      image: buxybox
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 999
-      volumeMounts:
-        - mountPath: /var/run/argocd
-          name: var-files
-        - mountPath: /home/argocd/cmp-server/plugins
-          name: plugins
-        - mountPath: /home/argocd/cmp-server/config/plugin.yaml  # Comment about the necessity of this mount
-          subPath: substitution.yaml  # Maps the specific config file for this plugin
-          name: argocd-cmp-cm
-        - mountPath: /tmp
-          name: cmp-tmp
-  volumes:
-    - name: argocd-cmp-cm
-      configMap:
-        name: argocd-cmp-cm
-    - name: cmp-tmp # scratch space for any temporary processing
-      emptyDir: { }
+#  extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name needs to be defined
+#    - name: substitution
+#      command:
+#        - "/var/run/argocd/argocd-cmp-server"
+#      image: buxybox
+#      securityContext:
+#        runAsNonRoot: true
+#        runAsUser: 999
+#      volumeMounts:
+#        - mountPath: /var/run/argocd
+#          name: var-files
+#        - mountPath: /home/argocd/cmp-server/plugins
+#          name: plugins
+#        - mountPath: /home/argocd/cmp-server/config/plugin.yaml  # Comment about the necessity of this mount
+#          subPath: substitution.yaml  # Maps the specific config file for this plugin
+#          name: argocd-cmp-cm
+#        - mountPath: /tmp
+#          name: cmp-tmp
+#  volumes:
+#    - name: argocd-cmp-cm
+#      configMap:
+#        name: argocd-cmp-cm
+#    - name: cmp-tmp # scratch space for any temporary processing
+#      emptyDir: { }
 #  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
 #    - configMapRef:
 #        name: global-variables # previously set as configmap in terraform (with key AWS_ACCOUNT_ID) which dynamically sets aws acct number, for argocd cmp to consume # pending. Use ESO, SSM parameter
