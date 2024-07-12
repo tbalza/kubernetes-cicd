@@ -85,8 +85,6 @@ repoServer:
       emptyDir: {}
     - name: custom-tools # envsubst
       emptyDir: {}
-    - name: var-files # envsubst req, for initContainer to talk to extraContainers?
-      emptyDir: {}
   initContainers: # # envsubst
     - name: install-envsubst
       image: tbalza/envsubst:latest
