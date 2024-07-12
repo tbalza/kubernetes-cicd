@@ -77,6 +77,9 @@ repoServer:
           name: cmp-tmp
         - mountPath: /usr/local/bin # envsubst
           name: custom-tools
+      env:
+        - name: PATH
+          value: "/home/argocd/bin:${PATH}"
   volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
     - name: argocd-cmp-cm
       configMap:
