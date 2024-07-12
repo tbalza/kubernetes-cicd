@@ -24,9 +24,12 @@ configs:
       substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
         generate:
           command: ["sh", "-c"] # ["/bin/sh"]
-          args: ["kustomize build --enable-helm . | cat"] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
-        discover:
-          fileName: "*.yaml"
+          args: [ "kustomize build --enable-helm" ] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
+#        discover:
+#          fileName: "../jenkins/*.yaml"
+#  repositories:
+#    main-repo:
+#      url: https://github.com/tbalza/kubernetes-cicd
 
 server:
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
@@ -58,7 +61,7 @@ repoServer:
     - name: substitution
       command:
         - "/var/run/argocd/argocd-cmp-server"
-      image: buxybox
+      image: quay.io/argoproj/argocd # '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ default (include "argo-cd.defaultTag" .) .Values.repoServer.image.tag }}'
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
@@ -78,9 +81,11 @@ repoServer:
         name: argocd-cmp-cm
     - name: cmp-tmp # scratch space for any temporary processing
       emptyDir: { }
+#    - mountPath: /usr/local/bin # defined in init container
+#      name: tool-bin
 
 
-#  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
-#    - configMapRef:
-#        name: global-variables # previously set as configmap in terraform (with key AWS_ACCOUNT_ID) which dynamically sets aws acct number, for argocd cmp to consume # pending. Use ESO, SSM parameter
+  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
+    - configMapRef:
+        name: global-variables # previously set as configmap in terraform (with key AWS_ACCOUNT_ID) which dynamically sets aws acct number, for argocd cmp to consume # pending. Use ESO, SSM parameter
 
