@@ -94,9 +94,9 @@ repoServer:
       command: [ "sh", "-c" ]
       args:
         - "cp envsubst /custom-tools/envsubst && chmod +x /custom-tools/envsubst"
-  volumeMounts:
-    - mountPath: /custom-tools
-      name: custom-tools
+      volumeMounts:
+        - mountPath: /custom-tools
+          name: custom-tools
 
 
 #  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
