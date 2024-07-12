@@ -23,11 +23,6 @@ resources:
 #  - application.yaml
 #  - delete-hook.yaml
 
-configMapGenerator:
-  - name: envsubst
-    files:
-    - envsubst # v 1.4.2 #
-
 #vars:
 #  - name: ARGOCD_ROLE_ARN
 #    objref:

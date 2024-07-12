@@ -76,25 +76,23 @@ repoServer:
         - mountPath: /tmp
           name: cmp-tmp
         - mountPath: /usr/local/bin # envsubst
-          name: envsubst
+          name: shared-bin
   volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
     - name: argocd-cmp-cm
       configMap:
         name: argocd-cmp-cm
     - name: cmp-tmp # scratch space for any temporary processing
       emptyDir: { }
-    - name: envsubst # envsubst
-      configMap:
-        name: envsubst
-#  initContainers: # # envsubst
-#    - name: install-envsubst
-#      command:
-#        - wget -O /shared-bin/envsubst "https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64" &&
-#          chmod +x /shared-bin/envsubst
-#      image: dibi/envsubst # ######################
-#      volumeMounts:
-#        - mountPath: /shared-bin
-#          name: shared-bin
+    - name: shared-bin # envsubst
+      emptyDir: { }
+  initContainers: # # envsubst
+    - name: install-envsubst
+      command:
+        - echo "test"
+      image: busybox # ######################
+      volumeMounts:
+        - mountPath: /shared-bin
+          name: shared-bin
 
 
 #  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
