@@ -75,31 +75,28 @@ repoServer:
           name: argocd-cmp-cm
         - mountPath: /tmp
           name: cmp-tmp
+        - mountPath: /usr/local/bin # envsubst
+          name: shared-bin
   volumes:
     - name: argocd-cmp-cm
       configMap:
         name: argocd-cmp-cm
     - name: cmp-tmp # scratch space for any temporary processing
       emptyDir: { }
-    - name: custom-tools
+    - name: shared-bin # envsubst
       emptyDir: { }
-  initContainers:
-    - name: download-tools
-      image: alpine:3 # quay.io/argoproj/argocd
-      command: ["/bin/sh", "-c"]
-      args:
-        - |
-
-          # Download and install Kustomize
-          curl -L "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.4.2/kustomize_v5.4.2_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin
-
-          # Ensure the tools are executable
-          chmod +x /usr/local/bin/envsubst
+  InitContainers: # # envsubst
+    - name: install-envsubst
+      command:
+        - wget -O /shared-bin/envsubst "https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64" &&
+          chmod +x /shared-bin/envsubst
+      image: busybox
+#      securityContext:
+#        runAsNonRoot: true
+#        runAsUser: 999
       volumeMounts:
-        - mountPath: /usr/local/bin
-          name: custom-tools
-    - mountPath: /usr/local/bin # defined in init container
-      name: custom-tools
+        - mountPath: /shared-bin
+          name: shared-bin
 
 
 #  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
