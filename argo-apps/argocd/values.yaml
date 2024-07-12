@@ -87,13 +87,13 @@ repoServer:
       emptyDir: { }
   initContainers: # # envsubst
     - name: install-envsubst
+      image: alpine:3.8
       command: [ "/bin/sh", "-c" ]
       args:
-        - >
+        - >-
           echo "Starting the init container script..." > /shared-bin/init-log.txt;
           echo "test" > /shared-bin/testfile.txt;
           echo "File creation complete." >> /shared-bin/init-log.txt
-      image: busybox # ######################
       volumeMounts:
         - mountPath: /shared-bin
           name: shared-bin
