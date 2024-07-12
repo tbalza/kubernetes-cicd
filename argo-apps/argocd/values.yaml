@@ -93,7 +93,7 @@ repoServer:
         runAsUser: 999
       command: [ "sh", "-c" ]
       args:
-        - "cp envsubst /custom-tools/ && chmod +x /custom-tools/envsubst"
+        - "cp envsubst /custom-tools/envsubst && chmod +x /custom-tools/envsubst"
   volumeMounts:
     - mountPath: /custom-tools
       name: custom-tools
