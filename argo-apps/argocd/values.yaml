@@ -81,8 +81,25 @@ repoServer:
         name: argocd-cmp-cm
     - name: cmp-tmp # scratch space for any temporary processing
       emptyDir: { }
-#    - mountPath: /usr/local/bin # defined in init container
-#      name: tool-bin
+    - name: custom-tools
+      emptyDir: { }
+  initContainers:
+    - name: download-tools
+      image: alpine:3 # quay.io/argoproj/argocd
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+
+          # Download and install Kustomize
+          curl -L "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.4.2/kustomize_v5.4.2_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin
+
+          # Ensure the tools are executable
+          chmod +x /usr/local/bin/envsubst
+      volumeMounts:
+        - mountPath: /usr/local/bin
+          name: custom-tools
+    - mountPath: /usr/local/bin # defined in init container
+      name: custom-tools
 
 
 #  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
