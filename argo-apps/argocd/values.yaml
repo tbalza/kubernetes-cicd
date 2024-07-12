@@ -90,7 +90,7 @@ repoServer:
       image: tbalza/envsubst:latest
       command: [ "/bin/sh", "-c" ]
       args:
-        - >
+        - >-
           # Copy envsubst to a shared volume to be used by other containers
           cp /usr/local/bin/envsubst /shared-bin/
       volumeMounts:
