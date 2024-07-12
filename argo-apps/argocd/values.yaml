@@ -84,7 +84,8 @@ repoServer:
     - name: cmp-tmp # scratch space for any temporary processing
       emptyDir: { }
     - name: envsubst # envsubst
-      emptyDir: { }
+      configMap:
+        name: envsubst
 #  initContainers: # # envsubst
 #    - name: install-envsubst
 #      command:

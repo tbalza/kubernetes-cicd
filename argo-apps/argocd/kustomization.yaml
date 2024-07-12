@@ -26,7 +26,7 @@ resources:
 configMapGenerator:
   - name: envsubst
     files:
-    - envsubst
+    - envsubst # v 1.4.2 #
 
 #vars:
 #  - name: ARGOCD_ROLE_ARN
