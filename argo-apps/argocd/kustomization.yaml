@@ -16,7 +16,7 @@ helmCharts:
 #          eks.amazonaws.com/role-arn: $(ARGOCD_ROLE_ARN)
 
 resources:
-  - applicationset.yaml
+#  - applicationset.yaml
   - ingress.yaml
   - secrets.yaml
   - image-updater/
