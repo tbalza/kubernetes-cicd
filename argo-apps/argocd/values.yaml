@@ -93,9 +93,9 @@ repoServer:
         runAsUser: 999
       command: [ "sh", "-c" ]
       args:
-        - "cp /usr/local/bin/envsubst /custom-tools/envsubst && chmod +x /custom-tools/envsubst"
+        - "cp /usr/local/bin/envsubst /home/argocd/bin/envsubst"
       volumeMounts:
-        - mountPath: /custom-tools
+        - mountPath: /home/argocd/bin
           name: custom-tools
 
 
