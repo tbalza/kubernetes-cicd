@@ -57,7 +57,7 @@ repoServer:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
   nodeSelector:
     role: ci-cd
-  extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name needs to be defined
+  extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
     - name: substitution
       command:
         - "/var/run/argocd/argocd-cmp-server"
@@ -70,14 +70,14 @@ repoServer:
           name: var-files
         - mountPath: /home/argocd/cmp-server/plugins
           name: plugins
-        - mountPath: /home/argocd/cmp-server/config/plugin.yaml  # Comment about the necessity of this mount
+        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
           subPath: substitution.yaml  # Maps the specific config file for this plugin
           name: argocd-cmp-cm
         - mountPath: /tmp
           name: cmp-tmp
         - mountPath: /usr/local/bin # envsubst
           name: shared-bin
-  volumes:
+  volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
     - name: argocd-cmp-cm
       configMap:
         name: argocd-cmp-cm
@@ -85,15 +85,12 @@ repoServer:
       emptyDir: { }
     - name: shared-bin # envsubst
       emptyDir: { }
-  InitContainers: # # envsubst
+  initContainers: # # envsubst
     - name: install-envsubst
       command:
         - wget -O /shared-bin/envsubst "https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64" &&
           chmod +x /shared-bin/envsubst
       image: busybox
-#      securityContext:
-#        runAsNonRoot: true
-#        runAsUser: 999
       volumeMounts:
         - mountPath: /shared-bin
           name: shared-bin
