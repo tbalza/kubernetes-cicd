@@ -87,13 +87,12 @@ repoServer:
       emptyDir: { }
   initContainers: # # envsubst
     - name: install-envsubst
-      image: alpine:3.8
+      image: tbalza/envsubst:latest
       command: [ "/bin/sh", "-c" ]
       args:
-        - >-
-          echo "Starting the init container script..." > /shared-bin/init-log.txt;
-          echo "test" > /shared-bin/testfile.txt;
-          echo "File creation complete." >> /shared-bin/init-log.txt
+        - >
+          # Copy envsubst to a shared volume to be used by other containers
+          cp /usr/local/bin/envsubst /shared-bin/
       volumeMounts:
         - mountPath: /shared-bin
           name: shared-bin
