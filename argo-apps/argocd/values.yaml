@@ -24,7 +24,7 @@ configs:
       substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
         generate:
           command: ["sh", "-c"] # ["/bin/sh"]
-          args: [ "kustomize build --enable-helm" ] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
+          args: ["kustomize build --enable-helm"] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
 #        discover:
 #          fileName: "../jenkins/*.yaml"
 #  repositories:
@@ -85,7 +85,7 @@ repoServer:
 #      name: tool-bin
 
 
-  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
-    - configMapRef:
-        name: global-variables # previously set as configmap in terraform (with key AWS_ACCOUNT_ID) which dynamically sets aws acct number, for argocd cmp to consume # pending. Use ESO, SSM parameter
+#  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
+#    - configMapRef:
+#        name: global-variables # previously set as configmap in terraform (with key AWS_ACCOUNT_ID) which dynamically sets aws acct number, for argocd cmp to consume # pending. Use ESO, SSM parameter
 
