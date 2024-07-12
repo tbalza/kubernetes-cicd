@@ -63,8 +63,8 @@ repoServer:
         - "/var/run/argocd/argocd-cmp-server"
       image: quay.io/argoproj/argocd # '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ default (include "argo-cd.defaultTag" .) .Values.repoServer.image.tag }}'
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 999
+        runAsNonRoot: true # true
+        runAsUser: 999 # 999
       volumeMounts:
         - mountPath: /var/run/argocd
           name: var-files
@@ -88,6 +88,9 @@ repoServer:
   initContainers: # # envsubst
     - name: install-envsubst
       image: tbalza/envsubst:latest
+      securityContext:
+        runAsNonRoot: false # true
+        runAsUser: 0 # 999
       command: [ "sh", "-c" ]
       args:
         - "cp /usr/local/bin/envsubst /shared-bin/"
