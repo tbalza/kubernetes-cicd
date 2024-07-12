@@ -13,7 +13,7 @@ global:
   image:
     tag: "v2.11.4" # Overrides the global Argo CD image tag whose default is the chart appVersion
 
-configs:
+configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ busybox? https://github.com/crumbhole/argocd-lovely-plugin
   cm:
     kustomize.buildOptions: "--load-restrictor LoadRestrictionsNone --enable-helm" # Enable Kustomize to install helm charts
   params:
@@ -76,24 +76,24 @@ repoServer:
         - mountPath: /tmp
           name: cmp-tmp
         - mountPath: /usr/local/bin # envsubst
-          name: shared-bin
+          name: envsubst
   volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
     - name: argocd-cmp-cm
       configMap:
         name: argocd-cmp-cm
     - name: cmp-tmp # scratch space for any temporary processing
       emptyDir: { }
-    - name: shared-bin # envsubst
+    - name: envsubst # envsubst
       emptyDir: { }
-  initContainers: # # envsubst
-    - name: install-envsubst
-      command:
-        - wget -O /shared-bin/envsubst "https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64" &&
-          chmod +x /shared-bin/envsubst
-      image: busybox
-      volumeMounts:
-        - mountPath: /shared-bin
-          name: shared-bin
+#  initContainers: # # envsubst
+#    - name: install-envsubst
+#      command:
+#        - wget -O /shared-bin/envsubst "https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64" &&
+#          chmod +x /shared-bin/envsubst
+#      image: dibi/envsubst # ######################
+#      volumeMounts:
+#        - mountPath: /shared-bin
+#          name: shared-bin
 
 
 #  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
