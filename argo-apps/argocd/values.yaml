@@ -88,7 +88,7 @@ repoServer:
   initContainers: # # envsubst
     - name: install-envsubst
       image: tbalza/envsubst:latest
-      command: [ "/bin/sh", "-c" ]
+      command: [ "sh", "-c" ]
       args:
         - "cp /usr/local/bin/envsubst /shared-bin/"
       volumeMounts:
