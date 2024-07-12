@@ -1,24 +1,15 @@
-# Start from the Alpine Linux base image
+# Use an official Alpine image as a parent image
 FROM alpine:latest
 
-# Install the gettext package which includes envsubst
-RUN apk add --no-cache gettext
+# Install gettext which includes envsubst, and place it in /usr/local/bin
+RUN apk add --no-cache gettext && ln -s /usr/bin/envsubst /usr/local/bin/envsubst
 
-# Add a non-root user with UID 999
-RUN adduser -D nonrootuser
+# Set the user to non-root for security
+RUN adduser -D customuser
+USER customuser
 
-# Create a directory for custom tools
-RUN mkdir /custom-tools
-
-# Copy the envsubst binary to the custom-tools directory
-# Optionally, create a symbolic link instead of copying to retain original paths
-RUN cp /usr/bin/envsubst /custom-tools/envsubst
-
-# Set the user to nonrootuser to ensure non-root execution
-USER nonrootuser
-
-# Set the default work directory
-WORKDIR /custom-tools
+# Set the working directory to /usr/local/bin for convenience
+WORKDIR /usr/local/bin
 
 # Keep the container running with a simple command
 CMD ["tail", "-f", "/dev/null"]

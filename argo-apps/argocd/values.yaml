@@ -77,7 +77,6 @@ repoServer:
           name: cmp-tmp
         - mountPath: /usr/local/bin # envsubst
           name: custom-tools
-          subPath: envsubst
   volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
     - name: argocd-cmp-cm
       configMap:
@@ -94,10 +93,10 @@ repoServer:
         runAsUser: 999
       command: [ "sh", "-c" ]
       args:
-        - "cp /usr/local/bin/envsubst /custom-tools/envsubst && chmod +x /custom-tools/envsubst"
-      volumeMounts:
-        - mountPath: /custom-tools
-          name: custom-tools
+        - "cp envsubst /custom-tools/ && chmod +x /custom-tools/envsubst"
+  volumeMounts:
+    - mountPath: /custom-tools
+      name: custom-tools
 
 
 #  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
