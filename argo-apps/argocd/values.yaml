@@ -75,8 +75,8 @@ repoServer:
           name: argocd-cmp-cm
         - mountPath: /tmp
           name: cmp-tmp
-#        - mountPath: /usr/local/bin # envsubst
-#          name: custom-tools
+        - mountPath: /usr/local/bin # envsubst
+          name: custom-tools
   volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
     - name: argocd-cmp-cm
       configMap:
@@ -84,6 +84,8 @@ repoServer:
     - name: cmp-tmp # scratch space for any temporary processing
       emptyDir: {}
     - name: custom-tools # envsubst
+      emptyDir: {}
+    - name: var-files # envsubst req, for initContainer to talk to extraContainers?
       emptyDir: {}
   initContainers: # # envsubst
     - name: install-envsubst
@@ -93,10 +95,10 @@ repoServer:
         runAsUser: 999
       command: [ "sh", "-c" ]
       args:
-        - "cp envsubst /tmp/envsubst"
+        - "cp /usr/local/bin/envsubst /custom-tools/envsubst && chmod +x /custom-tools/envsubst"
       volumeMounts:
-        - mountPath: /tmp
-          name: tmp
+        - mountPath: /custom-tools
+          name: custom-tools
 
 
 #  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
