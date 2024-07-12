@@ -87,8 +87,10 @@ repoServer:
       emptyDir: { }
   initContainers: # # envsubst
     - name: install-envsubst
-      command:
-        - echo "test"
+      command: [ "/bin/sh", "-c" ]
+      args:
+        - >
+          echo "test" > /shared-bin/testfile.txt
       image: busybox # ######################
       volumeMounts:
         - mountPath: /shared-bin
