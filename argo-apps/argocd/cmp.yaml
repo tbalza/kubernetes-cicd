@@ -36,7 +36,7 @@ spec:
       - name: install-envsubst
         image: tbalza/envsubst:latest # alpine:latest
         command: ["/bin/sh", "-c"]
-        args: ["apk --no-cache add gettext; cp /usr/bin/envsubst /custom-bin/envsubst"]
+        args: ["cp /usr/local/bin/envsubst /tmp/envsubst"] # ["apk --no-cache add gettext; cp /usr/bin/envsubst /custom-bin/envsubst"]
         volumeMounts:
         - name: custom-bin
           mountPath: /custom-bin
