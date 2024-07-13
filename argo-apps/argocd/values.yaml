@@ -90,7 +90,7 @@ repoServer:
       image: tbalza/envsubst:latest
       command: [ "sh", "-c" ]
       args:
-        - "cp /usr/local/bin/envsubst /tmp/envsubst"
+        - "cp envsubst /tmp/envsubst"
       volumeMounts:
         - mountPath: /tmp
           name: tmp
