@@ -85,15 +85,15 @@ repoServer:
       emptyDir: {}
     - name: custom-tools # envsubst
       emptyDir: {}
-#  initContainers: # # envsubst
-#    - name: install-envsubst
-#      image: alpine:latest
-#      command: [ "sh", "-c" ]
-#      args:
-#        - "cp envsubst /tmp/envsubst"
-#      volumeMounts:
-#        - mountPath: /tmp
-#          name: tmp
+  initContainers: # # envsubst
+    - name: install-envsubst
+      image: alpine:latest
+      command: [ "sh", "-c" ]
+      args:
+        - "cp envsubst /tmp/envsubst"
+      volumeMounts:
+        - mountPath: /tmp
+          name: tmp
 
 
 #  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
