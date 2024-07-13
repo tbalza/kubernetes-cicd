@@ -27,9 +27,9 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
           args: ["kustomize build --enable-helm"] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
         discover:
           fileName: "../jenkins/*.yaml"
-  repositories:
-    main-repo:
-      url: https://github.com/tbalza/kubernetes-cicd
+#  repositories:
+#    main-repo:
+#      url: https://github.com/tbalza/kubernetes-cicd
 
 server:
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
