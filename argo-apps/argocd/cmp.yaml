@@ -1,0 +1,87 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ConfigManagementPlugin
+metadata:
+  name: kustomize-build-with-helm
+spec:
+  generate:
+    command: ["sh", "-c"]
+    args: ["kustomize build --enable-helm"]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cmp-kustomize-build-with-helm
+  namespace: argocd
+data:
+  kustomize-build-with-helm.yaml: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: ConfigManagementPlugin
+    metadata:
+      name: kustomize-build-with-helm
+    spec:
+      generate:
+        command: ["sh", "-c"]
+        args: ["kustomize build --enable-helm"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+  namespace: argocd
+spec:
+  selector:
+    matchLabels:
+      app: argocd-repo-server
+  template:
+    metadata:
+      labels:
+        app: argocd-repo-server
+    spec:
+      containers:
+        - name: argocd-repo-server
+          # existing repo server container spec
+        - name: kustomize-build-with-helm
+          image: quay.io/argoproj/argocd:v2.7.11
+          command: ["/var/run/argocd/argocd-cmp-server"]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 999
+          volumeMounts:
+            - mountPath: /var/run/argocd
+              name: var-files
+            - mountPath: /home/argocd/cmp-server/plugins
+              name: plugins
+            - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+              subPath: kustomize-build-with-helm.yaml
+              name: argocd-cmp-kustomize-build-with-helm
+            - mountPath: /tmp
+              name: cmp-tmp
+        - name: alpine-envsubst
+          image: alpine:latest
+          command: ["/bin/sh", "-c", "apk add --no-cache gettext && while true; do sleep 3600; done"]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 999
+          volumeMounts:
+            - mountPath: /var/run/argocd
+              name: var-files
+            - mountPath: /home/argocd/cmp-server/plugins
+              name: plugins
+            - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+              subPath: kustomize-build-with-helm.yaml
+              name: argocd-cmp-kustomize-build-with-helm
+            - mountPath: /tmp
+              name: cmp-tmp
+          env:
+            - name: PATH
+              value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/envsubst"
+      volumes:
+        - name: var-files
+          emptyDir: {}
+        - name: plugins
+          emptyDir: {}
+        - name: argocd-cmp-kustomize-build-with-helm
+          configMap:
+            name: argocd-cmp-kustomize-build-with-helm
+        - name: cmp-tmp
+          emptyDir: {}
