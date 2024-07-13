@@ -18,18 +18,18 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
     kustomize.buildOptions: "--load-restrictor LoadRestrictionsNone --enable-helm" # Enable Kustomize to install helm charts
   params:
     server.insecure: true # necessary when SSL termination is handled by ALB
-#  cmp: # aws-account-substitution plugin. needed since kustomize can't retrieve remote values (secrets/configmaps) for its own installation (only for resulting pods etc.)
-#    create: true
-#    plugins: # Plugin yaml files to be added to argocd-cmp-cm
-#      substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
-#        generate:
-#          command: ["sh", "-c"] # ["/bin/sh"]
-#          args: ["kustomize build --enable-helm"] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
-#        discover:
-#          fileName: "../jenkins/*.yaml"
-#  repositories:
-#    main-repo:
-#      url: https://github.com/tbalza/kubernetes-cicd
+  cmp: # aws-account-substitution plugin. needed since kustomize can't retrieve remote values (secrets/configmaps) for its own installation (only for resulting pods etc.)
+    create: true
+    plugins: # Plugin yaml files to be added to argocd-cmp-cm
+      substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
+        generate:
+          command: ["sh", "-c"] # ["/bin/sh"]
+          args: ["kustomize build --enable-helm"] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
+        discover:
+          fileName: "../jenkins/*.yaml"
+  repositories:
+    main-repo:
+      url: https://github.com/tbalza/kubernetes-cicd
 
 server:
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
@@ -75,8 +75,8 @@ repoServer:
           name: argocd-cmp-cm
         - mountPath: /tmp
           name: cmp-tmp
-#        - mountPath: /usr/local/bin/envsubst # envsubst
-#          name: custom-tools
+        - mountPath: /usr/local/bin # envsubst
+          name: custom-tools
   volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
     - name: argocd-cmp-cm
       configMap:
@@ -87,7 +87,7 @@ repoServer:
       emptyDir: {}
   initContainers: # # envsubst
     - name: install-envsubst
-      image: alpine:latest
+      image: tbalza/envsubst:latest
       command: [ "sh", "-c" ]
       args:
         - "cp envsubst /tmp/envsubst"
