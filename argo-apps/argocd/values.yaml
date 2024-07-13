@@ -87,7 +87,7 @@ repoServer:
       emptyDir: {}
   initContainers: # # envsubst
     - name: install-envsubst
-      image: tbalza/envsubst:latest
+      image: alpine:latest
       command: [ "sh", "-c" ]
       args:
         - "cp envsubst /tmp/envsubst"
