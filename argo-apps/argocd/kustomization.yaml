@@ -19,7 +19,7 @@ resources:
   - ingress.yaml
   - secrets.yaml
   - image-updater/
-  - cmp.yaml
+#  - cmp.yaml
 #  - application.yaml
 #  - delete-hook.yaml
 #  - applicationset.yaml

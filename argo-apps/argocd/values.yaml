@@ -57,46 +57,46 @@ repoServer:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
   nodeSelector:
     role: ci-cd
-#  extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
-#    - name: substitution
-#      command:
-#        - "/var/run/argocd/argocd-cmp-server"
-#      image: quay.io/argoproj/argocd # '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ default (include "argo-cd.defaultTag" .) .Values.repoServer.image.tag }}'
-#      securityContext:
-#        runAsNonRoot: false # true
-#        runAsUser: 0 # 999
-#      volumeMounts:
-#        - mountPath: /var/run/argocd
-#          name: var-files
-#        - mountPath: /home/argocd/cmp-server/plugins
-#          name: plugins
-#        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-#          subPath: substitution.yaml  # Maps the specific config file for this plugin
-#          name: argocd-cmp-cm
-#        - mountPath: /tmp
-#          name: cmp-tmp
-##        - mountPath: /usr/local/bin # envsubst
-##          name: custom-tools
-#  volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
-#    - name: argocd-cmp-cm
-#      configMap:
-#        name: argocd-cmp-cm
-#    - name: cmp-tmp # scratch space for any temporary processing
-#      emptyDir: {}
-#    - name: custom-tools # envsubst
-#      emptyDir: {}
-#  initContainers: # # envsubst
-#    - name: install-envsubst
-#      image: tbalza/envsubst:latest
-#      securityContext:
-#        runAsNonRoot: false
-#        runAsUser: 0
-#      command: [ "sh", "-c" ]
-#      args:
-#        - "cp /usr/local/bin/envsubst /tmp/envsubst"
-#      volumeMounts:
-#        - mountPath: /tmp
-#          name: tmp
+  extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
+    - name: substitution
+      command:
+        - "/var/run/argocd/argocd-cmp-server"
+      image: quay.io/argoproj/argocd # '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ default (include "argo-cd.defaultTag" .) .Values.repoServer.image.tag }}'
+      securityContext:
+        runAsNonRoot: false # true
+        runAsUser: 0 # 999
+      volumeMounts:
+        - mountPath: /var/run/argocd
+          name: var-files
+        - mountPath: /home/argocd/cmp-server/plugins
+          name: plugins
+        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+          subPath: substitution.yaml  # Maps the specific config file for this plugin
+          name: argocd-cmp-cm
+        - mountPath: /tmp
+          name: cmp-tmp
+        - mountPath: /usr/local/bin/envsubst # envsubst
+          name: custom-tools
+  volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
+    - name: argocd-cmp-cm
+      configMap:
+        name: argocd-cmp-cm
+    - name: cmp-tmp # scratch space for any temporary processing
+      emptyDir: {}
+    - name: custom-tools # envsubst
+      emptyDir: {}
+  initContainers: # # envsubst
+    - name: install-envsubst
+      image: tbalza/envsubst:latest
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+      command: [ "sh", "-c" ]
+      args:
+        - "cp /usr/local/bin/envsubst /tmp/envsubst"
+      volumeMounts:
+        - mountPath: /tmp
+          name: tmp
 
 
 #  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
