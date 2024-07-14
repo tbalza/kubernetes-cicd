@@ -10,7 +10,7 @@ data "aws_availability_zones" "available" {}
 # aws kubernetes v1.29
 
 locals {
-  name            = "django-production1114" # cluster name
+  name            = "django-production" # cluster name
   cluster_version = "1.29"               # 1.29
   region          = "us-east-1"
   domain          = "tbalza.net"
@@ -197,7 +197,7 @@ module "ssm-parameter" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "20.11.1"
+  version = "20.11.1" # 20.11.1 # 20.17.2
 
   cluster_name             = local.name
   cluster_version          = local.cluster_version
