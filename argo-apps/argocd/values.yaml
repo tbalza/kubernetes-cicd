@@ -59,7 +59,7 @@ repoServer:
     role: ci-cd
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
     - name: substitution
-      command: [ "sh", "-c" ]
+      command: ["/bin/sh", "-c"]
       args: # can't get /tmp/envsubst to be working from any dir with `export PATH=/tmp:$PATH` for some reason, running from pod cmd line works fine. using /tmp/envsubst in plugin arg for now
         - |
           /var/run/argocd/argocd-cmp-server
@@ -94,7 +94,7 @@ repoServer:
       securityContext:
         runAsNonRoot: true
         runAsUser: 999 # required for envsubst to be executed in extra container by correct argocd user
-      command: [ "sh", "-c" ] # # /tmp/envsubst # - "cp envsubst /tmp/envsubst && chmod a+x /tmp/envsubst"
+      command: ["/bin/sh", "-c"] # # /tmp/envsubst # - "cp envsubst /tmp/envsubst && chmod a+x /tmp/envsubst"
       args:
         - |
           wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /tmp/envsubst &&
