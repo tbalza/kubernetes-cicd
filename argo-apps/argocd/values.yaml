@@ -75,8 +75,9 @@ repoServer:
           name: argocd-cmp-cm
         - mountPath: /tmp
           name: cmp-tmp
-        - mountPath: /usr/local/bin # envsubst
+        - mountPath: /usr/local/bin/envsubst # envsubst
           name: custom-tools
+          subPath: envsubst
   volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
     - name: argocd-cmp-cm
       configMap:
@@ -89,11 +90,11 @@ repoServer:
     - name: install-envsubst
       image: tbalza/envsubst:latest
       command: [ "sh", "-c" ]
-      args:
-        - "cp envsubst /tmp/envsubst"
+      args: # /tmp/envsubst
+        - "cp envsubst /custom-tools/envsubst"
       volumeMounts:
-        - mountPath: /tmp
-          name: tmp
+        - mountPath: /custom-tools # /tmp
+          name: custom-tools
 
 
 #  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
