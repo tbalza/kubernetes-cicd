@@ -24,7 +24,7 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
       substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
         generate:
           command: ["sh", "-c"] # ["/bin/sh"]
-          args: ["kustomize build --enable-helm"] # ["kustomize build --enable-helm" | /tmp/envsubst ] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
+          args: ["kustomize build --enable-helm | /tmp/envsubst"] # ["kustomize build --enable-helm" | /tmp/envsubst ] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
         discover:
           fileName: "../jenkins/*.yaml"
 #  repositories:
