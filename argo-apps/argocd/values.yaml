@@ -59,13 +59,10 @@ repoServer:
     role: ci-cd
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
     - name: substitution
-      env:
-        - name: PATH
-          value: "/tmp:${PATH}"
       command: [ "sh", "-c" ]
       args:
         - |
-          export PATH=/tmp:$PATH && /var/run/argocd/argocd-cmp-server
+          /var/run/argocd/argocd-cmp-server
       image: quay.io/argoproj/argocd # '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ default (include "argo-cd.defaultTag" .) .Values.repoServer.image.tag }}'
       securityContext:
         runAsNonRoot: true
