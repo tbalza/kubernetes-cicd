@@ -93,7 +93,7 @@ repoServer:
       args: # /tmp/envsubst
         - "cp envsubst /custom-tools/envsubst"
       volumeMounts:
-        - mountPath: /tmp # /tmp
+        - mountPath: /custom-tools # /tmp
           name: custom-tools
 
 
