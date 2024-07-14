@@ -97,11 +97,10 @@ repoServer:
       securityContext:
         runAsNonRoot: true
         runAsUser: 999 # required for envsubst to be executed in extra container by correct argocd user
-      command: ["/bin/sh", "-c"] # # /tmp/envsubst # - "cp envsubst /tmp/envsubst && chmod a+x /tmp/envsubst"
+      command: ["/bin/sh", "-c"] # # /tmp/envsubst # - "cp envsubst /tmp/envsubst && chmod a+x /tmp/envsubst" # && chmod a+x /custom-tools/envsubst
       args:
         - |
-          wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /custom-tools/envsubst &&
-          chmod a+x /custom-tools/envsubst
+          wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /custom-tools/envsubst
       volumeMounts:
         - mountPath: /opt/bin/envsubst # /tmp # /custom-tools
           name: custom-tools # custom-tools
