@@ -65,6 +65,9 @@ repoServer:
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
+      env:
+        - name: PATH
+          value: "/tmp:${PATH}"
       volumeMounts:
         - mountPath: /var/run/argocd
           name: var-files
