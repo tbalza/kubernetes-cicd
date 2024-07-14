@@ -91,10 +91,10 @@ repoServer:
       image: tbalza/envsubst:latest
       command: [ "sh", "-c" ]
       args: # /tmp/envsubst
-        - "cp envsubst /custom-tools/envsubst"
+        - "cp envsubst /tmp/envsubst"
       volumeMounts:
-        - mountPath: /custom-tools # /tmp
-          name: custom-tools
+        - mountPath: /tmp # /tmp # /custom-tools
+          name: tmp # custom-tools
 
 
 #  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
