@@ -59,9 +59,8 @@ repoServer:
     role: ci-cd
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
     - name: substitution
-      command:
-        - "/bin/sh"
-        - "-c"
+      command: [ "sh", "-c" ]
+      args:
         - |
           echo 'export PATH=/tmp:$PATH' >> ~/.profile &&
           /var/run/argocd/argocd-cmp-server
