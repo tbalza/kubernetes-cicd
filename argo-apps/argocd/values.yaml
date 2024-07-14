@@ -67,6 +67,7 @@ repoServer:
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
+        allowPrivilegeEscalation: true
       volumeMounts:
         - mountPath: /var/run/argocd
           name: var-files
