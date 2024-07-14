@@ -94,7 +94,7 @@ repoServer:
       image: tbalza/envsubst:latest
       command: [ "sh", "-c" ]
       args: # /tmp/envsubst
-        - "cp envsubst /tmp/envsubst chmod a+x /tmp/envsubst"
+        - "cp envsubst /tmp/envsubst && chmod a+x /tmp/envsubst"
       volumeMounts:
         - mountPath: /tmp # /tmp # /custom-tools
           name: tmp # custom-tools
