@@ -59,6 +59,9 @@ repoServer:
     role: ci-cd
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
     - name: substitution
+      env:
+        - name: PATH
+          value: "/tmp:${PATH}"
       command: [ "sh", "-c" ]
       args:
         - |
