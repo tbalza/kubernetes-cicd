@@ -80,8 +80,8 @@ repoServer:
           name: argocd-cmp-cm
         - mountPath: /tmp
           name: cmp-tmp
-#        - mountPath: /tmp/envsubst # envsubst # /usr/local/bin/envsubst # read only dirs from quay.io/argoproj/argocd using tmp for now
-#          name: custom-tools
+        - mountPath: /custom-tools # envsubst # /usr/local/bin/envsubst # read only dirs from quay.io/argoproj/argocd using tmp for now
+          name: custom-tools
           #subPath: envsubst
   volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
     - name: argocd-cmp-cm
@@ -100,11 +100,11 @@ repoServer:
       command: ["/bin/sh", "-c"] # # /tmp/envsubst # - "cp envsubst /tmp/envsubst && chmod a+x /tmp/envsubst"
       args:
         - |
-          wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /tmp/envsubst &&
-          chmod a+x /tmp/envsubst
+          wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /custom-tools/envsubst &&
+          chmod a+x /custom-tools/envsubst
       volumeMounts:
-        - mountPath: /tmp # /tmp # /custom-tools
-          name: tmp # custom-tools
+        - mountPath: /opt/bin/envsubst # /tmp # /custom-tools
+          name: custom-tools # custom-tools
 
 
 #  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
