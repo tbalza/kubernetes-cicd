@@ -82,7 +82,7 @@ resource "helm_release" "argo_cd" {
   version    = local.argocd_helm_chart.version # "6.7.14" # pending reference this dynamically to argo-apps/argocd/config.yaml
   namespace = local.argocd_helm_chart.namespace # "argocd"
 
-  #create_namespace = true
+  create_namespace = true
 
   values = [file("../../${path.module}/argo-apps/argocd/values.yaml")]
 
@@ -112,12 +112,12 @@ resource "kubectl_manifest" "example_applicationset" {
   ]
 }
 
-# Create namespace
-resource "kubernetes_namespace" "argo_cd" {
-  metadata {
-    name = "argocd"
-  }
-}
+## Create namespace
+#resource "kubernetes_namespace" "argo_cd" {
+#  metadata {
+#    name = "argocd"
+#  }
+#}
 
 # ArgoCD AWS Account
 
