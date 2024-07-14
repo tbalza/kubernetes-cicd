@@ -92,6 +92,9 @@ repoServer:
   initContainers: # # envsubst
     - name: install-envsubst
       image: tbalza/envsubst:latest
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
       command: [ "sh", "-c" ]
       args: # /tmp/envsubst
         - "cp envsubst /tmp/envsubst && chmod a+x /tmp/envsubst"
