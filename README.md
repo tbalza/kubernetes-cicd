@@ -26,6 +26,9 @@ ALLOWED_HOSTS
 Debug=0 (in production)
 
 
+# cmp envsubst
+https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY =
 
