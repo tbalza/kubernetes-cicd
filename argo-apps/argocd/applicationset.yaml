@@ -31,7 +31,7 @@ spec:
         server: https://kubernetes.default.svc # pending make dynamic from repo files
         namespace: '{{.path.basename}}' # pending make dynamic from repo files
       ignoreDifferences: # argocd diff customization, meant for django, calculating structured merge diff: error building typed value from live resource: .status.lastPhaseTransitionTime: field not declared in schema
-        - kind: PersistentVolume # (custom diffing) fixes syncing error: .status.lastPhaseTransitionTime: field not declared in schema # https://github.com/argoproj/argo-cd/issues/16640
+        - kind: PersistentVolume # (custom diffing) fixes syncing error: .status.lastPhaseTransitionTime: field not declared in schema # https://github.com/argoproj/argo-cd/issues/16640 (related to django PV)
           jsonPointers:
             - /spec/claimRef/resourceVersion
             - /spec/claimRef/uid
@@ -44,4 +44,4 @@ spec:
         - CreateNamespace=true
         - ServerSideApply=true
         - ServerSideDiff=true
-        - RespectIgnoreDifferences=true # (custom diffing) fixes syncing error: .status.lastPhaseTransitionTime: field not declared in schema
+        - RespectIgnoreDifferences=true # (custom diffing) fixes syncing error: .status.lastPhaseTransitionTime: field not declared in schema (related to django PV)
