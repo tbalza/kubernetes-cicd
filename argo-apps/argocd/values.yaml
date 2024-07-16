@@ -24,9 +24,10 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
       substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
         generate:
           command: ["/bin/sh", "-c"] # ["/bin/sh"]
-          args: ["kustomize build --load-restrictor LoadRestrictionsNone --enable-helm"] # ["kustomize build --enable-helm" | /tmp/envsubst ] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
+          args: ["PATH=/tmp:$PATH kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | /tmp/envsubst"] # ["kustomize build --enable-helm" | /tmp/envsubst ] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
         discover:
           fileName: "../jenkins/*.yaml"
+        preserveFileMode: true # by default cmp resets file mode
 #  repositories:
 #    main-repo:
 #      url: https://github.com/tbalza/kubernetes-cicd
@@ -63,8 +64,6 @@ repoServer:
       args: # can't get /tmp/envsubst to be working from any dir with `export PATH=/tmp:$PATH` for some reason, running from pod cmd line works fine. using /tmp/envsubst in plugin arg for now
         - |
           /var/run/argocd/argocd-cmp-server
-          sleep 5
-          export PATH=/tmp:$PATH
       image: quay.io/argoproj/argocd # '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ default (include "argo-cd.defaultTag" .) .Values.repoServer.image.tag }}'
       securityContext:
         runAsNonRoot: true
@@ -83,18 +82,6 @@ repoServer:
 #        - mountPath: /custom-tools # envsubst # /usr/local/bin/envsubst # read only dirs from quay.io/argoproj/argocd using tmp for now
 #          name: custom-tools
           #subPath: envsubst
-    - name: install-envsubst
-      image: alpine:latest # tbalza/envsubst:latest
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 999 # required for envsubst to be executed in extra container by correct argocd user
-      command: [ "/bin/sh", "-c" ] # # /tmp/envsubst # - "cp envsubst /tmp/envsubst && chmod a+x /tmp/envsubst" # && chmod a+x /custom-tools/envsubst
-      args:
-        - |
-          wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /custom-tools/envsubst
-      volumeMounts:
-        - mountPath: /opt/bin/envsubst # /tmp # /custom-tools
-          name: custom-tools # custom-tools
   volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
     - name: argocd-cmp-cm
       configMap:
@@ -103,19 +90,19 @@ repoServer:
       emptyDir: {}
     - name: custom-tools # envsubst
       emptyDir: {}
-#  initContainers: # # envsubst
-#    - name: install-envsubst
-#      image: alpine:latest # tbalza/envsubst:latest
-#      securityContext:
-#        runAsNonRoot: true
-#        runAsUser: 999 # required for envsubst to be executed in extra container by correct argocd user
-#      command: ["/bin/sh", "-c"] # # /tmp/envsubst # - "cp envsubst /tmp/envsubst && chmod a+x /tmp/envsubst" # && chmod a+x /custom-tools/envsubst
-#      args:
-#        - |
-#          wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /custom-tools/envsubst
-#      volumeMounts:
-#        - mountPath: /opt/bin/envsubst # /tmp # /custom-tools
-#          name: custom-tools # custom-tools
+  initContainers: # # envsubst
+    - name: install-envsubst
+      image: alpine:latest # tbalza/envsubst:latest
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999 # required for envsubst to be executed in extra container by correct argocd user
+      command: ["/bin/sh", "-c"] # # /tmp/envsubst # - "cp envsubst /tmp/envsubst && chmod a+x /tmp/envsubst" # && chmod a+x /custom-tools/envsubst
+      args:
+        - |
+          wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /custom-tools/envsubst
+      volumeMounts:
+        - mountPath: /tmp # /tmp # /custom-tools
+          name: custom-tools # custom-tools
 
 
 #  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
