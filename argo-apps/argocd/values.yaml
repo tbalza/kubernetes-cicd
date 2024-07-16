@@ -84,7 +84,7 @@ repoServer:
       command: [ "/bin/sh", "-c" ]
       args: # can't get /tmp/envsubst to be working from any dir with `export PATH=/tmp:$PATH` for some reason, running from pod cmd line works fine. using /tmp/envsubst in plugin arg for now
         - |
-          wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /tmp/envsubst
+          wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /custom-tools/envsubst
           /var/run/argocd/argocd-cmp-server
       image: alpine:latest # '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ default (include "argo-cd.defaultTag" .) .Values.repoServer.image.tag }}'
       securityContext:
@@ -101,8 +101,8 @@ repoServer:
           name: argocd-cmp-cm
         - mountPath: /tmp
           name: cmp-tmp
-#        - mountPath: /custom-tools # envsubst # /usr/local/bin/envsubst # read only dirs from quay.io/argoproj/argocd using tmp for now
-#          name: custom-tools
+        - mountPath: /custom-tools # envsubst # /usr/local/bin/envsubst # read only dirs from quay.io/argoproj/argocd using tmp for now
+          name: custom-tools
           #subPath: envsubst
   volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
     - name: argocd-cmp-cm
