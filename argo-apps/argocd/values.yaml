@@ -25,8 +25,8 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
         generate:
           command: ["/bin/sh", "-c"] # ["/bin/sh"]
           args: ["kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst"] #  ["kustomize build --enable-helm" | /tmp/envsubst ] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
-#        discover:
-#          fileName: "../jenkins/*.yaml"
+        discover:
+          fileName: "none.yaml" # "../jenkins/*.yaml"
         preserveFileMode: true # by default cmp resets file mode
 #  repositories:
 #    main-repo:
