@@ -22,6 +22,9 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
     create: true
     plugins: # Plugin yaml files to be added to argocd-cmp-cm
       substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
+        init:
+          command: ["/bin/sh", "-c"]
+          args: ["PATH=/tmp:$PATH chmod +x /tmp/envsubst"]
         generate:
           command: ["/bin/sh", "-c"] # ["/bin/sh"]
           args: ["kustomize build --load-restrictor LoadRestrictionsNone --enable-helm"] #  ["kustomize build --enable-helm" | /tmp/envsubst ] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
@@ -97,7 +100,7 @@ repoServer:
         runAsNonRoot: true
         runAsUser: 999 # required for envsubst to be executed in extra container by correct argocd user
       command: ["/bin/sh", "-c"] # # /tmp/envsubst # - "cp envsubst /tmp/envsubst && chmod a+x /tmp/envsubst" # && chmod a+x /custom-tools/envsubst
-      args:
+      args: # PATH=/tmp:$PATH
         - |
           wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /tmp/envsubst
       volumeMounts:
