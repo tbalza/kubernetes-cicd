@@ -79,7 +79,7 @@ repoServer:
 #          name: argocd-cmp-cm
 #        - mountPath: /tmp
 #          name: cmp-tmp
-  extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
+  initContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
     - name: substitution
       command: [ "/bin/sh", "-c" ]
       args: # can't get /tmp/envsubst to be working from any dir with `export PATH=/tmp:$PATH` for some reason, running from pod cmd line works fine. using /tmp/envsubst in plugin arg for now
