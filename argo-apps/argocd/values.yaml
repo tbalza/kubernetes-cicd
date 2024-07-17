@@ -15,6 +15,7 @@ global:
   domain: argocd.tbalza.net # Used for ingresses, certificates, SSO, notifications, etc. (blank allows all domains) # check if it can be replaced by ingress
   image:
     tag: "v2.11.4" # Overrides the global Argo CD image tag whose default is the chart appVersion
+#  env: []
 
 configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ busybox? https://github.com/crumbhole/argocd-lovely-plugin
   cm:
@@ -84,6 +85,9 @@ repoServer:
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
     - name: substitution
       command: [ "/bin/sh", "-c" ]
+      envFrom:
+        - secretRef:
+            name: argocd-secrets
       args:
         - |
           /var/run/argocd/argocd-cmp-server

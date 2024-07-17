@@ -103,9 +103,29 @@ locals {
       value = var.ARGOCD_GITHUB_TOKEN
     }
 
+    ###################################################################################
+
     "argo_cd_aws_account_number" = { # check
       value = data.aws_caller_identity.current.account_id
     }
+
+    "argo_cd_aws_cluster_name" = { # check
+      value = local.name
+    }
+
+    "argo_cd_aws_ecr_repo" = { # check
+      value = module.ecr.repository_url
+    }
+
+    "argo_cd_aws_region" = { # check
+      value = local.region
+    }
+
+    "argo_cd_aws_domain" = { # check
+      value = local.domain
+    }
+
+    ##################################################################################
 
     # ServiceAccounts ARN
     "argo_cd_iam_role_arn" = {
@@ -2235,39 +2255,39 @@ output "db_instance_port" {
   value       = module.db.db_instance_port
 }
 
-## Create namespace
-resource "kubernetes_namespace" "argo_cd" {
-  metadata {
-    name = "argocd"
-  }
+### Create namespace
+#resource "kubernetes_namespace" "argo_cd" {
+#  metadata {
+#    name = "argocd"
+#  }
+#
+#  depends_on = [
+#    #helm_release.argo_cd
+#    module.eks
+#  ]
+#
+#}
 
-  depends_on = [
-    #helm_release.argo_cd
-    module.eks
-  ]
-
-}
-
-## pending. `terraform_remote_state` stuff will change when on the same tf (infra and argocd bootstrap should be spun/destroyed without scripts)
-resource "kubectl_manifest" "aws_account_configmap" { # global variables that come from tf make sense not to be committed to repo, to be consumed by kustomize itself, not pods, through argocd cmp
-  yaml_body = <<-YAML
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: global-variables
-  namespace: argocd
-data:
-  TF_ACCOUNT_ID: "${data.aws_caller_identity.current.account_id}"
-  TF_CLUSTER_NAME: "${local.name}"
-  TF_REGION: "${local.region}"
-  TF_ECR_REPO: "${module.ecr.repository_url}"
-  TF_DOMAIN: "${local.domain}"
-  YAML
-  depends_on = [
-    #helm_release.argo_cd
-    module.eks
-  ]
-}
+### pending. `terraform_remote_state` stuff will change when on the same tf (infra and argocd bootstrap should be spun/destroyed without scripts)
+#resource "kubectl_manifest" "aws_account_configmap" { # global variables that come from tf make sense not to be committed to repo, to be consumed by kustomize itself, not pods, through argocd cmp
+#  yaml_body = <<-YAML
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  name: global-variables
+#  namespace: argocd
+#data:
+#  TF_ACCOUNT_ID: "${data.aws_caller_identity.current.account_id}"
+#  TF_CLUSTER_NAME: "${local.name}"
+#  TF_REGION: "${local.region}"
+#  TF_ECR_REPO: "${module.ecr.repository_url}"
+#  TF_DOMAIN: "${local.domain}"
+#  YAML
+#  depends_on = [
+#    #helm_release.argo_cd
+#    module.eks
+#  ]
+#}
 
 
 
