@@ -4,9 +4,9 @@ controller:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
   nodeSelector:
     role: ci-cd
-  envFrom: # this loads all the secrets as ENV variables
-    - secretRef:
-        name: django-secrets
+#  envFrom: # this loads all the secrets as ENV variables
+#    - secretRef:
+#        name: django-secrets
 
 crds:
   keep: false # check # Keep CRDs on chart uninstall
@@ -41,9 +41,9 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
 server:
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
     enabled: false # true
-  envFrom: # this loads all the secrets as ENV variables
-    - secretRef:
-        name: django-secrets
+#  envFrom: # this loads all the secrets as ENV variables
+#    - secretRef:
+#        name: django-secrets
 
 applicationSet:
   enabled: true
