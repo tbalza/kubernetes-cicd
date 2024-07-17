@@ -110,9 +110,9 @@ repoServer:
 #          name: custom-tools # custom-tools
 
   # pending. Load from ESO, instead of configmap resource in TF
-#  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
-#    - configMapRef:
-#        name: global-variables # previously set as configmap in terraform (with key AWS_ACCOUNT_ID) which dynamically sets aws acct number, for argocd cmp to consume # pending. Use ESO, SSM parameter
+  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
+    - configMapRef:
+        name: global-variables # previously set as configmap in terraform (with key AWS_ACCOUNT_ID) which dynamically sets aws acct number, for argocd cmp to consume # pending. Use ESO, SSM parameter
 
   containerSecurityContext:
     runAsNonRoot: true
