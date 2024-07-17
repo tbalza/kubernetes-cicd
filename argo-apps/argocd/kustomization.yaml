@@ -19,6 +19,8 @@ resources:
   - ingress.yaml
   - secrets.yaml
   - image-updater/
+#  - deployment.yaml
+
 #  - cmp.yaml
 #  - application.yaml
 #  - delete-hook.yaml

@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+  namespace: argocd
+spec:
+  template:
+    spec:
+      containers:
+      - name: substitution
+        envFrom:
+        - secretRef:
+            name: django-secrets  # Assuming you are referring to the secret configured elsewhere
