@@ -1,15 +1,12 @@
-# Use an official Alpine image as a parent image
-FROM alpine:latest
+# Use the official Argo CD image as the base
+FROM quay.io/argoproj/argocd:latest
 
-# Install gettext which includes envsubst, and place it in /usr/local/bin
-RUN apk add --no-cache gettext && ln -s /usr/bin/envsubst /usr/local/bin/envsubst
+# Install gettext for envsubst
+USER root
+RUN apt-get update && \
+    apt-get install -y gettext-base && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Set the user to non-root for security
-RUN adduser -D customuser
-USER customuser
-
-# Set the working directory to /usr/local/bin for convenience
-WORKDIR /usr/local/bin
-
-# Keep the container running with a simple command
-CMD ["tail", "-f", "/dev/null"]
+# Switch back to the default user
+USER argocd

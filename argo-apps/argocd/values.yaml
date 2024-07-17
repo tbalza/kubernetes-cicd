@@ -28,6 +28,7 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
         discover:
           fileName: "../jenkins/*.yaml" # "../jenkins/*.yaml"
         preserveFileMode: true # by default cmp resets file mode
+        lockRepo: false
 #  repositories:
 #    main-repo:
 #      url: https://github.com/tbalza/kubernetes-cicd
@@ -86,7 +87,7 @@ repoServer:
       args: # can't get /tmp/envsubst to be working from any dir with `export PATH=/tmp:$PATH` for some reason, running from pod cmd line works fine. using /tmp/envsubst in plugin arg for now
         - |
           /var/run/argocd/argocd-cmp-server
-      image: alpine:latest # '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ default (include "argo-cd.defaultTag" .) .Values.repoServer.image.tag }}'
+      image: tbalza/envsubst:latest # '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ default (include "argo-cd.defaultTag" .) .Values.repoServer.image.tag }}'
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
@@ -101,8 +102,7 @@ repoServer:
           name: argocd-cmp-cm
         - mountPath: /tmp
           name: cmp-tmp
-
-#        - mountPath: /custom-tools # envsubst # /usr/local/bin/envsubst # read only dirs from quay.io/argoproj/argocd using tmp for now
+#        - mountPath: /usr/local/bin/ # envsubst # /usr/local/bin/envsubst # read only dirs from quay.io/argoproj/argocd using tmp for now
 #          name: custom-tools
           #subPath: envsubst
   volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
@@ -124,11 +124,20 @@ repoServer:
 #        - |
 #          wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /tmp/envsubst
 #      volumeMounts:
-#        - mountPath: /tmp # /tmp # /custom-tools
-#          name: tmp # custom-tools
+#        - mountPath: /custom-tools # /tmp # /custom-tools
+#          name: custom-tools # custom-tools
 
 
 #  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
 #    - configMapRef:
 #        name: global-variables # previously set as configmap in terraform (with key AWS_ACCOUNT_ID) which dynamically sets aws acct number, for argocd cmp to consume # pending. Use ESO, SSM parameter
 
+  containerSecurityContext:
+    runAsNonRoot: true
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    seccompProfile:
+      type: RuntimeDefault
+    capabilities:
+      drop:
+        - ALL
