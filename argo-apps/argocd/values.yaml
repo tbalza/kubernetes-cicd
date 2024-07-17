@@ -4,9 +4,12 @@ controller:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
   nodeSelector:
     role: ci-cd
-#  envFrom: # this loads all the secrets as ENV variables
-#    - secretRef:
-#        name: django-secrets
+  env:
+    - name: ARGOCD_ACCOUNT
+      valueFrom:
+        secretKeyRef:
+          name: argocd-secrets-global
+          key: ARGOCD_ACCOUNT
 
 crds:
   keep: false # check # Keep CRDs on chart uninstall
@@ -15,7 +18,7 @@ global:
   domain: argocd.tbalza.net # Used for ingresses, certificates, SSO, notifications, etc. (blank allows all domains) # check if it can be replaced by ingress
   image:
     tag: "v2.11.4" # Overrides the global Argo CD image tag whose default is the chart appVersion
-#  env: []
+  env: []
 
 configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ busybox? https://github.com/crumbhole/argocd-lovely-plugin
   cm:
