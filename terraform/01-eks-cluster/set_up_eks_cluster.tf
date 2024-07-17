@@ -103,6 +103,10 @@ locals {
       value = var.ARGOCD_GITHUB_TOKEN
     }
 
+    "argo_cd_aws_account_number" = { # check
+      value = data.aws_caller_identity.current.account_id
+    }
+
     # ServiceAccounts ARN
     "argo_cd_iam_role_arn" = {
       value = aws_iam_role.argo_cd.arn

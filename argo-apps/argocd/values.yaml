@@ -74,6 +74,12 @@ repoServer:
   envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
     - configMapRef:
         name: global-variables
+  env:
+    - name: TF_ACCOUNT_ID
+      valueFrom:
+        secretKeyRef:
+          name: argocd-secrets
+          key: account
 
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
     - name: substitution
