@@ -41,11 +41,17 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
 server:
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
     enabled: false # true
+  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
+    - configMapRef:
+        name: global-variables
 
 applicationSet:
   enabled: true
   nodeSelector:
     role: ci-cd
+  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
+    - configMapRef:
+        name: global-variables
 
 dex:
   enabled: false # This is for SSO
