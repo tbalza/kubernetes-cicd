@@ -90,7 +90,7 @@ persistence:
     readOnly: true
 agent:
   podName: default # default # Agent Pod base name
-  args: "" # leave blank as kubernetes plugin provides these as env variables. default commands break this setup
+  args: "" # must leave blank as kubernetes plugin provides these as env variables. default populated values break this setup
   defaultsProviderTemplate: "" # default: blank # The name of the pod template to use for providing default values
   workingDir: "/home/jenkins/agent" # default
   nodeUsageMode: "NORMAL" # default
