@@ -49,9 +49,9 @@ applicationSet:
   enabled: true
   nodeSelector:
     role: ci-cd
-#  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
-#    - configMapRef:
-#        name: global-variables
+  envFrom: # this loads all the secrets as ENV variables
+    - secretRef:
+        name: django-secrets
 
 dex:
   enabled: false # This is for SSO
@@ -71,9 +71,9 @@ repoServer:
   nodeSelector:
     role: ci-cd
 
-  envFrom: # this loads all the secrets as ENV variables
-    - secretRef:
-        name: django-secrets
+#  envFrom: # this loads all the secrets as ENV variables
+#    - secretRef:
+#        name: django-secrets
 #  env:
 #    - name: TF_ACCOUNT_ID
 #      valueFrom:
