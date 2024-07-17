@@ -4,12 +4,12 @@ controller:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
   nodeSelector:
     role: ci-cd
-  env:
-    - name: ARGOCD_ACCOUNT
-      valueFrom:
-        secretKeyRef:
-          name: argocd-secrets-global
-          key: ARGOCD_ACCOUNT
+#  env:
+#    - name: ARGOCD_ACCOUNT
+#      valueFrom:
+#        secretKeyRef:
+#          name: argocd-secrets-global
+#          key: ARGOCD_ACCOUNT
 
 crds:
   keep: false # check # Keep CRDs on chart uninstall
