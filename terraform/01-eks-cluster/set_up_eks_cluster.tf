@@ -2244,26 +2244,26 @@ output "db_instance_port" {
 #
 #}
 
-# pending. `terraform_remote_state` stuff will change when on the same tf (infra and argocd bootstrap should be spun/destroyed without scripts)
-#resource "kubectl_manifest" "aws_account_configmap" { # global variables that come from tf make sense not to be committed to repo, to be consumed by kustomize itself, not pods, through argocd cmp
-#  yaml_body = <<-YAML
-#apiVersion: v1
-#kind: ConfigMap
-#metadata:
-#  name: global-variables
-#  namespace: argocd
-#data:
-#  ACCOUNT_ID: "${data.aws_caller_identity.current.account_id}"
-#  CLUSTER_NAME: "${local.name}"
-#  REGION: "${local.region}"
-#  ECR_REPO: "${module.ecr.repository_url}"
-#  DOMAIN: "${local.domain}"
-#  YAML
-#  depends_on = [
-#    #helm_release.argo_cd
-#    module.eks
-#  ]
-#}
+## pending. `terraform_remote_state` stuff will change when on the same tf (infra and argocd bootstrap should be spun/destroyed without scripts)
+resource "kubectl_manifest" "aws_account_configmap" { # global variables that come from tf make sense not to be committed to repo, to be consumed by kustomize itself, not pods, through argocd cmp
+  yaml_body = <<-YAML
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: global-variables
+  namespace: argocd
+data:
+  ACCOUNT_ID: "${data.aws_caller_identity.current.account_id}"
+  CLUSTER_NAME: "${local.name}"
+  REGION: "${local.region}"
+  ECR_REPO: "${module.ecr.repository_url}"
+  DOMAIN: "${local.domain}"
+  YAML
+  depends_on = [
+    #helm_release.argo_cd
+    module.eks
+  ]
+}
 
 
 
@@ -2283,18 +2283,18 @@ output "db_instance_port" {
 #  ]
 #}
 
-resource "kubectl_manifest" "aws_account_configmap" { # "${data.aws_caller_identity.current.account_id}"
-  yaml_body = <<-YAML
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: aws-account
-  namespace: argocd
-data:
-  AWS_ACCOUNT_ID: "${data.aws_caller_identity.current.account_id}"
-  YAML
-
-  depends_on = [
-    #module.eks
-  ]
-}
+#resource "kubectl_manifest" "aws_account_configmap" { # "${data.aws_caller_identity.current.account_id}"
+#  yaml_body = <<-YAML
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  name: global-variables
+#  namespace: argocd
+#data:
+#  AWS_ACCOUNT_ID: "${data.aws_caller_identity.current.account_id}"
+#  YAML
+#
+#  depends_on = [
+#    #module.eks
+#  ]
+#}
