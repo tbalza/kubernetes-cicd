@@ -4,6 +4,9 @@ controller:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
   nodeSelector:
     role: ci-cd
+  envFrom: # set environment variable from configmap, probably not needed if using envsubst with cmp
+    - configMapRef:
+        name: global-variables
 
 crds:
   keep: false # check # Keep CRDs on chart uninstall
