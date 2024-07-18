@@ -1665,6 +1665,28 @@ resource "aws_iam_role_policy_attachment" "imageupdater_read_attach" { # check
   policy_arn = aws_iam_policy.imageupdater_ssm_read.arn
 }
 
+# ArgoCD Repo Server
+resource "aws_iam_policy" "reposerver_ssm_read" { # check
+  name = "SSM-for-argocd-imageupdater"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      "Action" : [
+        "ssm:GetParameter*",
+        "ssm:ListTagsForResource", # check
+        "ssm:DescribeParameters"   # check
+      ],
+      Resource = "arn:aws:ssm:${local.region}:${data.aws_caller_identity.current.account_id}:parameter/*" # check .limit scope accordingly. SSM is region specific
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "reposerver_read_attach" { # check
+  role       = aws_iam_role.argo_cd.name # image_updater.name
+  policy_arn = aws_iam_policy.reposerver_ssm_read.arn # imageupdater_ssm_read.arn
+}
+
 ####### check
 
 #resource "aws_iam_policy" "jenkins_admin" {
