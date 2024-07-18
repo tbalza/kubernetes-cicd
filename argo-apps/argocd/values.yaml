@@ -126,13 +126,3 @@ repoServer:
 #      volumeMounts:
 #        - mountPath: /custom-tools # /tmp # /custom-tools
 #          name: custom-tools # custom-tools
-
-  containerSecurityContext:
-    runAsNonRoot: true
-    readOnlyRootFilesystem: true
-    allowPrivilegeEscalation: false
-    seccompProfile:
-      type: RuntimeDefault
-    capabilities:
-      drop:
-        - ALL
