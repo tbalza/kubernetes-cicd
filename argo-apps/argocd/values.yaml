@@ -92,9 +92,9 @@ repoServer:
   nodeSelector:
     role: ci-cd
 
-#  envFrom: # this loads all the secrets as ENV variables
-#    - secretRef:
-#        name: django-secrets
+  envFrom: # this loads all the secrets as ENV variables
+    - secretRef:
+        name: django-secrets-global
 #  env:
 #    - name: TF_ACCOUNT_ID
 #      valueFrom:
