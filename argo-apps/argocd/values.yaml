@@ -74,9 +74,9 @@ repoServer:
   nodeSelector:
     role: ci-cd
 
-#  envFrom: # this loads all the secrets as ENV variables
-#    - secretRef:
-#        name: argocd-secrets-global
+  envFrom: # this loads all the secrets as ENV variables
+    - secretRef:
+        name: argocd-secrets-global
 
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
     - name: substitution
