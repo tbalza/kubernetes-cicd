@@ -720,7 +720,7 @@ resource "aws_iam_role" "argo_cd" {
         },
         Condition = {
           StringEquals = {
-            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:argocd:argocd" #"namespace:service-account-name"
+            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:argocd:argocd-repo-server" #"namespace:service-account-name"
           }
         }
       },
