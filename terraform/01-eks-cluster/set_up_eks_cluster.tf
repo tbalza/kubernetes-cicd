@@ -1667,7 +1667,7 @@ resource "aws_iam_role_policy_attachment" "imageupdater_read_attach" { # check
 
 # ArgoCD Repo Server
 resource "aws_iam_policy" "reposerver_ssm_read" { # check
-  name = "SSM-for-argocd-imageupdater"
+  name = "SSM-for-argocd-reposerver"
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
