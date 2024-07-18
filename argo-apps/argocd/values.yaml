@@ -94,7 +94,7 @@ repoServer:
 
   envFrom: # this loads all the secrets as ENV variables
     - secretRef:
-        name: django-secrets-global
+        name: argocd-secrets-global
 #  env:
 #    - name: TF_ACCOUNT_ID
 #      valueFrom:
