@@ -114,7 +114,11 @@ locals {
     }
 
     "argo_cd_aws_ecr_repo" = { # check
-      value = module.ecr.repository_url
+      value = split("/", module.ecr.repository_url)[0] # retains only the ecr domain <ecr domain>/<repo name>
+    }
+
+    "argo_cd_aws_ecr_repo_name" = { # check
+      value = module.ecr.repository_name
     }
 
     "argo_cd_aws_region" = { # check

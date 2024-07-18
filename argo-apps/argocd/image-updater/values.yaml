@@ -3,7 +3,7 @@ nodeSelector:
 
 serviceAccount: # not using credentials configured for Argo CD, instead retrieving secret via git write-back annotation
   annotations:
-    eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ImageUpdaterRole" # pending dynamic values
+    eks.amazonaws.com/role-arn: "arn:aws:iam::${AWS_ACCOUNT}:role/ImageUpdaterRole" # pending dynamic values
 
 # Pull secrets from External Secrets Operator
 extraEnvFrom:
@@ -25,8 +25,8 @@ config:
 #    # -- If specified, the secret with Argo CD API key will be created.
 #    token: ""
   registries:
-    - api_url: https://350206045032.dkr.ecr.us-east-1.amazonaws.com # pending dynamic values
-      prefix: 350206045032.dkr.ecr.us-east-1.amazonaws.com
+    - api_url: https://${AWS_ECR_REPO} # pending dynamic values
+      prefix: ${AWS_ECR_REPO}
       name: ECR
       ping: true
       insecure: false
@@ -37,7 +37,7 @@ config:
 
 authScripts:
   enabled: true
-  scripts: # $AWS_REGION # https://github.com/argoproj-labs/argocd-image-updater/issues/112 # credentials: env:REGISTRY_SECRET # pending dynamic values
+  scripts:
     ecr-login.sh: |
       #!/bin/sh
       
@@ -48,7 +48,7 @@ authScripts:
       export HOME=/tmp
       
       # Retrieve the authorization token from AWS ECR
-      auth_token=$(aws ecr get-authorization-token --region us-east-1 --output text --query 'authorizationData[].authorizationToken')
+      auth_token=$(aws ecr get-authorization-token --region ${AWS_REGION} --output text --query 'authorizationData[].authorizationToken')
       
       # Decode the authorization token
       decoded_token=$(echo $auth_token | base64 -d)
