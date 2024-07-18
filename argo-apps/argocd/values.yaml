@@ -4,12 +4,6 @@ controller:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
   nodeSelector:
     role: ci-cd
-#  env:
-#    - name: ARGOCD_ACCOUNT
-#      valueFrom:
-#        secretKeyRef:
-#          name: argocd-secrets-global
-#          key: ARGOCD_ACCOUNT
 
 crds:
   keep: false # check # Keep CRDs on chart uninstall
@@ -20,12 +14,6 @@ global:
 #    role: ci-cd
   image:
     tag: "v2.11.4" # Overrides the global Argo CD image tag whose default is the chart appVersion
-#  env:
-#    - name: ARGOCD_ACCOUNT
-#      valueFrom:
-#        secretKeyRef:
-#          name: argocd-secrets-global
-#          key: ARGOCD_ACCOUNT
 
 configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ busybox? https://github.com/crumbhole/argocd-lovely-plugin
   cm:
@@ -52,17 +40,11 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
 server:
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
     enabled: false # true
-#  envFrom: # this loads all the secrets as ENV variables
-#    - secretRef:
-#        name: argocd-secrets-global
 
 applicationSet:
   enabled: true
   nodeSelector:
     role: ci-cd
-#  envFrom: # this loads all the secrets as ENV variables
-#    - secretRef:
-#        name: argocd-secrets-global
 
 dex:
   enabled: false # This is for SSO
