@@ -54,7 +54,7 @@ server:
     enabled: false # true
 #  envFrom: # this loads all the secrets as ENV variables
 #    - secretRef:
-#        name: django-secrets
+#        name: argocd-secrets-global
 
 applicationSet:
   enabled: true
@@ -62,7 +62,7 @@ applicationSet:
     role: ci-cd
 #  envFrom: # this loads all the secrets as ENV variables
 #    - secretRef:
-#        name: django-secrets
+#        name: argocd-secrets-global
 
 dex:
   enabled: false # This is for SSO
@@ -99,7 +99,7 @@ repoServer:
 #    - name: TF_ACCOUNT_ID
 #      valueFrom:
 #        secretKeyRef:
-#          name: argocd-secrets
+#          name: argocd-secrets-global
 #          key: account
 
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
@@ -107,7 +107,7 @@ repoServer:
       command: [ "/bin/sh", "-c" ]
 #      envFrom:
 #        - secretRef:
-#            name: argocd-secrets
+#            name: argocd-secrets-global
       args:
         - |
           /var/run/argocd/argocd-cmp-server
