@@ -23,7 +23,7 @@ config:
 #    # -- If specified, use an unencrypted HTTP connection to the Argo CD API instead of TLS.
 #    plaintext: true
 #    # -- If specified, the secret with Argo CD API key will be created.
-#    token: ""
+#    token: "" #
   registries:
     - api_url: https://350206045032.dkr.ecr.us-east-1.amazonaws.com # pending dynamic values
       prefix: 350206045032.dkr.ecr.us-east-1.amazonaws.com
