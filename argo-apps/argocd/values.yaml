@@ -12,8 +12,8 @@ global:
   domain: argocd.tbalza.net # Used for ingresses, certificates, SSO, notifications, etc. (blank allows all domains) # check if it can be replaced by ingress
 #  nodeSelector:
 #    role: ci-cd
-  image:
-    tag: "v2.11.4" # Overrides the global Argo CD image tag whose default is the chart appVersion
+#  image:
+#    tag: "v2.11.4" # Overrides the global Argo CD image tag whose default is the chart appVersion
 
 configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ busybox? https://github.com/crumbhole/argocd-lovely-plugin
   cm:
