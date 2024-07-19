@@ -225,7 +225,7 @@ module "ssm-parameter" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "20.11.1" # 20.11.1 # 20.17.2
+  version = "20.20.0" # 20.11.1 # 20.17.2 #
 
   cluster_name             = local.name
   cluster_version          = local.cluster_version
