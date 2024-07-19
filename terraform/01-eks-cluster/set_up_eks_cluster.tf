@@ -1773,7 +1773,7 @@ resource "helm_release" "external_dns" {
   chart      = "external-dns"
   repository = "https://kubernetes-sigs.github.io/external-dns/"
   namespace  = "kube-system"
-  version    = "1.14.4" # Chart 1.14.4, App 0.14.1
+  version    = "1.14.5" # Chart 1.14.5, App 0.14.2
 
   values = [
     <<-EOF
