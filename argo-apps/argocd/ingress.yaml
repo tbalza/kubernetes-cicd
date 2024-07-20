@@ -4,7 +4,7 @@ metadata:
   name: argo-cd-argocd-server
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+#    argocd.argoproj.io/sync-wave: "1"
     alb.ingress.kubernetes.io/backend-protocol: HTTP
     alb.ingress.kubernetes.io/conditions.argo-cd-argocd-server-grpc: |
       [{"field":"http-header","httpHeaderConfig":{"httpHeaderName": "Content-Type", "values":["application/grpc"]}}]

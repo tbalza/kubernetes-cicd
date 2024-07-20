@@ -922,7 +922,7 @@ output "image_updater_role_arn" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "5.8.1"
+  version = "5.9.0"
 
   name = local.name
   cidr = local.vpc_cidr
@@ -956,7 +956,7 @@ module "vpc" {
 
 module "ebs_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "3.0.0"
+  version = "3.1.0"
 
   description = "Customer managed key to encrypt EKS managed node group volumes"
 
@@ -1203,7 +1203,7 @@ provider "helm" {
 
 module "aws_load_balancer_controller_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "5.39.1"
+  version = "5.41.0"
 
   role_name                              = "aws-load-balancer-controller"
   attach_load_balancer_controller_policy = true
@@ -1270,7 +1270,7 @@ resource "helm_release" "aws_load_balancer_controller" {
 # IAM additional policy https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2826 # check
 module "ebs_csi_driver_irsa" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "5.39.1"
+  version = "5.41.0"
 
   # create_role      = false
   role_name_prefix = "${module.eks.cluster_name}-ebs-csi"
