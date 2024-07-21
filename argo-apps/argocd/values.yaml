@@ -39,8 +39,8 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
 #      url: https://github.com/tbalza/kubernetes-cicd
 
 server:
-  ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
-    enabled: false # true
+#  ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
+#    enabled: false # true
   serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
     annotations:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
