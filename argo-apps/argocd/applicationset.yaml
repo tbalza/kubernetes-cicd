@@ -41,7 +41,7 @@ spec:
       syncPolicy:
         automated:
           selfHeal: true
-          prune: false # (disable when testing cmp plugin) enables the deletion of resources that are no longer in source
+          prune: true # (disable when testing cmp plugin) enables the deletion of resources that are no longer in source
         syncOptions:
         - CreateNamespace=true
         - ServerSideApply=true
