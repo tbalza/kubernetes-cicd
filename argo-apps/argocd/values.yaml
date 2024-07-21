@@ -2,8 +2,8 @@ controller:
   serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
     annotations:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
-  nodeSelector:
-    role: ci-cd
+#  nodeSelector:
+#    role: ci-cd
 
 crds:
   keep: false # check # Keep CRDs on chart uninstall
@@ -14,10 +14,8 @@ global:
   domain: argocd.tbalza.net # Used for ingresses, certificates, SSO, notifications, etc. (blank allows all domains) # check if it can be replaced by ingress
   image:
     tag: "v2.11.4"
-#  nodeSelector:
-#    role: ci-cd
-#  image:
-#    tag: "v2.11.4" # Overrides the global Argo CD image tag whose default is the chart appVersion
+  nodeSelector:
+    role: ci-cd
 
 configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ busybox? https://github.com/crumbhole/argocd-lovely-plugin
   cm:
@@ -44,22 +42,28 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
 server:
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
     enabled: false # true
+  serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
+    annotations:
+      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
 
 applicationSet:
   enabled: true
-  nodeSelector:
-    role: ci-cd
+#  nodeSelector:
+#    role: ci-cd
+  serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
+    annotations:
+      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
 
 dex:
   enabled: false # This is for SSO
-  server:
-    nodeSelector:
-      role: ci-cd
+#  server:
+#    nodeSelector:
+#      role: ci-cd
 
-notifications:
-  controller:
-    nodeSelector:
-      role: ci-cd
+#notifications:
+#  controller:
+#    nodeSelector:
+#      role: ci-cd
 
 repoServer:
 #  deploymentAnnotations:
@@ -70,15 +74,14 @@ repoServer:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
   rbac:
      - apiGroups:
-       - argoproj.io
+       - "*"
        resources:
-       - applications
+       - "*"
        verbs:
-       - get
-       - list
-       - watch
-  nodeSelector:
-    role: ci-cd
+       - "*"
+
+#  nodeSelector:
+#    role: ci-cd
 
 #  envFrom: # this loads all the secrets as ENV variables
 #    - secretRef:
@@ -88,10 +91,10 @@ repoServer:
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
     - name: substitution
       command: [ "/bin/sh", "-c" ]
-#      envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
-#        - secretRef:
-#            name: argocd-secrets-global
-#            optional: true
+      envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
+        - secretRef:
+            name: argocd-secrets-global
+            optional: true
       args:
         - |
           /var/run/argocd/argocd-cmp-server
