@@ -1,5 +1,5 @@
 controller:
-  serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
+  serviceAccount:
     annotations:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
 #  nodeSelector:
@@ -137,3 +137,8 @@ repoServer:
 #      volumeMounts:
 #        - mountPath: /custom-tools # /tmp # /custom-tools
 #          name: custom-tools # custom-tools
+
+redisSecretInit:
+  serviceAccount:
+    annotations:
+      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now

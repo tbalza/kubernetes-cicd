@@ -15,5 +15,5 @@ resources:
   - ingress.yaml
   - secrets.yaml
   - secrets2.yaml
-  - image-updater/
+#  - image-updater/
   - applicationset.yaml
