@@ -20,19 +20,20 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
     kustomize.buildOptions: "--load-restrictor LoadRestrictionsNone --enable-helm" # Enable Kustomize to install helm charts
   params:
     server.insecure: true # necessary when SSL termination is handled by ALB
-  cmp: # argocd cmp "env substitution" plugin. needed since kustomize can't retrieve remote values (env/secrets/configmaps) for its own installation (only for resulting pods etc.)
-    create: true
-    plugins: # Plugin yaml files to be added to argocd-cmp-cm
-      substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
-        generate:
-          command: ["/bin/sh", "-c"] # ["/bin/sh"]
-          args: ["kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst"] # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst # ["kustomize build --enable-helm" | /tmp/envsubst ] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
-#        discover:
-#          fileName: "../jenkins/*.yaml" # "../jenkins/*.yaml"
-#          find:
-#            glob: "**/*.yaml"
-        preserveFileMode: true # by default cmp resets file mode
-        lockRepo: false
+#  cmp: # argocd cmp "env substitution" plugin. needed since kustomize can't retrieve remote values (env/secrets/configmaps) for its own installation (only for resulting pods etc.)
+#    create: true
+#    plugins: # Plugin yaml files to be added to argocd-cmp-cm
+#      substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
+#        generate:
+#          command: ["/bin/sh", "-c"] # ["/bin/sh"]
+#          args: ["kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst"] # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst # ["kustomize build --enable-helm" | /tmp/envsubst ] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
+##        discover:
+##          fileName: "../jenkins/*.yaml" # "../jenkins/*.yaml"
+##          find:
+##            glob: "**/*.yaml"
+#        preserveFileMode: true # by default cmp resets file mode
+#        lockRepo: false
+
 #  repositories: # not needed since we are using ApplicationSet
 #    main-repo:
 #      url: https://github.com/tbalza/kubernetes-cicd
@@ -55,75 +56,77 @@ applicationSet:
 dex:
   enabled: false # This is for SSO
 
-repoServer:
-#  deploymentAnnotations:
-#    argocd.argoproj.io/sync-wave: "2"
-  serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
-    name: "argocd-repo-server"
-    annotations:
-      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDrepoRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
-  rbac:
-     - apiGroups:
-       - "*"
-       resources:
-       - "*"
-       verbs:
-       - "*"
-
-#  envFrom: # this loads all the secrets as ENV variables
-#    - secretRef:
-#        name: argocd-secrets-global
-#        optional: true #
-
-  extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
-    - name: substitution
-      command: [ "/bin/sh", "-c" ]
-      envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
-        - secretRef:
-            name: argocd-secrets-global
-            optional: true
-      args:
-        - |
-          /var/run/argocd/argocd-cmp-server
-      image: tbalza/envsubst:latest # pending replace with generic image, install kustomize, helm, envsubst # quay.io/argoproj/argocd # '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ default (include "argo-cd.defaultTag" .) .Values.repoServer.image.tag }}'
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 999
-        allowPrivilegeEscalation: true
-      volumeMounts:
-        - mountPath: /var/run/argocd
-          name: var-files
-        - mountPath: /home/argocd/cmp-server/plugins
-          name: plugins
-        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-          subPath: substitution.yaml  # Maps the specific config file for this plugin
-          name: argocd-cmp-cm
-        - mountPath: /tmp
-          name: cmp-tmp
-#        - mountPath: /usr/local/bin/ # envsubst # /usr/local/bin/envsubst # read only dirs from quay.io/argoproj/argocd using tmp for now
-#          name: custom-tools
-          #subPath: envsubst
-  volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
-    - name: argocd-cmp-cm
-      configMap:
-        name: argocd-cmp-cm
-    - name: cmp-tmp # scratch space for any temporary processing
-      emptyDir: {}
-#    - name: custom-tools # envsubst
-#      emptyDir: {}
-#  initContainers: # # envsubst
-#    - name: install-envsubst
-#      image: alpine:latest # tbalza/envsubst:latest
+#repoServer:
+##  deploymentAnnotations:
+##    argocd.argoproj.io/sync-wave: "2"
+#  serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
+#    name: "argocd-repo-server"
+#    annotations:
+#      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDrepoRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
+#  rbac:
+#     - apiGroups:
+#       - "*"
+#       resources:
+#       - "*"
+#       verbs:
+#       - "*"
+#
+##  envFrom: # this loads all the secrets as ENV variables
+##    - secretRef:
+##        name: argocd-secrets-global
+##        optional: true #
+#
+#  extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
+#    - name: substitution
+#      command: [ "/bin/sh", "-c" ]
+#      envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
+#        - secretRef:
+#            name: argocd-secrets-global
+#            optional: true
+#      args:
+#        - |
+#          /var/run/argocd/argocd-cmp-server
+#      image: tbalza/envsubst:latest # pending replace with generic image, install kustomize, helm, envsubst # quay.io/argoproj/argocd # '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ default (include "argo-cd.defaultTag" .) .Values.repoServer.image.tag }}'
 #      securityContext:
 #        runAsNonRoot: true
-#        runAsUser: 999 # required for envsubst to be executed in extra container by correct argocd user
-#      command: ["/bin/sh", "-c"] # # /tmp/envsubst # - "cp envsubst /tmp/envsubst && chmod a+x /tmp/envsubst" # && chmod a+x /custom-tools/envsubst
-#      args: # PATH=/tmp:$PATH
-#        - |
-#          wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /tmp/envsubst
+#        runAsUser: 999
+#        allowPrivilegeEscalation: true
 #      volumeMounts:
-#        - mountPath: /custom-tools # /tmp # /custom-tools
-#          name: custom-tools # custom-tools
+#        - mountPath: /var/run/argocd
+#          name: var-files
+#        - mountPath: /home/argocd/cmp-server/plugins
+#          name: plugins
+#        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+#          subPath: substitution.yaml  # Maps the specific config file for this plugin
+#          name: argocd-cmp-cm
+#        - mountPath: /tmp
+#          name: cmp-tmp
+#
+##        - mountPath: /usr/local/bin/ # envsubst # /usr/local/bin/envsubst # read only dirs from quay.io/argoproj/argocd using tmp for now
+##          name: custom-tools
+#          #subPath: envsubst
+#
+#  volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
+#    - name: argocd-cmp-cm
+#      configMap:
+#        name: argocd-cmp-cm
+#    - name: cmp-tmp # scratch space for any temporary processing
+#      emptyDir: {}
+##    - name: custom-tools # envsubst
+##      emptyDir: {}
+##  initContainers: # # envsubst
+##    - name: install-envsubst
+##      image: alpine:latest # tbalza/envsubst:latest
+##      securityContext:
+##        runAsNonRoot: true
+##        runAsUser: 999 # required for envsubst to be executed in extra container by correct argocd user
+##      command: ["/bin/sh", "-c"] # # /tmp/envsubst # - "cp envsubst /tmp/envsubst && chmod a+x /tmp/envsubst" # && chmod a+x /custom-tools/envsubst
+##      args: # PATH=/tmp:$PATH
+##        - |
+##          wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /tmp/envsubst
+##      volumeMounts:
+##        - mountPath: /custom-tools # /tmp # /custom-tools
+##          name: custom-tools # custom-tools
 
 redisSecretInit:
   serviceAccount:
