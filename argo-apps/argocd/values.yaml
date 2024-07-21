@@ -2,8 +2,6 @@ controller:
   serviceAccount:
     annotations:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
-#  nodeSelector:
-#    role: ci-cd
 
 crds:
   keep: false # check # Keep CRDs on chart uninstall
@@ -56,20 +54,12 @@ applicationSet:
 
 dex:
   enabled: false # This is for SSO
-#  server:
-#    nodeSelector:
-#      role: ci-cd
-
-#notifications:
-#  controller:
-#    nodeSelector:
-#      role: ci-cd
 
 repoServer:
 #  deploymentAnnotations:
 #    argocd.argoproj.io/sync-wave: "2"
   serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
-    name: "argocd-repo-server"
+#    name: "argocd-repo-server"
     annotations:
       eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDrepoRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
   rbac:
@@ -79,9 +69,6 @@ repoServer:
        - "*"
        verbs:
        - "*"
-
-#  nodeSelector:
-#    role: ci-cd
 
 #  envFrom: # this loads all the secrets as ENV variables
 #    - secretRef:
