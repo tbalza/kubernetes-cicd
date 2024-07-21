@@ -25,7 +25,7 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
   params:
     server.insecure: true # necessary when SSL termination is handled by ALB
   cmp: # argocd cmp "env substitution" plugin. needed since kustomize can't retrieve remote values (env/secrets/configmaps) for its own installation (only for resulting pods etc.)
-    create: true
+    create: false
     plugins: # Plugin yaml files to be added to argocd-cmp-cm
       substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
         generate:
