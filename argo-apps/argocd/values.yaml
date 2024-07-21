@@ -109,8 +109,8 @@ repoServer:
         name: argocd-cmp-cm
     - name: cmp-tmp # scratch space for any temporary processing
       emptyDir: {}
-    - name: custom-tools # envsubst
-      emptyDir: {}
+#    - name: custom-tools # envsubst
+#      emptyDir: {}
 #  initContainers: # # envsubst
 #    - name: install-envsubst
 #      image: alpine:latest # tbalza/envsubst:latest
