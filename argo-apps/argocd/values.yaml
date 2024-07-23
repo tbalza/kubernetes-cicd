@@ -53,7 +53,7 @@ applicationSet:
     role: ci-cd
   serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
     annotations:
-      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
+      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole3" # `argocd-application-controller` assigned to argocd-secrets-global right now
 
 dex:
   enabled: false # This is for SSO
