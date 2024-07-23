@@ -101,9 +101,9 @@ repoServer:
           name: argocd-cmp-cm
         - mountPath: /tmp
           name: cmp-tmp
-        - mountPath: /usr/local/bin/ # envsubst # /usr/local/bin/envsubst # read only dirs from quay.io/argoproj/argocd using tmp for now
-          name: custom-tools
-          subPath: envsubst
+##        - mountPath: /usr/local/bin/ # envsubst # /usr/local/bin/envsubst # read only dirs from quay.io/argoproj/argocd using tmp for now
+##          name: custom-tools
+##          subPath: envsubst
 
   volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
     - name: argocd-cmp-cm
