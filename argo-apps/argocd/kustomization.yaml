@@ -13,7 +13,7 @@ helmCharts:
 
 resources:
   - secrets.yaml
-#  - secrets2.yaml
+  - secrets2.yaml
   - image-updater/
   - applicationset.yaml
   - ingress.yaml
