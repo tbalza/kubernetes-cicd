@@ -11,7 +11,7 @@ spec:
       repoURL: https://github.com/tbalza/kubernetes-cicd.git
       revision: HEAD # branch for git write back?
       directories:
-      - path: argo-apps/** # argo-apps/*
+        - path: argo-apps/* # argo-apps/*
   template:
     metadata:
       name: '{{.path.basename}}'
@@ -27,8 +27,6 @@ spec:
         repoURL: https://github.com/tbalza/kubernetes-cicd.git # check
         targetRevision: HEAD # check
         path: '{{.path.path}}'
-#        plugin:
-#          name: substitution
       destination:
         server: https://kubernetes.default.svc # pending make dynamic from repo files
         namespace: '{{.path.basename}}' # pending make dynamic from repo files
