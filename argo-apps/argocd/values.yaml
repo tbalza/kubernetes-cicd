@@ -30,7 +30,7 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
         discover:
 ##          fileName: "../jenkins/*.yaml" # "../jenkins/*.yaml"
           find:
-            glob: "**.yaml"
+            glob: "**/*.yaml"
         preserveFileMode: true # by default cmp resets file mode
         lockRepo: false
 
