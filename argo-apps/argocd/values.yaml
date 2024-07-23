@@ -14,6 +14,10 @@ global:
 #    tag: "v2.11.4"
   nodeSelector:
     role: ci-cd
+  envFrom: # this loads all the secrets as ENV variables
+    - secretRef:
+        name: argocd-secrets-global
+        optional: true #
 
 configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ busybox? https://github.com/crumbhole/argocd-lovely-plugin
   cm:
