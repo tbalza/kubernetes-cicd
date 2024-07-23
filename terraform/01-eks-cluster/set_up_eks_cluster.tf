@@ -716,35 +716,35 @@ module "eks" {
 
 ## STS
 
-resource "aws_iam_role" "argo_cd_repo" {
-  name = "ArgoCDrepoRole"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = "sts:AssumeRole",
-        Principal = {
-          Service = "eks.amazonaws.com"
-        },
-      },
-      # External Secrets Operator reqs (jwt auth)
-      {
-        Effect = "Allow",
-        Action = "sts:AssumeRoleWithWebIdentity",
-        Principal = {
-          Federated = module.eks.oidc_provider_arn
-        },
-        Condition = {
-          StringEquals = {
-            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:argocd:argocd-repo-server" #"namespace:service-account-name"
-          }
-        }
-      },
-    ]
-  })
-}
+#resource "aws_iam_role" "argo_cd_repo" {
+#  name = "ArgoCDrepoRole"
+#
+#  assume_role_policy = jsonencode({
+#    Version = "2012-10-17",
+#    Statement = [
+#      {
+#        Effect = "Allow",
+#        Action = "sts:AssumeRole",
+#        Principal = {
+#          Service = "eks.amazonaws.com"
+#        },
+#      },
+#      # External Secrets Operator reqs (jwt auth)
+#      {
+#        Effect = "Allow",
+#        Action = "sts:AssumeRoleWithWebIdentity",
+#        Principal = {
+#          Federated = module.eks.oidc_provider_arn
+#        },
+#        Condition = {
+#          StringEquals = {
+#            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:argocd:argocd-repo-server" #"namespace:service-account-name"
+#          }
+#        }
+#      },
+#    ]
+#  })
+#}
 
 resource "aws_iam_role" "argo_cd" {
   name = "ArgoCDRole"
@@ -768,7 +768,7 @@ resource "aws_iam_role" "argo_cd" {
         },
         Condition = {
           StringEquals = {
-            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:argocd:*" #"namespace:service-account-name"
+            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:argocd:argocd" #"namespace:service-account-name"
           }
         }
       },
@@ -1713,9 +1713,9 @@ resource "aws_iam_role_policy_attachment" "imageupdater_read_attach" { # check
   policy_arn = aws_iam_policy.imageupdater_ssm_read.arn
 }
 
-# ArgoCD Repo Server
-resource "aws_iam_policy" "reposerver_ssm_read" { # check
-  name = "SSM-for-argocd-reposerver"
+# ArgoCD
+resource "aws_iam_policy" "argocd_ssm_read" { # check
+  name = "SSM-for-argocd"
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
@@ -1731,8 +1731,8 @@ resource "aws_iam_policy" "reposerver_ssm_read" { # check
 }
 
 resource "aws_iam_role_policy_attachment" "reposerver_read_attach" { # check
-  role       = aws_iam_role.argo_cd_repo.name # image_updater.name
-  policy_arn = aws_iam_policy.reposerver_ssm_read.arn # imageupdater_ssm_read.arn
+  role       = aws_iam_role.argo_cd.name # image_updater.name
+  policy_arn = aws_iam_policy.argocd_ssm_read.arn # imageupdater_ssm_read.arn
 }
 
 ####### check
