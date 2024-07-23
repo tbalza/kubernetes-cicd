@@ -1731,7 +1731,7 @@ resource "aws_iam_policy" "reposerver_ssm_read" { # check
 }
 
 resource "aws_iam_role_policy_attachment" "reposerver_read_attach" { # check
-  role       = aws_iam_role.argo_cd.name # image_updater.name
+  role       = aws_iam_role.argo_cd_repo.name # image_updater.name
   policy_arn = aws_iam_policy.reposerver_ssm_read.arn # imageupdater_ssm_read.arn
 }
 
