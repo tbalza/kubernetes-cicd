@@ -2,8 +2,10 @@ nodeSelector:
   role: ci-cd
 
 serviceAccount: # not using credentials configured for Argo CD, instead retrieving secret via git write-back annotation
+  create: true
   annotations:
     eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ImageUpdaterRole" # pending dynamic values
+  name: "argocd-image-updater"
 
 # Pull secrets from External Secrets Operator
 extraEnvFrom:
