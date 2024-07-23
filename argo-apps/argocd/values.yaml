@@ -58,13 +58,13 @@ applicationSet:
 dex:
   enabled: false # This is for SSO
 
-#repoServer:
+repoServer:
 ##  deploymentAnnotations:
 ##    argocd.argoproj.io/sync-wave: "2"
-#  serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
-#    name: "argocd-repo-server"
-#    annotations:
-#      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDrepoRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
+  serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
+    name: "argocd-repo-server"
+    annotations:
+      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDrepoRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
 #  rbac:
 #     - apiGroups:
 #       - "*"
