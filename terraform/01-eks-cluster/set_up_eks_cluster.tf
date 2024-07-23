@@ -618,19 +618,19 @@ module "eks" {
       }
     }
 
-    argocdrepo = {
-      principal_arn     = aws_iam_role.argo_cd_repo.arn
-      kubernetes_groups = []
-
-      policy_associations = {
-        admin_policy = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
-          access_scope = {
-            type = "cluster" # check
-          }
-        }
-      }
-    }
+#    argocdrepo = {
+#      principal_arn     = aws_iam_role.argo_cd_repo.arn
+#      kubernetes_groups = []
+#
+#      policy_associations = {
+#        admin_policy = {
+#          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
+#          access_scope = {
+#            type = "cluster" # check
+#          }
+#        }
+#      }
+#    }
 
     imageupdater = { # argocd image updater
       principal_arn     = aws_iam_role.image_updater.arn
