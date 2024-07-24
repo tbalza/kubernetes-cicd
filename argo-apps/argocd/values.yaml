@@ -87,14 +87,7 @@ repoServer:
       args:
         - |
           /var/run/argocd/argocd-cmp-server &  # Start in background
-          sleep 10  # Allow some time for initialization and environment variables to load
-          if [ -z "$ARGOCD_AWS_ACCOUNT" ]; then  # Check if the environment variable is empty
-            echo "Environment variable not set, restarting cmp server..."
-            pgrep -f /var/run/argocd/argocd-cmp-server | xargs kill -9
-            sleep 5  # Allow some time for the process to terminate
-          fi
-          echo "Restarting argocd-cmp-server..."
-          /var/run/argocd/argocd-cmp-server  # Restart the server
+          pgrep -f /var/run/argocd/argocd-cmp-server | xargs kill -9
       image: tbalza/envsubst:latest # pending replace with generic image, install kustomize, helm, envsubst # quay.io/argoproj/argocd # '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ default (include "argo-cd.defaultTag" .) .Values.repoServer.image.tag }}'
       securityContext:
         runAsNonRoot: true
