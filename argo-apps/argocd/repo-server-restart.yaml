@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: argocd-repo-server-restart-
+  generateName: restart-repo-server-
   annotations:
     argocd.argoproj.io/hook: PreSync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
@@ -9,7 +9,13 @@ spec:
   template:
     spec:
       restartPolicy: Never
+      serviceAccountName: argo-cd-argocd-repo-server  # Use the existing service account
       containers:
-      - name: restart-repo-server
-        image: bitnami/kubectl
-        command: ["kubectl", "rollout", "restart", "deployment", "argo-cd-argocd-repo-server", "-n", "argocd"]
+      - name: restart
+        image: bitnami/kubectl  # Ensure this image is available in your registry or change accordingly
+        imagePullPolicy: IfNotPresent
+        command:
+        - sh
+        - -c
+        - |
+          kubectl rollout restart deployment argo-cd-argocd-repo-server -n argocd
