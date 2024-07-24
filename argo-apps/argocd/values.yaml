@@ -87,7 +87,7 @@ repoServer:
       args:
         - |
           /var/run/argocd/argocd-cmp-server
-          sleep 10  # Allow some time for initialization and environment variables to load
+          sleep 5  # Allow some time for initialization and environment variables to load
           if [ -z "$ARGOCD_AWS_ACCOUNT" ]; then  # Check if the environment variable is empty
             pgrep -f /var/run/argocd/argocd-cmp-server | xargs kill -9
             sleep 5 
