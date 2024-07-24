@@ -3,19 +3,27 @@ kind: Job
 metadata:
   generateName: restart-repo-server-
   annotations:
-    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook: PostSync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
   template:
     spec:
       restartPolicy: Never
-      serviceAccountName: argo-cd-argocd-repo-server  # Use the existing service account
+      serviceAccountName: argo-cd-argocd-repo-server
       containers:
       - name: restart
-        image: bitnami/kubectl  # Ensure this image is available in your registry or change accordingly
-        imagePullPolicy: IfNotPresent
+        image: bitnami/kubectl
         command:
-        - sh
+        - /bin/sh
         - -c
         - |
-          kubectl rollout restart deployment argo-cd-argocd-repo-server -n argocd
+          # Check if the deployment has been restarted via this job before
+          RESTARTED=$(kubectl get deployment argo-cd-argocd-repo-server -n argocd -o=jsonpath='{.metadata.annotations.argocd-restarted}')
+          if [ "$RESTARTED" != "true" ]; then
+            # Restart the deployment
+            kubectl rollout restart deployment argo-cd-argocd-repo-server -n argocd
+            # Mark the deployment as restarted
+            kubectl annotate deployment argo-cd-argocd-repo-server -n argocd argocd-restarted=true --overwrite
+          else
+            echo "The deployment has been previously restarted. No action taken."
+          fi
