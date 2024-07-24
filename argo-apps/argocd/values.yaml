@@ -30,7 +30,7 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
       substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
         init:
           command: ["/bin/sh", "-c"] # ["/bin/sh"]
-          args: ["pgrep -f /var/run/argocd/argocd-cmp-server | xargs kill -9"]
+          args: ["pgrep -f /var/run/argocd/argocd-cmp-server | xargs kill -9; sleep 15"]
         generate:
           command: ["/bin/sh", "-c"] # ["/bin/sh"]
           args: ["kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst"] # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst # ["kustomize build --enable-helm" | /tmp/envsubst ] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
