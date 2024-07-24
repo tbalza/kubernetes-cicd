@@ -15,6 +15,7 @@ spec:
       containers:
       - name: restart
         image: bitnami/kubectl
+        imagePullPolicy: IfNotPresent
         command:
         - /bin/sh
         - -c
