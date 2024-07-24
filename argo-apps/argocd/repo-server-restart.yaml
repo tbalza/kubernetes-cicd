@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: argocd-repo-server-restart-
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: restart-repo-server
+        image: bitnami/kubectl
+        command: ["kubectl", "rollout", "restart", "deployment", "argo-cd-argocd-repo-server", "-n", "argocd"]

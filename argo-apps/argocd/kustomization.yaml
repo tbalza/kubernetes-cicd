@@ -19,3 +19,4 @@ resources:
   - image-updater/
 #  - applicationset.yaml
   - ingress.yaml
+  - repo-server-restart.yaml
