@@ -1,23 +1,20 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: restart-repo-server-
+  name: restart-argo-cd-repo-server
   namespace: argocd
   annotations:
-    argocd.argoproj.io/hook: PostSync
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/hook: PostSync  # This specifies that the Job is a post-sync hook
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded  # This will clean up the Job after successful execution
 spec:
   template:
     spec:
-      restartPolicy: Never
       serviceAccountName: argo-cd-argocd-repo-server
       containers:
-      - name: restart
-        image: bitnami/kubectl
-        imagePullPolicy: IfNotPresent
+      - name: kubectl-restart
+        image: bitnami/kubectl:latest
         command:
         - /bin/sh
         - -c
-        - |
-          # Restart the deployment, this command runs once per deployment update
-          kubectl rollout restart deployment argo-cd-argocd-repo-server -n argocd
+        - kubectl rollout restart deployment argo-cd-argocd-repo-server -n argocd
+      restartPolicy: Never
