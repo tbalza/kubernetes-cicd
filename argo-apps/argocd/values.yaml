@@ -102,8 +102,9 @@ repoServer:
           name: argocd-cmp-cm
         - mountPath: /tmp
           name: cmp-tmp
-        - mountPath: /tmp/secrets
+        - mountPath: /secrets
           name: secret-volume
+          readOnly: true
 ##        - mountPath: /usr/local/bin/ # envsubst # /usr/local/bin/envsubst # read only dirs from quay.io/argoproj/argocd using tmp for now
 ##          name: custom-tools
 ##          subPath: envsubst
