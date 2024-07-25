@@ -27,11 +27,6 @@ spec:
         repoURL: https://github.com/tbalza/kubernetes-cicd.git # check
         targetRevision: HEAD # check
         path: '{{.path.path}}'
-        plugin:
-          name: substitution
-#          envFrom: # this loads all the secrets as ENV variables
-#            - secretRef:
-#                name: django-secrets # Reference the ExternalSecret name
       destination:
         server: https://kubernetes.default.svc # pending make dynamic from repo files
         namespace: '{{.path.basename}}' # pending make dynamic from repo files
