@@ -36,8 +36,8 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
         discover:
 #          fileName: "../jenkins/*.yaml" # "../jenkins/*.yaml"
           find:
-#            glob: "**/*.yaml"
-            command: [sh, -c, "find . -type f -name '*.yaml' | grep -q ."]
+            glob: "**/*.yaml"
+#            command: [sh, -c, "find . -type f -name '*.yaml' | grep -q ."]
         preserveFileMode: true # by default cmp resets file mode
 #        lockRepo: false # not relevant for sidecar plugin
 
