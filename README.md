@@ -2,6 +2,9 @@ sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
 
 rm ~/.kube/config
 
+docker run --rm --platform linux/amd64 tbalza/envsubst2:latest envsubst --version
+docker buildx build --platform linux/amd64 -t tbalza/envsubst2:latest --push .
+
 set Cloudflare API token as an environment variable (that will be used by ExternalDNS)
 # export TF_VAR_CFL_API_TOKEN=123example
 set Cloudflare Zone ID as an environment variable (that will be used by ACM)
