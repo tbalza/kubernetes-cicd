@@ -31,10 +31,10 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
         generate:
           command: ["/bin/sh", "-c"] # ["/bin/sh"]
           args: ["kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst"] # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst # ["kustomize build --enable-helm" | /tmp/envsubst ] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
-#        discover:
+        discover:
 ####          fileName: "../jenkins/*.yaml" # "../jenkins/*.yaml"
-#          find:
-#            glob: "../argo-apps/**.yaml"
+          find:
+            glob: "../argo-apps/**.yaml"
         preserveFileMode: true # by default cmp resets file mode
         lockRepo: false
 
