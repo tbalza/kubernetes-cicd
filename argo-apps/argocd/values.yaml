@@ -87,8 +87,8 @@ repoServer:
       args: # /var/run/argocd/argocd-cmp-server & pgrep -f /var/run/argocd/argocd-cmp-server | xargs kill -9
         - |
           if [ ! -f /tmp/restarted.flag ]; then
+            /var/run/argocd/argocd-cmp-server &
             touch /tmp/restarted.flag
-            /var/run/argocd/argocd-cmp-server
             sleep 10  # gives a moment for the server to start up properly
             pgrep -f /var/run/argocd/argocd-cmp-server | xargs kill -9
           else
