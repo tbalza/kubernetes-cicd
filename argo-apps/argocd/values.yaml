@@ -7,8 +7,6 @@ crds:
   keep: false # check # Keep CRDs on chart uninstall
 
 global:
-  deploymentAnnotations:
-    argocd.argoproj.io/sync-wave: "1"
   domain: argocd.tbalza.net # Used for ingresses, certificates, SSO, notifications, etc. (blank allows all domains) # check if it can be replaced by ingress
 #  image:
 #    tag: "v2.11.4"
