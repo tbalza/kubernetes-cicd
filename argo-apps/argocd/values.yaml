@@ -33,12 +33,13 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
             - |
               AVAILABLE_VARS=$(env | cut -d "=" -f 1 | awk '{print "$"$1}' | tr "\n" " ");
               kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
-#        discover:
+        discover:
 #          fileName: "../jenkins/*.yaml" # "../jenkins/*.yaml"
-#          find:
-#            glob: "**.yaml"
-#        preserveFileMode: true # by default cmp resets file mode
-#        lockRepo: false
+          find:
+#            glob: "**/*.yaml"
+            command: [sh, -c, "find /argo-apps -type f -name '*.yaml' | grep -q ."]
+        preserveFileMode: true # by default cmp resets file mode
+#        lockRepo: false # not relevant for sidecar plugin
 
 #  repositories: # not needed since we are using ApplicationSet
 #    main-repo:
