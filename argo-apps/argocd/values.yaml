@@ -30,7 +30,11 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
       substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
         generate:
           command: ["/bin/sh", "-c"] # ["/bin/sh"]
-          args: ["kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst"] # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst # ["kustomize build --enable-helm" | /tmp/envsubst ] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
+          #args: ["kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "] # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst # ["kustomize build --enable-helm" | /tmp/envsubst ] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
+          args:
+            - |
+              AVAILABLE_VARS=$(env | cut -d "=" -f 1 | awk '{print "$"$1}' | tr "\n" " ")
+              kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
 #        discover:
 #          fileName: "../jenkins/*.yaml" # "../jenkins/*.yaml"
 #          find:
@@ -83,8 +87,8 @@ repoServer:
       envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
         - secretRef:
             name: argocd-secrets-global
-            optional: true
-      args: # /var/run/argocd/argocd-cmp-server & pgrep -f /var/run/argocd/argocd-cmp-server | xargs kill -9
+            optional: true # # /var/run/argocd/argocd-cmp-server & pgrep -f /var/run/argocd/argocd-cmp-server | xargs kill -9
+      args:
         - |
           /var/run/argocd/argocd-cmp-server
       image: tbalza/envsubst:latest # pending replace with generic image, install kustomize, helm, envsubst # quay.io/argoproj/argocd # '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ default (include "argo-cd.defaultTag" .) .Values.repoServer.image.tag }}'
