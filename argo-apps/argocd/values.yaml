@@ -89,7 +89,7 @@ repoServer:
           if [ -z "$ARGOCD_AWS_ACCOUNT" ]; then
             echo "Environment variable ARGOCD_AWS_ACCOUNT is not set. Starting and then stopping argocd-cmp-server."
             /var/run/argocd/argocd-cmp-server &
-            sleep 5  # gives a moment for the server to start up properly
+            sleep 30  # gives a moment for the server to start up properly
             pgrep -f /var/run/argocd/argocd-cmp-server | xargs kill -9
           else
             echo "Environment variable ARGOCD_AWS_ACCOUNT is set. Starting argocd-cmp-server."
