@@ -33,7 +33,7 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
           #args: ["kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "] # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst # ["kustomize build --enable-helm" | /tmp/envsubst ] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
           args:
             - |
-              AVAILABLE_VARS=$(env | cut -d "=" -f 1 | awk '{print "$"$1}' | tr "\n" " ")
+              AVAILABLE_VARS=$(env | cut -d "=" -f 1 | awk '{print "$"$1}' | tr "\n" " ");
               kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
 #        discover:
 #          fileName: "../jenkins/*.yaml" # "../jenkins/*.yaml"
