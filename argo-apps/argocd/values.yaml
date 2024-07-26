@@ -27,7 +27,7 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
           args:
             - |
               AVAILABLE_VARS=$(env | cut -d "=" -f 1 | awk '{print "$"$1}' | tr "\n" " ")
-              kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
+              kustomize build --load-restrictor LoadRestrictionsNone --enable-helm . | envsubst "$AVAILABLE_VARS"
         preserveFileMode: true # by default cmp resets file mode
 
 server:
