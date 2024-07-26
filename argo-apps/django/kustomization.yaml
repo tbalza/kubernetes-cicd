@@ -15,5 +15,3 @@ configMapGenerator:
 # ArgoCD Image Updater, creates/updates `.argocd-source-django.yaml` and uses that file to update the image according to update-strategy annotation
 images: # argocd image-updater # required for argocd to sync
 - name: django-production-kustomize
-  newName: 350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production
-  newTag: 7a0786fc304e641e616bdadaedc9d67ab1defeea
