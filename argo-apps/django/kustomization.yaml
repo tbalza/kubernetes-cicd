@@ -9,7 +9,7 @@ resources:
   - pvc.yaml
   - secrets.yaml
   - service.yaml
-  - serviceaccount.yaml
+#  - serviceaccount.yaml
 
 #configMapGenerator:
 #  - name: nginx-config
