@@ -14,7 +14,7 @@ extraEnvFrom:
 
 config:
   logLevel: "trace" # default info # debug # trace
-  applicationsAPIKind: "argocd" # kubernetes
+  applicationsAPIKind: "kubernetes" # kubernetes
 #  argocd:
 #    # -- Use the gRPC-web protocol to connect to the Argo CD API
 #    grpcWeb: true
