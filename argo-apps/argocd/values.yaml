@@ -34,10 +34,10 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
             - |
               AVAILABLE_VARS=$(env | cut -d "=" -f 1 | awk '{print "$"$1}' | tr "\n" " ")
               kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
-        discover:
-#          fileName: "../jenkins/*.yaml" # "../jenkins/*.yaml"
-          find:
-            glob: "**/serviceaccount.yaml"
+#        discover:
+##          fileName: "../jenkins/*.yaml" # "../jenkins/*.yaml"
+#          find:
+#            glob: "**/serviceaccount.yaml"
 #            command: [sh, -c, "find . -type f -name '*.yaml' | grep -q ."]
         preserveFileMode: true # by default cmp resets file mode
 #        lockRepo: false # not relevant for sidecar plugin
