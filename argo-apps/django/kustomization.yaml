@@ -3,8 +3,6 @@ kind: Kustomization
 
 namespace: django # crucial for configMapGenerator
 
-helmCharts:
-
 resources:
   - deployment.yaml
   - ingress.yaml
