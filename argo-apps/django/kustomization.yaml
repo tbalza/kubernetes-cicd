@@ -10,7 +10,6 @@ resources:
   - secrets.yaml
   - service.yaml
   - serviceaccount.yaml
-  - .argocd-source-django.yaml
 
 configMapGenerator:
   - name: nginx-config
