@@ -4,7 +4,7 @@ metadata:
   name: restart-argo-cd-repo-server
   namespace: argocd
   annotations:
-    argocd.argoproj.io/hook: PostSync  # PostSync
+    argocd.argoproj.io/hook: PostSync  # PostSync #
     argocd.argoproj.io/hook-delete-policy: HookSucceeded  # This will clean up the Job after successful execution
 spec:
   #backoffLimit: 2
