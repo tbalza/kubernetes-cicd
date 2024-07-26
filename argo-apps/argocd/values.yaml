@@ -23,12 +23,15 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
     plugins: # Plugin yaml files to be added to argocd-cmp-cm
       substitution:
         generate:
-          command: ["/bin/sh", "-c"] # ["/bin/sh"] # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
-          args:
+          command: ["/bin/sh", "-c"] # ["/bin/sh"] # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm --output /tmp | envsubst "$AVAILABLE_VARS"
+          args: # --output /tmp
             - |
               AVAILABLE_VARS=$(env | cut -d "=" -f 1 | awk '{print "$"$1}' | tr "\n" " ")
               kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
         preserveFileMode: true # by default cmp resets file mode
+#        discover:
+#          fileName: s*.yaml
+#        allowConcurrency: true
 
 server: # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
