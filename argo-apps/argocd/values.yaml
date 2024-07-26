@@ -12,10 +12,6 @@ global:
 #    tag: "v2.11.4"
   nodeSelector:
     role: ci-cd
-#  envFrom: # this loads all the secrets as ENV variables
-#    - secretRef:
-#        name: argocd-secrets-global
-#        optional: true #
 
 configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ busybox? https://github.com/crumbhole/argocd-lovely-plugin
   cm:
@@ -25,35 +21,18 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
   cmp: # argocd cmp "env substitution" plugin. needed since kustomize can't retrieve remote values (env/secrets/configmaps) for its own installation (only for resulting pods etc.)
     create: true
     plugins: # Plugin yaml files to be added to argocd-cmp-cm
-      substitution: # name can't have hyphens # # argocd prepends ARGOCD_ENV_ to configmap key
+      substitution:
         generate:
           command: ["/bin/sh", "-c"] # ["/bin/sh"]
-          #args: ["kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "] # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst # ["kustomize build --enable-helm" | /tmp/envsubst ] # "set -o pipefail; kustomize build . | envsubst" # ["-c", "kustomize build . | envsubst"]
-          #AVAILABLE_VARS=$(env | cut -d "=" -f 1 | awk '{print "$"$1}' | tr "\n" " "); # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
           args:
             - |
               AVAILABLE_VARS=$(env | cut -d "=" -f 1 | awk '{print "$"$1}' | tr "\n" " ")
               kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
-#        discover:
-#          fileName: "../jenkins/*.yaml" # "../jenkins/*.yaml"
-#          find:
-#            glob: "**/serviceaccount.yaml"
-#            command: [sh, -c, "find . -type f -name '*.yaml' | grep -q ."]
         preserveFileMode: true # by default cmp resets file mode
-#        lockRepo: false # not relevant for sidecar plugin
-
-#  repositories: # not needed since we are using ApplicationSet
-#    main-repo:
-#      url: https://github.com/tbalza/kubernetes-cicd
 
 server:
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
     enabled: false # true
-#  serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
-#    annotations:
-#      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
-#  nodeSelector:
-#    role: ci-cd
 
 applicationSet:
   enabled: true
@@ -67,8 +46,6 @@ dex:
   enabled: false # This is for SSO
 
 repoServer:
-##  deploymentAnnotations:
-##    argocd.argoproj.io/sync-wave: "2"
   serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
 #    name: "argocd-repo-server"
     annotations:
