@@ -8,7 +8,7 @@ spec:
   goTemplateOptions: ["missingkey=error"]
   generators:
     - git:
-        repoURL: git@github.com:tbalza/kubernetes-cicd.git
+        repoURL: https://github.com/tbalza/kubernetes-cicd.git # git@github.com:tbalza/kubernetes-cicd.git
         revision: HEAD # branch for git write back?
         directories:
           - path: argo-apps/* # argo-apps/*
@@ -25,7 +25,7 @@ spec:
     spec:
       project: "default" # check
       source:
-        repoURL: git@github.com:tbalza/kubernetes-cicd.git # check
+        repoURL: https://github.com/tbalza/kubernetes-cicd.git # git@github.com:tbalza/kubernetes-cicd.git # check
         targetRevision: HEAD # check
         path: '{{.path.path}}'
         plugin:
