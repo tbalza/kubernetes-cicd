@@ -10,6 +10,7 @@ resources:
   - secrets.yaml
   - service.yaml
   - serviceaccount.yaml
+  - test/
 
 configMapGenerator:
   - name: nginx-config
