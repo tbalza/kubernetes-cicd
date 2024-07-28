@@ -19,6 +19,8 @@ serviceAccount: # not using credentials configured for Argo CD, instead retrievi
 extraEnvFrom:
    - secretRef:
        name: argocd-secrets
+   - secretRef:
+       name: argocd-secrets-global
 
 config:
   logLevel: "trace" # default info # debug # trace
