@@ -20,7 +20,7 @@ extraEnvFrom:
    - secretRef:
        name: argocd-secrets
    - secretRef:
-       name: argocd-secrets-global
+       name: argocd-secrets-global # check. testing image updater + cmp, not working even with write back kustomization
 
 config:
   logLevel: "trace" # default info # debug # trace

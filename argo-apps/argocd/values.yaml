@@ -29,9 +29,9 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
               AVAILABLE_VARS=$(env | cut -d "=" -f 1 | awk '{print "$"$1}' | tr "\n" " ")
               kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
         preserveFileMode: true # by default cmp resets file mode
-#        discover:
-#          fileName: s*.yaml
-#        allowConcurrency: true
+        discover:
+          fileName: s*.yaml
+        allowConcurrency: true
 
 server: # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
