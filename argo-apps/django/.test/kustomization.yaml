@@ -1,8 +1,0 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-
-namespace: django # crucial for configMapGenerator
-
-# ArgoCD Image Updater, creates/updates `.argocd-source-django.yaml` and uses that file to update the image according to update-strategy annotation
-images: # argocd image-updater # required for argocd to sync
-  - name: django-production-kustomize
