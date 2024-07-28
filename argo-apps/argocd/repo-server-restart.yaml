@@ -18,6 +18,5 @@ spec:
         command:
         - /bin/sh
         - -c
-        - >
-          kubectl rollout restart deployment argo-cd-argocd-repo-server -n argocd
+        - kubectl rollout restart deployment argo-cd-argocd-repo-server -n argocd
       restartPolicy: Never
