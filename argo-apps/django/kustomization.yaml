@@ -8,8 +8,7 @@ resources:
 - secrets.yaml
 - service.yaml
 - serviceaccount.yaml
-- test/images.yaml
-
+-
 configMapGenerator:
 - name: nginx-config
   files:
