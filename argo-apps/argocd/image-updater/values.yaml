@@ -1,13 +1,13 @@
 nodeSelector:
   role: ci-cd
 
-volumeMounts:
-  - mountPath: /tmp
-    name: cmp-tmp
-
-volumes:
-  - name: cmp-tmp
-    emptyDir: {}
+#volumeMounts:
+#  - mountPath: /tmp
+#    name: cmp-tmp
+#
+#volumes:
+#  - name: cmp-tmp
+#    emptyDir: {}
 
 serviceAccount: # not using credentials configured for Argo CD, instead retrieving secret via git write-back annotation
   create: true
