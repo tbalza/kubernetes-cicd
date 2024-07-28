@@ -2,17 +2,18 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: django # crucial for configMapGenerator
 resources:
-  - deployment.yaml
-  - ingress.yaml
-  - pvc.yaml
-  - secrets.yaml
-  - service.yaml
-  - serviceaccount.yaml
+- deployment.yaml
+- ingress.yaml
+- pvc.yaml
+- secrets.yaml
+- service.yaml
+- serviceaccount.yaml
 #  - test/
 configMapGenerator:
-  - name: nginx-config
-    files:
-    - ../../django/nginx/default.conf # load the nginx default.conf from the django project directory
+- name: nginx-config
+  files:
+  - ../../django/nginx/default.conf # load the nginx default.conf from the django project directory
 # ArgoCD Image Updater, creates/updates `.argocd-source-django.yaml` and uses that file to update the image according to update-strategy annotation
 images: # argocd image-updater # required for argocd to sync
-  - name: django-production-kustomize
+- name: django-production-kustomize
+  newName: 350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production
