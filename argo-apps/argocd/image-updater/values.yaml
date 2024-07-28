@@ -29,7 +29,7 @@ config:
     # -- Use the gRPC-web protocol to connect to the Argo CD API
     grpcWeb: true
     # -- Connect to the Argo CD API server at server address
-    serverAddress: "argo-cd-argocd-server"
+    serverAddress: argocd-server.argocd # argocd-server.argocd
     # -- If specified, the certificate of the Argo CD API server is not verified.
     insecure: true #
     # -- If specified, use an unencrypted HTTP connection to the Argo CD API instead of TLS.
