@@ -69,8 +69,8 @@ repoServer:
 #            name: argocd-secrets-global
 #            optional: true
         - configMapRef: # secrets were used to test if it all worked. after determining repo server/redit restart was needed this should work. delete secretRef if successful
-            name: global-variables
-            optional: false
+            name: global-variables # pending. check rbac, restrict accordingly
+            optional: true
       args:
         - |
           /var/run/argocd/argocd-cmp-server
