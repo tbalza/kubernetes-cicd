@@ -65,9 +65,12 @@ repoServer:
     - name: substitution
       command: [ "/bin/sh", "-c" ]
       envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
-        - secretRef:
-            name: argocd-secrets-global
-            optional: true # # /var/run/argocd/argocd-cmp-server & pgrep -f /var/run/argocd/argocd-cmp-server | xargs kill -9
+#        - secretRef:
+#            name: argocd-secrets-global
+#            optional: true
+        - configMapRef:
+            name: global-variables
+            optional: false
       args:
         - |
           /var/run/argocd/argocd-cmp-server

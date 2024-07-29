@@ -17,10 +17,10 @@ serviceAccount: # not using credentials configured for Argo CD, instead retrievi
 
 # Pull secrets from External Secrets Operator
 extraEnvFrom:
-   - secretRef:
+   - secretRef: # related to github credentials. pending. change name to image updater secrets
        name: argocd-secrets
-   - secretRef:
-       name: argocd-secrets-global # check. testing image updater + cmp, not working even with write back kustomization
+#   - secretRef:
+#       name: argocd-secrets-global # check. testing image updater + cmp, not working even with write back kustomization
 
 config:
   logLevel: "trace" # default info # debug # trace
