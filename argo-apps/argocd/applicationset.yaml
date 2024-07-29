@@ -45,7 +45,7 @@ spec:
           selfHeal: true
           prune: true # (disable when testing cmp plugin) enables the deletion of resources that are no longer in source
         retry:
-          limit: 50 # increase retries to prevent degraded state when cmp and image updater are being set up. pending fix
+          limit: 80 # increase retries to prevent degraded state when cmp and image updater are being set up. pending fix
           backoff:
             duration: 15s
             factor: 1
