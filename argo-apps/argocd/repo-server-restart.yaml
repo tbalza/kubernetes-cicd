@@ -15,7 +15,7 @@ spec:
       - name: kubectl-restart
         image: bitnami/kubectl:latest
         imagePullPolicy: IfNotPresent
-        command: # kubectl annotate es django-secrets force-sync=$(date +%s) --overwrite -n django;
+        command: # kubectl annotate es django-secrets force-sync=$(date +%s) --overwrite -n django # kubectl annotate es jenkins-secrets force-sync=$(date +%s) --overwrite -n jenkins
         - /bin/sh
         - -c
         - |
