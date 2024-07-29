@@ -19,7 +19,7 @@ serviceAccount: # not using credentials configured for Argo CD, instead retrievi
 extraEnvFrom:
    - secretRef: # related to github credentials. pending. change name to image updater secrets
        name: argocd-secrets
-#   - secretRef:
+#   - secretRef: # check. likely not needed, argocd values yaml does envfrom to plugin container. delete when checked
 #       name: argocd-secrets-global # check. testing image updater + cmp, not working even with write back kustomization
 
 config:
