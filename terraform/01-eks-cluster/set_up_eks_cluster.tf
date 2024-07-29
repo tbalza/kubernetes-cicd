@@ -2325,39 +2325,39 @@ output "db_instance_port" {
   value       = module.db.db_instance_port
 }
 
-### Create namespace
-resource "kubernetes_namespace" "global_vars" {
-  metadata {
-    name = "globalvars"
-  }
-
-  depends_on = [
-    #helm_release.argo_cd
-    module.eks
-  ]
-
-}
-
-### pending. `terraform_remote_state` stuff will change when on the same tf (infra and argocd bootstrap should be spun/destroyed without scripts)
-resource "kubectl_manifest" "aws_account_configmap" { # global variables that come from tf make sense not to be committed to repo, to be consumed by kustomize itself, not pods, through argocd cmp
-  yaml_body = <<-YAML
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: global-variables
-  namespace: globalvars
-data:
-  TF_ACCOUNT_ID: "${data.aws_caller_identity.current.account_id}"
-  TF_CLUSTER_NAME: "${local.name}"
-  TF_REGION: "${local.region}"
-  TF_ECR_REPO: "${module.ecr.repository_url}"
-  TF_DOMAIN: "${local.domain}"
-  YAML
-  depends_on = [
-    #helm_release.argo_cd
-    module.eks
-  ]
-}
+#### Create namespace
+#resource "kubernetes_namespace" "global_vars" {
+#  metadata {
+#    name = "globalvars"
+#  }
+#
+#  depends_on = [
+#    #helm_release.argo_cd
+#    module.eks
+#  ]
+#
+#}
+#
+#### pending. `terraform_remote_state` stuff will change when on the same tf (infra and argocd bootstrap should be spun/destroyed without scripts)
+#resource "kubectl_manifest" "aws_account_configmap" { # global variables that come from tf make sense not to be committed to repo, to be consumed by kustomize itself, not pods, through argocd cmp
+#  yaml_body = <<-YAML
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  name: global-variables
+#  namespace: globalvars
+#data:
+#  TF_ACCOUNT_ID: "${data.aws_caller_identity.current.account_id}"
+#  TF_CLUSTER_NAME: "${local.name}"
+#  TF_REGION: "${local.region}"
+#  TF_ECR_REPO: "${module.ecr.repository_url}"
+#  TF_DOMAIN: "${local.domain}"
+#  YAML
+#  depends_on = [
+#    #helm_release.argo_cd
+#    module.eks
+#  ]
+#}
 
 
 
