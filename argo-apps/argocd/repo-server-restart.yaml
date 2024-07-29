@@ -15,12 +15,10 @@ spec:
       - name: kubectl-restart
         image: bitnami/kubectl:latest
         imagePullPolicy: IfNotPresent
-        command:
+        command: # kubectl annotate es django-secrets force-sync=$(date +%s) --overwrite -n django;
         - /bin/sh
         - -c
         - |
           kubectl rollout restart deployment argo-cd-argocd-repo-server -n argocd;
           kubectl rollout restart deployment argo-cd-argocd-redis -n argocd;
-          kubectl annotate es django-secrets force-sync=$(date +%s) --overwrite -n django;
-          kubectl annotate es jenkins-secrets force-sync=$(date +%s) --overwrite -n jenkins;
       restartPolicy: Never
