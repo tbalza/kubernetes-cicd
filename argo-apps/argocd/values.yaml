@@ -68,7 +68,7 @@ repoServer:
 #        - secretRef:
 #            name: argocd-secrets-global
 #            optional: true
-        - configMapRef:
+        - configMapRef: # secrets were used to test if it all worked. after determining repo server/redit restart was needed this should work. delete secretRef if successful
             name: global-variables
             optional: false
       args:
