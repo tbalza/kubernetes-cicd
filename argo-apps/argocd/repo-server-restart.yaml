@@ -10,7 +10,7 @@ spec:
   #backoffLimit: 2
   template:
     spec:
-      serviceAccountName: argo-cd-argocd-repo-server
+      serviceAccountName: argocd-image-updater
       containers:
       - name: kubectl-restart
         image: bitnami/kubectl:latest
