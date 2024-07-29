@@ -48,7 +48,7 @@ spec:
         retry:
           limit: 800 # increase retries to prevent degraded state when cmp and image updater are being set up. pending fix
           backoff:
-            duration: 15s
+            duration: 30s
             factor: 1
             maxDuration: 10m
         syncOptions:
