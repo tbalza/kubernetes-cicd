@@ -1,14 +1,13 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: restart-argo-cd-repo-server
+  name: restart-argo-cd-repo-server2
   namespace: argocd
   annotations:
     argocd.argoproj.io/hook: PostSync  # PostSync #
     argocd.argoproj.io/hook-delete-policy: HookSucceeded  # This will clean up the Job after successful execution
-    #argocd.argoproj.io/sync-wave: "0" #
+    argocd.argoproj.io/sync-wave: "1" #
 spec:
-  #backoffLimit: 2
   template:
     spec:
       serviceAccountName: argocd-image-updater
@@ -20,7 +19,9 @@ spec:
         - /bin/sh
         - -c
         - |
-          kubectl rollout restart deployment argo-cd-argocd-repo-server -n argocd;
-          kubectl rollout restart deployment argo-cd-argocd-redis -n argocd
+          kubectl delete secretstore django-secrets -n django;
+          kubectl delete secretstore jenkins-secrets -n django;
+          sleep 10;
+          kubectl delete externalsecret django-secrets -n django;
+          kubectl delete externalsecret jenkins-secrets -n django;
       restartPolicy: Never
-# kubectl annotate es django-secrets force-sync- --overwrite -n django
