@@ -16,4 +16,4 @@ configMapGenerator:
 images: # argocd image-updater # required for argocd to sync
 - name: django-production-kustomize
   newName: 350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production
-  newTag: 38b7ce0fe8a498e53bf532c4319ec0b8dbc07fd1
+  newTag: f34a258b33e4ea972a1f5b0d1461f57010616691
