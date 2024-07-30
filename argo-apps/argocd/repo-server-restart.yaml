@@ -22,13 +22,13 @@ spec:
         - |
           kubectl rollout restart deployment argo-cd-argocd-repo-server -n argocd;
           kubectl rollout restart deployment argo-cd-argocd-redis -n argocd;
-          sleep 120;
+          sleep 1;
           kubectl delete secretstore django-secrets -n django;
           kubectl delete secretstore jenkins-secrets -n django;
-          sleep 60;
+          sleep 1;
           kubectl delete externalsecret django-secrets -n django;
           kubectl delete externalsecret jenkins-secrets -n django;
-          sleep 120;
+          sleep 1;
           kubectl delete pod jenkins-0 -n jenkins
       restartPolicy: Never
 # kubectl annotate es django-secrets force-sync- --overwrite -n django
