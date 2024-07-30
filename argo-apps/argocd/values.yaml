@@ -105,19 +105,23 @@ repoServer:
 
 ##    - name: custom-tools # envsubst
 ##      emptyDir: {}
-##  initContainers: # # envsubst
-##    - name: install-envsubst
-##      image: alpine:latest # tbalza/envsubst:latest
-##      securityContext:
-##        runAsNonRoot: true
-##        runAsUser: 999 # required for envsubst to be executed in extra container by correct argocd user
-##      command: ["/bin/sh", "-c"] # # /tmp/envsubst # - "cp envsubst /tmp/envsubst && chmod a+x /tmp/envsubst" # && chmod a+x /custom-tools/envsubst
-##      args: # PATH=/tmp:$PATH
-##        - |
-##          wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /tmp/envsubst
-##      volumeMounts:
-##        - mountPath: /custom-tools # /tmp # /custom-tools
-##          name: custom-tools # custom-tools
+  initContainers: # # envsubst
+    - name: get-env
+      envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
+        - secretRef:
+            name: argocd-secrets-global
+            optional: true
+#      image: alpine:latest # tbalza/envsubst:latest
+#      securityContext:
+#        runAsNonRoot: true
+#        runAsUser: 999 # required for envsubst to be executed in extra container by correct argocd user
+#      command: ["/bin/sh", "-c"] # # /tmp/envsubst # - "cp envsubst /tmp/envsubst && chmod a+x /tmp/envsubst" # && chmod a+x /custom-tools/envsubst
+#      args: # PATH=/tmp:$PATH
+#        - |
+#          wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /tmp/envsubst
+#      volumeMounts:
+#        - mountPath: /custom-tools # /tmp # /custom-tools
+#          name: custom-tools # custom-tools
 
 redisSecretInit:
   serviceAccount:
