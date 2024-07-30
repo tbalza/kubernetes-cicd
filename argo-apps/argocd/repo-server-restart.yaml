@@ -24,3 +24,31 @@ spec:
           kubectl rollout restart deployment argo-cd-argocd-redis -n argocd
       restartPolicy: Never
 # kubectl annotate es django-secrets force-sync- --overwrite -n django
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: restart-argo-cd-repo-server
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/hook: PostSync  # PostSync #
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded  # This will clean up the Job after successful execution
+    argocd.argoproj.io/sync-wave: "1" #
+spec:
+  template:
+    spec:
+      serviceAccountName: argocd-image-updater
+      containers:
+      - name: kubectl-restart
+        image: bitnami/kubectl:latest
+        imagePullPolicy: IfNotPresent
+        command: # kubectl annotate es django-secrets force-sync=$(date +%s) --overwrite -n django # kubectl annotate es jenkins-secrets force-sync=$(date +%s) --overwrite -n jenkins
+        - /bin/sh
+        - -c
+        - |
+          kubectl delete secretstore django-secrets -n django;
+          kubectl delete secretstore jenkins-secrets -n django;
+          sleep 10;
+          kubectl delete externalsecret django-secrets -n django;
+          kubectl delete externalsecret jenkins-secrets -n django;
+      restartPolicy: Never
