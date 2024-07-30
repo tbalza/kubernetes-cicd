@@ -28,7 +28,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: restart-argo-cd-repo-server
+  name: restart-argo-cd-repo-server2
   namespace: argocd
   annotations:
     argocd.argoproj.io/hook: PostSync  # PostSync #
