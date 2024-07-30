@@ -62,7 +62,7 @@ repoServer:
        - "*"
 
   podLabels: # label used to restart repo server with job
-    component: argocd-repo-server
+    component: argocd-repo-server # ?
 
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
     - name: substitution

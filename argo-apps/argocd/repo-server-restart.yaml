@@ -20,6 +20,6 @@ spec:
         - /bin/sh
         - -c
         - |
-          kubectl delete pod -l app.kubernetes.io/component=argocd-repo-server -n argocd
+          kubectl delete pod -l app.kubernetes.io/component=repo-server -n argocd
       restartPolicy: Never
 # kubectl annotate es django-secrets force-sync- --overwrite -n django
