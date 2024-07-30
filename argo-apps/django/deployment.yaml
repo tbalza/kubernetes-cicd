@@ -4,8 +4,8 @@ kind: Deployment
 metadata:
   name: django
   namespace: django
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
+#  annotations:
+#    argocd.argoproj.io/sync-wave: "1"
   labels:
     app: django
 spec:
