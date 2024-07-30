@@ -111,7 +111,7 @@ repoServer:
         - secretRef:
             name: argocd-secrets-global
             optional: true
-#      image: alpine:latest # tbalza/envsubst:latest
+      image: alpine:latest # tbalza/envsubst:latest
 #      securityContext:
 #        runAsNonRoot: true
 #        runAsUser: 999 # required for envsubst to be executed in extra container by correct argocd user
