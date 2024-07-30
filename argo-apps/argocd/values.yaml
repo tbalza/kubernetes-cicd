@@ -105,13 +105,13 @@ repoServer:
 
 ##    - name: custom-tools # envsubst
 ##      emptyDir: {}
-  initContainers: # # envsubst
-    - name: get-env
-      envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
-        - secretRef:
-            name: argocd-secrets-global
-            optional: true
-      image: alpine:latest # tbalza/envsubst:latest
+#  initContainers: # # envsubst
+#    - name: get-env
+#      envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
+#        - secretRef:
+#            name: argocd-secrets-global
+#            optional: true
+#      image: alpine:latest # tbalza/envsubst:latest
 #      securityContext:
 #        runAsNonRoot: true
 #        runAsUser: 999 # required for envsubst to be executed in extra container by correct argocd user
