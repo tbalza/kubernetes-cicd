@@ -6,7 +6,7 @@ metadata:
   annotations:
     argocd.argoproj.io/hook: PostSync  # PostSync #
     argocd.argoproj.io/hook-delete-policy: HookSucceeded  # This will clean up the Job after successful execution
-    argocd.argoproj.io/sync-wave: "1" #
+    argocd.argoproj.io/sync-wave: "2" #
 spec:
   template:
     spec:
