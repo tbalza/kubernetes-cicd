@@ -20,8 +20,8 @@ spec:
         - -c
         - |
           kubectl delete secretstore django-secrets -n django;
-          kubectl delete secretstore jenkins-secrets -n django;
+          kubectl delete secretstore jenkins-secrets -n jenkins;
           sleep 10;
           kubectl delete externalsecret django-secrets -n django;
-          kubectl delete externalsecret jenkins-secrets -n django
+          kubectl delete externalsecret jenkins-secrets -n jenkins
       restartPolicy: Never
