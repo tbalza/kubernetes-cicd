@@ -6,7 +6,7 @@ metadata:
   annotations:
     argocd.argoproj.io/hook: PostSync  # PostSync #
     argocd.argoproj.io/hook-delete-policy: HookSucceeded  # This will clean up the Job after successful execution
-    argocd.argoproj.io/sync-wave: "1" #
+    #argocd.argoproj.io/sync-wave: "1" #
 spec:
   #backoffLimit: 2
   template:
@@ -21,6 +21,14 @@ spec:
         - -c
         - |
           kubectl rollout restart deployment argo-cd-argocd-repo-server -n argocd;
-          kubectl rollout restart deployment argo-cd-argocd-redis -n argocd
+          kubectl rollout restart deployment argo-cd-argocd-redis -n argocd;
+          sleep 20;
+          kubectl delete secretstore django-secrets -n django;
+          kubectl delete secretstore jenkins-secrets -n jenkins;
+          sleep 10;
+          kubectl delete externalsecret django-secrets -n django;
+          kubectl delete externalsecret jenkins-secrets -n jenkins;
+          sleep 10;
+          kubectl delete pod -l statefulset.kubernetes.io/pod-name=jenkins-0 -n jenkins
       restartPolicy: Never
 # kubectl annotate es django-secrets force-sync- --overwrite -n django

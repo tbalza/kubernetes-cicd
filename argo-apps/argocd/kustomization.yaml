@@ -15,7 +15,7 @@ helmCharts:
 
 resources:
   - repo-server-restart.yaml
-  - repo-server-restart2.yaml
+#  - repo-server-restart2.yaml
   - secrets.yaml
   - secrets2.yaml
   - image-updater/
