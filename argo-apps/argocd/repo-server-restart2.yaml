@@ -23,7 +23,7 @@ spec:
           kubectl delete secretstore jenkins-secrets -n jenkins;
           sleep 10;
           kubectl delete externalsecret django-secrets -n django;
-          kubectl delete externalsecret jenkins-secrets -n jenkins
+          kubectl delete externalsecret jenkins-secrets -n jenkins;
           sleep 10;
           kubectl delete pod -l statefulset.kubernetes.io/pod-name=jenkins-0 -n jenkins
       restartPolicy: Never
