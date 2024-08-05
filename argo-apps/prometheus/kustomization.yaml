@@ -14,4 +14,4 @@ helmCharts:
 
 resources:
   - ingress.yaml
-  - serviceaccount.yaml
+#  - serviceaccount.yaml
