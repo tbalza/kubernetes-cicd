@@ -15,7 +15,7 @@ spec:
   strategy:
     type: RollingSync # this is to have ArgoCD envsubst plugin, image updater, and restart job that makes env available. sync before the rest of the apps
     rollingSync:
-      steps:
+      steps: # these are executed sequentially from top to bottom. everything that is argocd first, then everything that is not argocd at the same time
         - matchExpressions:
             - key: syncorder # label "type" defined in appset template
               operator: In
