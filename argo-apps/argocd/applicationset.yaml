@@ -23,19 +23,19 @@ spec:
                 - argocd
         - matchExpressions:
             - key: type
-              operator: In
+              operator: NotIn
               values:
-                - jenkins
-        - matchExpressions:
-            - key: type
-              operator: In
-              values:
-                - django
-        - matchExpressions:
-            - key: type
-              operator: In
-              values:
-                - prometheus
+                - argocd
+#        - matchExpressions:
+#            - key: type
+#              operator: In
+#              values:
+#                - django
+#        - matchExpressions:
+#            - key: type
+#              operator: In
+#              values:
+#                - prometheus
   template:
     metadata:
       name: '{{.path.basename}}'
