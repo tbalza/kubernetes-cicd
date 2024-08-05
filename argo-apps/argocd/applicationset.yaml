@@ -24,6 +24,8 @@ spec:
         argocd-image-updater.argoproj.io/git-branch: main # where the git writeback will be created
         argocd-image-updater.argoproj.io/refresh: hard #?
         argocd.argoproj.io/sync-wave: '{{ if eq .path.basename "argocd" }}-1{{ else }}0{{ end }}'
+        argocd.argoproj.io/hook: PostSync  # PostSync #
+        argocd.argoproj.io/hook-delete-policy: HookSucceeded
         # argocd-image-updater.argoproj.io/git-repository: https://github.com/tbalza/kubernetes-cicd.git
     spec:
       project: "default" # check
