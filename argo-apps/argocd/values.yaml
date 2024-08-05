@@ -1,7 +1,7 @@
 controller:
   serviceAccount:
     annotations:
-      eks.amazonaws.com/role-arn: "arn:aws:iam::${ARGOCD_AWS_ACCOUNT}:role/ArgoCDRole" # 350206045032 # `argocd-application-controller` assigned to argocd-secrets-global right now
+      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # 350206045032 # `argocd-application-controller` assigned to argocd-secrets-global right now
 
 crds:
   keep: false # check # Keep CRDs on chart uninstall
