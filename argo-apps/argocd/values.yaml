@@ -32,22 +32,22 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
         discover:
           fileName: s*.yaml
         allowConcurrency: true
-  cm: # health assessment needs to be manually added for syncwave to work since 1.8. https://argo-cd.readthedocs.io/en/stable/operator-manual/health/
-    resource.customizations: |
-      argoproj.io/Application:
-        health.lua: |
-          hs = {}
-          hs.status = "Progressing"
-          hs.message = ""
-          if obj.status ~= nil then
-            if obj.status.health ~= nil then
-              hs.status = obj.status.health.status
-              if obj.status.health.message ~= nil then
-                hs.message = obj.status.health.message
-              end
-            end
-          end
-          return hs
+#  cm: # health assessment needs to be manually added for syncwave to work since 1.8. https://argo-cd.readthedocs.io/en/stable/operator-manual/health/
+#    resource.customizations: |
+#      argoproj.io/Application:
+#        health.lua: |
+#          hs = {}
+#          hs.status = "Progressing"
+#          hs.message = ""
+#          if obj.status ~= nil then
+#            if obj.status.health ~= nil then
+#              hs.status = obj.status.health.status
+#              if obj.status.health.message ~= nil then
+#                hs.message = obj.status.health.message
+#              end
+#            end
+#          end
+#          return hs
 
 server: # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors

@@ -20,4 +20,5 @@ resources:
   - secrets2.yaml
   - image-updater/
   - ingress.yaml
+  - health-assessment.yaml
 #  - applicationset.yaml
