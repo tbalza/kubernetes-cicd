@@ -17,12 +17,12 @@ spec:
     rollingSync:
       steps:
         - matchExpressions:
-            - key: type # label "type" defined in appset template
+            - key: syncorder # label "type" defined in appset template
               operator: In
               values:
                 - argocd
         - matchExpressions:
-            - key: type
+            - key: syncorder
               operator: NotIn
               values:
                 - argocd
@@ -41,7 +41,7 @@ spec:
       name: '{{.path.basename}}'
       labels:
         # label for rollingSync matchExpressions # '{{path[0]}}' #
-        type: '{{.path.basename}}'
+        syncorder: '{{.path.basename}}'
       annotations: # image list has `app name` prepended before an `=` (django) and the ecr repo. corresponding annotations are prepended with the same app name (django.xxx)#
         argocd-image-updater.argoproj.io/image-list: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
         argocd-image-updater.argoproj.io/django.update-strategy: "newest-build" # digest # "newest-build" # sem ver
