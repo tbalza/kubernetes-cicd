@@ -30,12 +30,12 @@ spec:
             - key: type
               operator: In
               values:
-                - prometheus
+                - django
         - matchExpressions:
             - key: type
               operator: In
               values:
-                - django
+                - prometheus
   template:
     metadata:
       name: '{{.path.basename}}'
