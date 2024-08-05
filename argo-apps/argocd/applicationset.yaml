@@ -13,7 +13,7 @@ spec:
         directories:
           - path: argo-apps/* # argo-apps/*
   strategy:
-    type: RollingSync # this is to have ArgoCD envsubst plugin, image updater, and restart job that makes env available sync before the rest of the apps
+    type: RollingSync # this is to have ArgoCD envsubst plugin, image updater, and restart job that makes env available. sync before the rest of the apps
     rollingSync:
       steps:
         - matchExpressions:
@@ -26,22 +26,11 @@ spec:
               operator: NotIn
               values:
                 - argocd
-#        - matchExpressions:
-#            - key: type
-#              operator: In
-#              values:
-#                - django
-#        - matchExpressions:
-#            - key: type
-#              operator: In
-#              values:
-#                - prometheus
   template:
     metadata:
       name: '{{.path.basename}}'
       labels:
-        # label for rollingSync matchExpressions # '{{path[0]}}' #
-        syncorder: '{{.path.basename}}'
+        syncorder: '{{.path.basename}}' # label for rollingSync matchExpressions
       annotations: # image list has `app name` prepended before an `=` (django) and the ecr repo. corresponding annotations are prepended with the same app name (django.xxx)#
         argocd-image-updater.argoproj.io/image-list: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
         argocd-image-updater.argoproj.io/django.update-strategy: "newest-build" # digest # "newest-build" # sem ver
