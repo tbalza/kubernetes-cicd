@@ -19,7 +19,7 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
   params:
     server.insecure: true # necessary when SSL termination is handled by ALB
     applicationsetcontroller.enable.progressive.syncs: true # ApplicationSet compatible with Progressive Syncs. (SyncWave must use app of apps)
-    applicationsetcontroller.default.application.progressing.timeout: 600
+    applicationsetcontroller.default.application.progressing.timeout: 600 # prevent sync error with kube prometheus stack (default 300 seconds)
   cmp: # argocd cmp "env substitution" plugin. needed since kustomize can't retrieve remote values (env/secrets/configmaps) for its own installation (only for resulting pods etc.)
     create: true
     plugins: # Plugin yaml files to be added to argocd-cmp-cm
