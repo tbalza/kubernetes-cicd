@@ -32,7 +32,7 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
         discover:
           fileName: s*.yaml
         allowConcurrency: true
-  cm: # Needed for syncwave to work. https://argo-cd.readthedocs.io/en/stable/operator-manual/health/
+  cm: # health assessment needs to be manually added for syncwave to work since 1.8. https://argo-cd.readthedocs.io/en/stable/operator-manual/health/
     resource.customizations: |
       argoproj.io/Application:
         health.lua: |
