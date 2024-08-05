@@ -52,6 +52,10 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
 server: # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
     enabled: false # true
+  readinessProbe:
+    initialDelaySeconds: 60
+  livenessProbe:
+    initialDelaySeconds: 60
 
 applicationSet:
   enabled: true
