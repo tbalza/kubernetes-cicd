@@ -21,6 +21,7 @@ spec:
         - -c
         - |
           kubectl rollout restart deployment argo-cd-argocd-repo-server -n argocd;
-          kubectl rollout restart deployment argo-cd-argocd-redis -n argocd
+          kubectl rollout restart deployment argo-cd-argocd-redis -n argocd;
+          kubectl rollout restart deployment external-secrets -n kube-system
       restartPolicy: Never
 # kubectl annotate es django-secrets force-sync- --overwrite -n django
