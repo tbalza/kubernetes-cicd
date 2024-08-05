@@ -40,7 +40,7 @@ spec:
     metadata:
       name: '{{.path.basename}}'
       labels:
-        # label for rollingSync matchExpressions # '{{path[0]}}'
+        # label for rollingSync matchExpressions # '{{path[0]}}' #
         type: '{{.path.basename}}'
       annotations: # image list has `app name` prepended before an `=` (django) and the ecr repo. corresponding annotations are prepended with the same app name (django.xxx)#
         argocd-image-updater.argoproj.io/image-list: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
