@@ -12,9 +12,36 @@ spec:
         revision: HEAD # branch for git write back?
         directories:
           - path: argo-apps/* # argo-apps/*
+  strategy:
+    type: RollingSync # this is to have ArgoCD envsubst plugin, image updater, and restart job that makes env available sync before the rest of the apps
+    rollingSync:
+      steps:
+        - matchExpressions:
+            - key: type # label "type" defined in appset template
+              operator: In
+              values:
+                - argocd
+        - matchExpressions:
+            - key: type
+              operator: In
+              values:
+                - jenkins
+        - matchExpressions:
+            - key: type
+              operator: In
+              values:
+                - prometheus
+        - matchExpressions:
+            - key: type
+              operator: In
+              values:
+                - django
   template:
     metadata:
       name: '{{.path.basename}}'
+      labels:
+        # label for rollingSync matchExpressions # '{{path[0]}}'
+        type: '{{.path.basename}}'
       annotations: # image list has `app name` prepended before an `=` (django) and the ecr repo. corresponding annotations are prepended with the same app name (django.xxx)#
         argocd-image-updater.argoproj.io/image-list: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
         argocd-image-updater.argoproj.io/django.update-strategy: "newest-build" # digest # "newest-build" # sem ver
@@ -23,9 +50,6 @@ spec:
         argocd-image-updater.argoproj.io/write-back-target: kustomization
         argocd-image-updater.argoproj.io/git-branch: main # where the git writeback will be created
         argocd-image-updater.argoproj.io/refresh: hard #?
-        argocd.argoproj.io/sync-wave: '{{ if eq .path.basename "argocd" }}-1{{ else }}0{{ end }}'
-        argocd.argoproj.io/hook: PostSync  # PostSync #
-        argocd.argoproj.io/hook-delete-policy: HookSucceeded
         # argocd-image-updater.argoproj.io/git-repository: https://github.com/tbalza/kubernetes-cicd.git
     spec:
       project: "default" # check

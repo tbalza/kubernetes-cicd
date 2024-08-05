@@ -20,6 +20,16 @@ spec:
     spec:
       containers:
         - name: django-production-kustomize
+#          livenessProbe: # pending
+#            tcpSocket:
+#              port: 3306
+#            initialDelaySeconds: 12
+#            periodSeconds: 10
+#          readinessProbe:
+#            exec:
+#              command: [ "mysql", "-h", "127.0.0.1", "-e", "SELECT 1" ]
+#            initialDelaySeconds: 12
+#            periodSeconds: 10
           image: django-production-kustomize # django-production:latest # pending . ESO # will be replaced by kustomize?
           imagePullPolicy: Always
           envFrom: # this loads all the secrets as ENV variables

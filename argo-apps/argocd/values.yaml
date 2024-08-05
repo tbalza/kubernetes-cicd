@@ -18,6 +18,7 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
 #    kustomize.buildOptions: "--load-restrictor LoadRestrictionsNone --enable-helm" # Enable Kustomize to install helm charts
   params:
     server.insecure: true # necessary when SSL termination is handled by ALB
+    applicationsetcontroller.enable.progressive.syncs: true # ApplicationSet compatible with Progressive Syncs. (SyncWave must use app of apps)
   cmp: # argocd cmp "env substitution" plugin. needed since kustomize can't retrieve remote values (env/secrets/configmaps) for its own installation (only for resulting pods etc.)
     create: true
     plugins: # Plugin yaml files to be added to argocd-cmp-cm
@@ -52,10 +53,10 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
 server: # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
     enabled: false # true
-  readinessProbe:
-    initialDelaySeconds: 60
-  livenessProbe:
-    initialDelaySeconds: 60
+#  readinessProbe:
+#    initialDelaySeconds: 60
+#  livenessProbe:
+#    initialDelaySeconds: 60
 
 applicationSet:
   enabled: true
