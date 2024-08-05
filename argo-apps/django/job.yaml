@@ -6,7 +6,7 @@ metadata:
   annotations:
     argocd.argoproj.io/hook: PostSync  # PostSync #
     argocd.argoproj.io/hook-delete-policy: HookSucceeded  # This will clean up the Job after successful execution
-    argocd.argoproj.io/sync-wave: "1" #
+    argocd.argoproj.io/sync-wave: "2" #
 spec:
   #backoffLimit: 2
   template:
@@ -20,7 +20,6 @@ spec:
         - /bin/sh
         - -c
         - |
-          sleep 20;
           kubectl delete secretstore django-secrets -n django;
           kubectl delete externalsecret django-secrets -n django;;
       restartPolicy: Never
