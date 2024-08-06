@@ -71,10 +71,10 @@ dex:
   enabled: false # This is for SSO
 
 repoServer:
-#  serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
-#    name: "argo-cd-argocd-repo-server" # argo-cd-argocd-repo-server
-#    annotations:
-#      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDrepoRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
+  serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
+    name: "argo-cd-argocd-repo-server" # argo-cd-argocd-repo-server
+    annotations:
+      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDrepoRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
   rbac: # check. when restricting, remember restart for deployment argo-cd-argocd-repo-server must be allowed (for the job, that restarts and allows for env to be loaded)
      - apiGroups:
        - "*"
