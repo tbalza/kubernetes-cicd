@@ -14,7 +14,7 @@ helmCharts:
     valuesMerge: merge # specifies how to treat valuesInline with respect to Values. Legal values: ‘merge’, ‘override’, ‘replace’. Defaults to ‘override’. # check
 
 resources:
-  - job.yaml
+#  - job.yaml
 #  - repo-server-restart2.yaml
   - secrets.yaml
   - secrets2.yaml
