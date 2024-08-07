@@ -9,7 +9,7 @@ metadata:
 spec:
   template:
     spec:
-      serviceAccountName: argo-cd-argocd-repo-server
+      serviceAccountName: argocd-application-controller
       containers:
       - name: kubectl-restart
         image: bitnami/kubectl:latest
