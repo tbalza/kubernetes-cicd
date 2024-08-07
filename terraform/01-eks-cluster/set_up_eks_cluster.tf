@@ -136,6 +136,10 @@ locals {
       value = aws_iam_role.argo_cd.arn
     }
 
+    "argo_cd_repo_iam_role_arn" = {
+      value = aws_iam_role.argo_cd_repo.arn
+    }
+
     "jenkins_iam_role_arn" = {
       value = aws_iam_role.jenkins.arn
     }
@@ -903,6 +907,10 @@ resource "aws_iam_role" "external_secrets" { # check
 }
 
 output "argo_cd_iam_role_arn" {
+  value = aws_iam_role.argo_cd.arn
+}
+
+output "argo_cd_repo_iam_role_arn" {
   value = aws_iam_role.argo_cd_repo.arn
 }
 
