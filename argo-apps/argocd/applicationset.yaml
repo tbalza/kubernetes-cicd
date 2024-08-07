@@ -22,21 +22,15 @@ spec:
               values:
                 - argocd
         - matchExpressions:
-            - key: syncorder # label "type" defined in appset template
-              operator: In
-              values:
-                - argocd-image-updater
-        - matchExpressions:
             - key: syncorder
-              operator: In
+              operator: NotIn
               values:
-                - others
+                - argocd
   template:
     metadata:
       name: '{{.path.basename}}'
       labels:
-        #syncorder: '{{.path.basename}}' # label for rollingSync matchExpressions
-        syncorder: '{{ if eq .path "argo-apps/argocd" }}argocd{{ else if eq .path "argo-apps/argocd/image-updater" }}argocd-image-updater{{ else }}others{{ end }}'
+        syncorder: '{{.path.basename}}' # label for rollingSync matchExpressions
       annotations: # image list has `app name` prepended before an `=` (django) and the ecr repo. corresponding annotations are prepended with the same app name (django.xxx)#
         argocd-image-updater.argoproj.io/image-list: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
         argocd-image-updater.argoproj.io/django.update-strategy: "newest-build" # digest # "newest-build" # sem ver
