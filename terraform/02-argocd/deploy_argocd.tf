@@ -95,9 +95,9 @@ resource "helm_release" "argo_cd" {
 #    EOT
 #  ]
 
-  set { # fix for repo server definition
+  set {
     name  = "repoServer.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn" # annotation to allows service account to assume aws role
-    value = data.terraform_remote_state.eks.outputs.argo_cd_iam_role_arn
+    value = data.terraform_remote_state.eks.outputs.argo_cd_iam_role_arn # role/ArgoCDrepoRole
   }
 
   # Ensure that the Kubernetes namespace exists before deploying
