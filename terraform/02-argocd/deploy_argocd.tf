@@ -91,7 +91,7 @@ resource "helm_release" "argo_cd" {
     global:
       env:
         - name: ARGOCD_AWS_ACCOUNT
-          value: ${data.terraform_remote_state.eks.outputs.aws_account}
+          value: "${tostring(data.terraform_remote_state.eks.outputs.aws_account)}"
     EOT
   ]
 
