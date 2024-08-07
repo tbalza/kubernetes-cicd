@@ -84,7 +84,16 @@ resource "helm_release" "argo_cd" {
 
   create_namespace = true
 
-  values = [file("../../${path.module}/argo-apps/argocd/values.yaml")]
+  #values = [file("../../${path.module}/argo-apps/argocd/values.yaml")]
+  values = [
+    file("../../${path.module}/argo-apps/argocd/values.yaml"),
+    <<-EOT
+    global:
+      env:
+        - name: ARGOCD_AWS_ACCOUNT
+          value: ${data.terraform_remote_state.eks.outputs.aws_account}
+    EOT
+  ]
 
   set { # fix for repo server definition
     name  = "repoServer.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn" # annotation to allows service account to assume aws role
