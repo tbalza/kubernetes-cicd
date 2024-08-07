@@ -5,6 +5,7 @@ namespace: argocd
 
 resources:
   - rbac.yaml
+  - serviceaccount.yaml
 
 helmCharts:
   - name: argocd-image-updater
