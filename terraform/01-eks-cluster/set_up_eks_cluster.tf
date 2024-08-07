@@ -1760,7 +1760,7 @@ resource "aws_iam_policy" "argocd_controller_ssm_read" { # check
   })
 }
 
-resource "aws_iam_role_policy_attachment" "reposerver_read_attach" { # check
+resource "aws_iam_role_policy_attachment" "argocd_read_attach" { # check
   role       = aws_iam_role.argo_cd.name # image_updater.name
   policy_arn = aws_iam_policy.argocd_controller_ssm_read.arn # imageupdater_ssm_read.arn
 }
