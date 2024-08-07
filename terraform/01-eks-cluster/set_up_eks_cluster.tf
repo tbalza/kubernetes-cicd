@@ -772,7 +772,7 @@ resource "aws_iam_role" "argo_cd" {
         },
         Condition = {
           StringEquals = {
-            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:argocd:argocd" #"namespace:service-account-name" # `argocd` serviceaccount name doesnt exist
+            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:argocd:argocd-application-controller" #"namespace:service-account-name" # `argocd` serviceaccount name doesnt exist
           }
         }
       },
