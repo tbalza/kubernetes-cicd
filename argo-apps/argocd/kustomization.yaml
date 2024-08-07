@@ -19,6 +19,7 @@ resources:
   - secrets2.yaml
 #  - image-updater/
   - ingress.yaml
+  - rbac.yaml
 #  - serviceaccount.yaml
 #  - health-assessment.yaml # SyncWave not compatible with ApplicationSet, only app of apps
 #  - applicationset.yaml
