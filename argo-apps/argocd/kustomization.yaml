@@ -17,7 +17,7 @@ resources:
   - job.yaml
   - secrets.yaml
   - secrets2.yaml
-  - image-updater/
+#  - image-updater/
   - ingress.yaml
 #  - serviceaccount.yaml
 #  - health-assessment.yaml # SyncWave not compatible with ApplicationSet, only app of apps
