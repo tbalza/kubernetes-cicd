@@ -86,8 +86,8 @@ resource "helm_release" "argo_cd" {
 
   values = [file("../../${path.module}/argo-apps/argocd/values.yaml")]
 
-  set {
-    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn" # annotation to allows service account to assume aws role
+  set { # fix for repo server definition
+    name  = "repoServer.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn" # annotation to allows service account to assume aws role
     value = data.terraform_remote_state.eks.outputs.argo_cd_iam_role_arn
   }
 

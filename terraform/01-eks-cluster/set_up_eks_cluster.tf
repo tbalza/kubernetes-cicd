@@ -903,7 +903,7 @@ resource "aws_iam_role" "external_secrets" { # check
 }
 
 output "argo_cd_iam_role_arn" {
-  value = aws_iam_role.argo_cd.arn
+  value = aws_iam_role.argo_cd_repo.arn
 }
 
 output "jenkins_iam_role_arn" {
