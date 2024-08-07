@@ -5,10 +5,8 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/hook: Sync  # PostSync #
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded  # This will clean up the Job after successful execution
-    #argocd.argoproj.io/sync-wave: "1" #
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
-  #backoffLimit: 2
   template:
     spec:
       serviceAccountName: argocd-image-updater
@@ -16,12 +14,10 @@ spec:
       - name: kubectl-restart
         image: bitnami/kubectl:latest
         imagePullPolicy: IfNotPresent
-        command: # kubectl annotate es django-secrets force-sync=$(date +%s) --overwrite -n django # kubectl annotate es jenkins-secrets force-sync=$(date +%s) --overwrite -n jenkins
+        command:
         - /bin/sh
         - -c
         - |
           kubectl rollout restart deployment argo-cd-argocd-repo-server -n argocd;
           kubectl rollout restart deployment argo-cd-argocd-redis -n argocd
       restartPolicy: Never
-# kubectl annotate es django-secrets force-sync- --overwrite -n django
-#  kubectl rollout restart deployment external-secrets -n kube-system
