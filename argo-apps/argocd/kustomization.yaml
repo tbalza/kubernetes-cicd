@@ -15,11 +15,8 @@ helmCharts:
 
 resources:
   - job.yaml
-#  - secrets.yaml
-  - secrets2.yaml
-#  - image-updater/
+  - secrets.yaml
   - ingress.yaml
   - rbac.yaml
 #  - serviceaccount.yaml
-#  - health-assessment.yaml # SyncWave not compatible with ApplicationSet, only app of apps
 #  - applicationset.yaml
