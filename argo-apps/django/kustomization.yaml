@@ -9,6 +9,7 @@ resources:
 - service.yaml
 - serviceaccount.yaml
 - job.yaml # hackish way to get around applicationset not supporting env substitution, alongside ignoreApplicationDifferences in the appset
+- rbac.yaml
 configMapGenerator:
 - name: nginx-config
   files:
