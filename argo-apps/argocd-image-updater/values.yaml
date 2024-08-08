@@ -1,27 +1,14 @@
 nodeSelector:
   role: ci-cd
 
-serviceAccount: # not using credentials configured for Argo CD, instead retrieving secret via git write-back annotation
+serviceAccount: # not using credentials configured for Argo CD globally, instead retrieving secret for image updater git write-back annotation specifically
   create: false
   name: "argocd-image-updater"
 
 # Pull secrets from External Secrets Operator
 extraEnvFrom:
-   - secretRef: # related to github credentials. pending. change name to image updater secrets
+   - secretRef:
        name: argocd-secrets
-
-#config:
-#  logLevel: "trace" # default info # debug # trace
-#  registries:
-#    - api_url: https://350206045032.dkr.ecr.us-east-1.amazonaws.com # pending dynamic values
-#      prefix: 350206045032.dkr.ecr.us-east-1.amazonaws.com
-#      name: ECR
-#      ping: true
-#      insecure: false
-#      default: true
-#      credentials: ext:/scripts/ecr-login.sh
-#      credsexpire: 6h
-#      tagsortmode: none # ?
 
 authScripts:
   enabled: true
