@@ -18,11 +18,11 @@ images: # argocd image-updater # required for argocd to sync
 - name: django-production-kustomize
   newName: 350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production
   newTag: 30b764558adfbd80f7cfbb1a5e4bd1869a4bea0f
-patches:
-  - target:
-      group: argoproj.io
-      version: v1alpha1
-      kind: Application
-      name: django
-      namespace: argocd
-    path: image-updater-annotations.yaml
+#patches:
+#  - target:
+#      group: argoproj.io
+#      version: v1alpha1
+#      kind: Application
+#      name: django
+#      namespace: argocd
+#    path: image-updater-annotations.yaml
