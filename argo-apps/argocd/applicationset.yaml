@@ -32,7 +32,7 @@ spec:
       labels:
         syncorder: '{{.path.basename}}' # label for rollingSync matchExpressions
       annotations: # image list has `app name` prepended before an `=` (django) and the ecr repo. corresponding annotations are prepended with the same app name (django.xxx)#
-        argocd-image-updater.argoproj.io/image-list: "django={{ .Values.argocdecrrepo }}/django-production" # "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
+        argocd-image-updater.argoproj.io/image-list: "django=${ARGOCD_AWS_ACCOUNT}/django-production" # "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production" # ${ARGOCD_AWS_ACCOUNT}
         argocd-image-updater.argoproj.io/django.update-strategy: "newest-build" # digest # "newest-build" # sem ver
         argocd-image-updater.argoproj.io/django.kustomize.image-name: django-production-kustomize
         argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-secrets # secret:<namespace>/<secret> # <secret> refers to ExternalSecret name not they key. (must contain keys `username` `password`)
