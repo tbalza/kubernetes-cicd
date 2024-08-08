@@ -13,6 +13,21 @@ configMapGenerator:
 - name: nginx-config
   files:
   - ../../django/nginx/default.conf # load the nginx default.conf from the django project directory
+# shoehorning kustomize to have applicationset evaluate cmp env
+- name: ecr-repo-map
+  literals:
+  - argocdecrrepo=${ARGOCD_AWS_ACCOUNT}
+replacements:
+  - source:
+      kind: ConfigMap
+      name: ecr-repo-map
+      fieldPath: data.argocdecrrepo
+    targets:
+      - select:
+          name: '{{.path.basename}}'
+          kind: Application
+        fieldPaths:
+          - metadata.annotations['argocd-image-updater.argoproj.io/image-list']
 # ArgoCD Image Updater, creates/updates `.argocd-source-django.yaml` and uses that file to update the image according to update-strategy annotation
 images: # argocd image-updater # required for argocd to sync
 - name: django-production-kustomize
