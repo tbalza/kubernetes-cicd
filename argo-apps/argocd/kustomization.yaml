@@ -18,4 +18,4 @@ resources:
   - secrets2.yaml
   - ingress.yaml
   - rbac.yaml
-  - applicationset.yaml
+#  - applicationset.yaml
