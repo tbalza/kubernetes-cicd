@@ -16,6 +16,7 @@ resources:
   - rbac.yaml
   - secrets.yaml
   - serviceaccount.yaml
+  - auth.yaml
 
 # adding patches to things that can't be disabled via the upstream chart
 patches:
