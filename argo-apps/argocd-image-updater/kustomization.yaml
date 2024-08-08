@@ -16,8 +16,9 @@ resources:
   - rbac.yaml
   - secrets.yaml
   - serviceaccount.yaml
+  - auth.yaml
 
-# Apply patch to add serviceaccount annotation (adding manifest as resource does not work with this chart currently)
+# adding patches to things that can't be disabled via the upstream chart
 patches:
 #  - target:
 #      group: ""
