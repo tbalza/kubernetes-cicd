@@ -95,10 +95,10 @@ resource "helm_release" "argo_cd" {
 #    EOT
 #  ]
 
-  set { # used for ImageUpdater secrets. contains github credentials
-    name  = "controller.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn" # annotation to allows service account to assume aws role
-    value = data.terraform_remote_state.eks.outputs.argo_cd_iam_role_arn # role/ArgoCDRole
-  }
+#  set { # used for ImageUpdater secrets. contains github credentials
+#    name  = "controller.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn" # annotation to allows service account to assume aws role
+#    value = data.terraform_remote_state.eks.outputs.argo_cd_image_iam_role_arn # role/ArgoCDRole
+#  }
 
   set { # used for ArgoCD Repo Server secrets. contains values that envsubst plugin uses
     name  = "repoServer.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn" # annotation to allows service account to assume aws role
