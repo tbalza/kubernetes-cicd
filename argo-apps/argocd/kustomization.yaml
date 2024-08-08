@@ -15,7 +15,7 @@ helmCharts:
 
 resources:
   - job.yaml
-  - secrets.yaml
+#  - secrets.yaml
   - secrets2.yaml
 #  - image-updater/
   - ingress.yaml

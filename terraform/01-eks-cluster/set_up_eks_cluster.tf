@@ -608,22 +608,8 @@ module "eks" {
     }
 
 
-    argocd = {
-      principal_arn     = aws_iam_role.argo_cd.arn
-      kubernetes_groups = []
-
-      policy_associations = {
-        admin_policy = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # check
-          access_scope = {
-            type = "cluster" # check
-          }
-        }
-      }
-    }
-
     argocdrepo = {
-      principal_arn     = aws_iam_role.argo_cd_repo.arn
+      principal_arn     = aws_iam_role.argocd_repo.arn
       kubernetes_groups = []
 
       policy_associations = {
@@ -637,7 +623,7 @@ module "eks" {
     }
 
     imageupdater = { # argocd image updater
-      principal_arn     = aws_iam_role.image_updater.arn
+      principal_arn     = aws_iam_role.argocd_image_updater.arn
       kubernetes_groups = []
 
       policy_associations = {
@@ -720,7 +706,7 @@ module "eks" {
 
 ## STS
 
-resource "aws_iam_role" "argo_cd_repo" {
+resource "aws_iam_role" "argocd_repo" {
   name = "ArgoCDrepoRole"
 
   assume_role_policy = jsonencode({
@@ -750,37 +736,7 @@ resource "aws_iam_role" "argo_cd_repo" {
   })
 }
 
-resource "aws_iam_role" "argo_cd" {
-  name = "ArgoCDRole"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = "sts:AssumeRole",
-        Principal = {
-          Service = "eks.amazonaws.com"
-        },
-      },
-      # External Secrets Operator reqs (jwt auth)
-      {
-        Effect = "Allow",
-        Action = "sts:AssumeRoleWithWebIdentity",
-        Principal = {
-          Federated = module.eks.oidc_provider_arn
-        },
-        Condition = {
-          StringEquals = {
-            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" : "system:serviceaccount:argocd:argocd-application-controller" #"namespace:service-account-name" # `argocd` serviceaccount name doesnt exist
-          }
-        }
-      },
-    ]
-  })
-}
-
-resource "aws_iam_role" "image_updater" {
+resource "aws_iam_role" "argocd_image_updater" {
   name = "ImageUpdaterRole"
 
   assume_role_policy = jsonencode({
@@ -906,12 +862,12 @@ resource "aws_iam_role" "external_secrets" { # check
   })
 }
 
-output "argo_cd_iam_role_arn" {
-  value = aws_iam_role.argo_cd.arn
+output "argo_cd_imageupdater_iam_role_arn" {
+  value = aws_iam_role.argocd_image_updater.arn
 }
 
 output "argo_cd_repo_iam_role_arn" {
-  value = aws_iam_role.argo_cd_repo.arn
+  value = aws_iam_role.argocd_repo.arn
 }
 
 output "jenkins_iam_role_arn" {
@@ -930,9 +886,9 @@ output "django_iam_role_arn" {
   value = aws_iam_role.django.arn
 }
 
-output "image_updater_role_arn" {
-  value = aws_iam_role.image_updater.arn
-}
+#output "image_updater_role_arn" {
+#  value = aws_iam_role.argocd_image_updater.arn
+#}
 
 ## Allow Jenkins to push images to ECR
 #resource "aws_iam_policy" "jenkins_ecr_policy" {
@@ -1717,7 +1673,7 @@ resource "aws_iam_policy" "imageupdater_ssm_read" { # check
 }
 
 resource "aws_iam_role_policy_attachment" "imageupdater_read_attach" { # check
-  role       = aws_iam_role.image_updater.name
+  role       = aws_iam_role.argocd_image_updater.name
   policy_arn = aws_iam_policy.imageupdater_ssm_read.arn
 }
 
@@ -1739,30 +1695,8 @@ resource "aws_iam_policy" "argocd_repo_ssm_read" { # check
 }
 
 resource "aws_iam_role_policy_attachment" "reposerver_read_attach" { # check
-  role       = aws_iam_role.argo_cd_repo.name # image_updater.name
-  policy_arn = aws_iam_policy.argocd_repo_ssm_read.arn # imageupdater_ssm_read.arn
-}
-
-# ArgoCD Image updater
-resource "aws_iam_policy" "argocd_controller_ssm_read" { # check
-  name = "SSM-for-argocd-application-controller"
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      "Action" : [
-        "ssm:GetParameter*",
-        "ssm:ListTagsForResource", # check
-        "ssm:DescribeParameters"   # check
-      ],
-      Resource = "arn:aws:ssm:${local.region}:${data.aws_caller_identity.current.account_id}:parameter/*" # check .limit scope accordingly. SSM is region specific
-    }]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "argocd_read_attach" { # check
-  role       = aws_iam_role.argo_cd.name # image_updater.name
-  policy_arn = aws_iam_policy.argocd_controller_ssm_read.arn # imageupdater_ssm_read.arn
+  role       = aws_iam_role.argocd_repo.name
+  policy_arn = aws_iam_policy.argocd_repo_ssm_read.arn
 }
 
 
