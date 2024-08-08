@@ -19,9 +19,11 @@ helmCharts:
 
 patches:
   - target:
-      group: v1
+      group: ""
+      version: v1
       kind: ServiceAccount
-      name: argocd-image-updater # Replace with the actual name of the Service Account
+      name: argocd-image-updater
+      namespace: argocd
     patch: |-
       - op: add
         path: /metadata/annotations/eks.amazonaws.com~1role-arn
