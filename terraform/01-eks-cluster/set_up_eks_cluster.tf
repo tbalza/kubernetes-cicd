@@ -866,6 +866,10 @@ output "argo_cd_imageupdater_iam_role_arn" {
   value = aws_iam_role.argocd_image_updater.arn
 }
 
+output "ecr_repo_url" {
+  value = split("/", module.ecr.repository_url)[0]
+}
+
 output "argo_cd_repo_iam_role_arn" {
   value = aws_iam_role.argocd_repo.arn
 }
