@@ -1543,7 +1543,7 @@ resource "aws_iam_policy" "imageupdater_ecr" { # check AmazonEC2ContainerRegistr
 }
 
 resource "aws_iam_role_policy_attachment" "imageupdater_ecr_attach" {
-  role       = aws_iam_role.argocd_image_updater
+  role       = aws_iam_role.argocd_image_updater.name
   policy_arn = aws_iam_policy.imageupdater_ecr.arn
 }
 
