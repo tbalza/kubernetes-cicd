@@ -16,3 +16,13 @@ helmCharts:
     namespace: argocd
     includeCRDs: false
     valuesFile: values.yaml
+
+patches:
+  - target:
+      group: v1
+      kind: ServiceAccount
+      name: argocd-image-updater # Replace with the actual name of the Service Account
+    patch: |-
+      - op: add
+        path: /metadata/annotations/eks.amazonaws.com~1role-arn
+        value: 'arn:aws:iam::350206045032:role/ImageUpdaterRole'
