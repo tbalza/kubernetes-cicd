@@ -8,12 +8,12 @@ data:
   log.level: "trace"
   registries.conf: |
     registries:
-      - api_url: https://350206045032.dkr.ecr.us-east-1.amazonaws.com
+      - api_url: https://${ARGOCD_AWS_ECR_REPO}
         credentials: ext:/scripts/ecr-login.sh
         credsexpire: 6h
         default: true
         insecure: false
         name: ECR
         ping: true
-        prefix: 350206045032.dkr.ecr.us-east-1.amazonaws.com
+        prefix: ${ARGOCD_AWS_ECR_REPO}
         tagsortmode: none
