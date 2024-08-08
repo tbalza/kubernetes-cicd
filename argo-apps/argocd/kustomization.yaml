@@ -15,8 +15,7 @@ helmCharts:
 
 resources:
   - job.yaml
-  - secrets.yaml
+  - secrets2.yaml
   - ingress.yaml
   - rbac.yaml
-#  - serviceaccount.yaml
 #  - applicationset.yaml
