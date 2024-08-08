@@ -4,8 +4,14 @@ kind: Deployment
 metadata:
   name: django
   namespace: django
-#  annotations:
-#    argocd.argoproj.io/sync-wave: "1"
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: "django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"
+    argocd-image-updater.argoproj.io/django.update-strategy: "newest-build"
+    argocd-image-updater.argoproj.io/django.kustomize.image-name: django-production-kustomize
+    argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-secrets
+    argocd-image-updater.argoproj.io/write-back-target: kustomization
+    argocd-image-updater.argoproj.io/git-branch: main
+    argocd-image-updater.argoproj.io/refresh: hard
   labels:
     app: django
 spec:
