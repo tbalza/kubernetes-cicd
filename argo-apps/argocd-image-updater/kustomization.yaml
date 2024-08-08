@@ -15,7 +15,6 @@ helmCharts:
 resources:
   - rbac.yaml
   - secrets.yaml
-  - config.yaml
 
 # Apply patch to add serviceaccount annotation (adding manifest as resource does not work with this chart currently)
 patches:

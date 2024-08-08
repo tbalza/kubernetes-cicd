@@ -10,18 +10,18 @@ extraEnvFrom:
    - secretRef: # related to github credentials. pending. change name to image updater secrets
        name: argocd-secrets
 
-#config:
-#  logLevel: "trace" # default info # debug # trace
-#  registries:
-#    - api_url: https://350206045032.dkr.ecr.us-east-1.amazonaws.com # pending dynamic values
-#      prefix: 350206045032.dkr.ecr.us-east-1.amazonaws.com
-#      name: ECR
-#      ping: true
-#      insecure: false
-#      default: true
-#      credentials: ext:/scripts/ecr-login.sh
-#      credsexpire: 6h
-#      tagsortmode: none # ?
+config:
+  logLevel: "trace" # default info # debug # trace
+  registries:
+    - api_url: https://350206045032.dkr.ecr.us-east-1.amazonaws.com # pending dynamic values
+      prefix: 350206045032.dkr.ecr.us-east-1.amazonaws.com
+      name: ECR
+      ping: true
+      insecure: false
+      default: true
+      credentials: ext:/scripts/ecr-login.sh
+      credsexpire: 6h
+      tagsortmode: none # ?
 
 authScripts:
   enabled: true
