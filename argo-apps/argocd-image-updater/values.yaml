@@ -25,28 +25,28 @@ extraEnvFrom:
 
 authScripts:
   enabled: true
-#  scripts:
-#    ecr-login.sh: |
-#      #!/bin/sh
-#
-#      # Save the original HOME directory
-#      #original_home=$HOME
-#
-#      # Set HOME to the /tmp directory for AWS CLI operations
-#      export HOME=/tmp
-#
-#      # Retrieve the authorization token from AWS ECR
-#      auth_token=$(aws ecr get-authorization-token --region us-east-1 --output text --query 'authorizationData[].authorizationToken')
-#
-#      # Decode the authorization token
-#      decoded_token=$(echo $auth_token | base64 -d)
-#
-#      # Extract username and password
-#      username=$(echo $decoded_token | cut -d: -f1)
-#      password=$(echo $decoded_token | cut -d: -f2)
-#
-#      # Output username and password
-#      echo "$username:$password"
-#
-#      # Restore the original HOME directory
-#      #export HOME=$original_home
+  scripts:
+    ecr-login.sh: |
+      #!/bin/sh
+
+      # Save the original HOME directory
+      #original_home=$HOME
+
+      # Set HOME to the /tmp directory for AWS CLI operations
+      export HOME=/tmp
+
+      # Retrieve the authorization token from AWS ECR
+      auth_token=$(aws ecr get-authorization-token --region us-east-1 --output text --query 'authorizationData[].authorizationToken')
+
+      # Decode the authorization token
+      decoded_token=$(echo $auth_token | base64 -d)
+
+      # Extract username and password
+      username=$(echo $decoded_token | cut -d: -f1)
+      password=$(echo $decoded_token | cut -d: -f2)
+
+      # Output username and password
+      echo "$username:$password"
+
+      # Restore the original HOME directory
+      #export HOME=$original_home
