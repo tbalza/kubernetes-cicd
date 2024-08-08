@@ -17,14 +17,7 @@ spec:
         - /bin/sh
         - -c
         - |
-          kubectl patch application "django" \
-            -p '{"metadata":{"annotations":{\
-            "argocd-image-updater.argoproj.io/image-list":"350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production", \
-            "argocd-image-updater.argoproj.io/django.update-strategy":"newest-build", \
-            "argocd-image-updater.argoproj.io/django.kustomize.image-name":"django-production-kustomize", \
-            "argocd-image-updater.argoproj.io/write-back-method":"git:secret:argocd/argocd-secrets", \
-            "argocd-image-updater.argoproj.io/write-back-target":"kustomization", \
-            "argocd-image-updater.argoproj.io/git-branch":"main", \
-            "argocd-image-updater.argoproj.io/refresh":"hard"\
-            }}}'
+          kubectl patch application "django" -n argocd \
+            -p '{"metadata":{"annotations":{"argocd-image-updater.argoproj.io/image-list":"350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"}}}'
       restartPolicy: Never
+
