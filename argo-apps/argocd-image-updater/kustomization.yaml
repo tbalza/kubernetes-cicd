@@ -15,19 +15,20 @@ helmCharts:
 resources:
   - rbac.yaml
   - secrets.yaml
+  - serviceaccount.yaml
 
 # Apply patch to add serviceaccount annotation (adding manifest as resource does not work with this chart currently)
 patches:
-  - target:
-      group: ""
-      version: v1
-      kind: ServiceAccount
-      name: argocd-image-updater
-      namespace: argocd
-    patch: |-
-      - op: add
-        path: /metadata/annotations/eks.amazonaws.com~1role-arn
-        value: 'arn:aws:iam::${ARGOCD_AWS_ACCOUNT}:role/ImageUpdaterRole'
+#  - target:
+#      group: ""
+#      version: v1
+#      kind: ServiceAccount
+#      name: argocd-image-updater
+#      namespace: argocd
+#    patch: |-
+#      - op: add
+#        path: /metadata/annotations/eks.amazonaws.com~1role-arn
+#        value: 'arn:aws:iam::${ARGOCD_AWS_ACCOUNT}:role/ImageUpdaterRole'
   - path: config.yaml
     target:
       group: ""
