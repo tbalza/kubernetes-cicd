@@ -17,7 +17,7 @@ spec:
         - /bin/sh
         - -c
         - |
-          kubectl patch application "specific-application-name" \
+          kubectl patch application "django" \
             -p '{"metadata":{"annotations":{\
             "argocd-image-updater.argoproj.io/image-list":"350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production", \
             "argocd-image-updater.argoproj.io/django.update-strategy":"newest-build", \
