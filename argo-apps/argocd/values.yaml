@@ -1,8 +1,3 @@
-#controller:
-#  serviceAccount:
-#    annotations:
-#      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # 350206045032 # `argocd-application-controller` assigned to argocd-secrets-global right now
-
 crds:
   keep: false # check # Keep CRDs on chart uninstall
 
@@ -13,8 +8,8 @@ global:
   nodeSelector:
     role: ci-cd
 
-configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ busybox? https://github.com/crumbhole/argocd-lovely-plugin
-#  cm:
+configs:
+#  cm: # needed if not using plugin
 #    kustomize.buildOptions: "--load-restrictor LoadRestrictionsNone --enable-helm" # Enable Kustomize to install helm charts
   params:
     server.insecure: true # necessary when SSL termination is handled by ALB
@@ -31,50 +26,21 @@ configs: # use `lovely-plugin` for envsubst instead of injecting envsubst w/ bus
               AVAILABLE_VARS=$(env | cut -d "=" -f 1 | awk '{print "$"$1}' | tr "\n" " ")
               kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
         preserveFileMode: true # by default cmp resets file mode
-#        discover:
-#          glob: "**/*.yaml"
         allowConcurrency: true
-#  cm: # health assessment needs to be manually added for syncwave to work since 1.8. https://argo-cd.readthedocs.io/en/stable/operator-manual/health/
-#    resource.customizations: |
-#      argoproj.io/Application:
-#        health.lua: |
-#          hs = {}
-#          hs.status = "Progressing"
-#          hs.message = ""
-#          if obj.status ~= nil then
-#            if obj.status.health ~= nil then
-#              hs.status = obj.status.health.status
-#              if obj.status.health.message ~= nil then
-#                hs.message = obj.status.health.message
-#              end
-#            end
-#          end
-#          return hs
 
 server: # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
   ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
     enabled: false # true
-#  readinessProbe:
-#    initialDelaySeconds: 60
-#  livenessProbe:
-#    initialDelaySeconds: 60
 
 applicationSet:
   enabled: true
   nodeSelector:
     role: ci-cd
-#  serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
-#    annotations:
-#      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
 
 dex:
   enabled: false # This is for SSO
 
 repoServer:
-#  serviceAccount: # this serviceAccount would be used by `repocreds`, image updater is set in another values.yaml (inside image-updater)
-#    name: "argo-cd-argocd-repo-server" # argo-cd-argocd-repo-server # argo-cd-argocd-repo-server
-#    annotations:
-#      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDrepoRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
   rbac: # check. when restricting, remember restart for deployment argo-cd-argocd-repo-server must be allowed (for the job, that restarts and allows for env to be loaded)
      - apiGroups:
        - "*"
@@ -83,9 +49,6 @@ repoServer:
        verbs:
        - "*"
 
-#  podLabels: # label used to restart repo server with job
-#    app.kubernetes.io/custom: argocd-repo-server # ?
-
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
     - name: substitution
       command: [ "/bin/sh", "-c" ]
@@ -93,9 +56,6 @@ repoServer:
         - secretRef:
             name: argocd-secrets-global
             optional: true
-#        - configMapRef: # secrets were used to test if it all worked. after determining repo server/redit restart was needed this should work. delete secretRef if successful
-#            name: global-variables # pending. check rbac, restrict accordingly
-#            optional: true
       args:
         - |
           /var/run/argocd/argocd-cmp-server
@@ -114,9 +74,6 @@ repoServer:
           name: argocd-cmp-cm
         - mountPath: /tmp
           name: cmp-tmp
-##        - mountPath: /usr/local/bin/ # envsubst # /usr/local/bin/envsubst # read only dirs from quay.io/argoproj/argocd using tmp for now
-##          name: custom-tools
-##          subPath: envsubst
 
   volumes: # only the shared-bin(envsubst) needs to be defined as additional mount
     - name: argocd-cmp-cm
@@ -124,28 +81,3 @@ repoServer:
         name: argocd-cmp-cm
     - name: cmp-tmp # scratch space for any temporary processing
       emptyDir: {}
-
-##    - name: custom-tools # envsubst
-##      emptyDir: {}
-#  initContainers: # # envsubst
-#    - name: get-env
-#      envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
-#        - secretRef:
-#            name: argocd-secrets-global
-#            optional: true
-#      image: alpine:latest # tbalza/envsubst:latest
-#      securityContext:
-#        runAsNonRoot: true
-#        runAsUser: 999 # required for envsubst to be executed in extra container by correct argocd user
-#      command: ["/bin/sh", "-c"] # # /tmp/envsubst # - "cp envsubst /tmp/envsubst && chmod a+x /tmp/envsubst" # && chmod a+x /custom-tools/envsubst
-#      args: # PATH=/tmp:$PATH
-#        - |
-#          wget -qO- https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64 > /tmp/envsubst
-#      volumeMounts:
-#        - mountPath: /custom-tools # /tmp # /custom-tools
-#          name: custom-tools # custom-tools
-
-#redisSecretInit:
-#  serviceAccount:
-#    annotations:
-#      eks.amazonaws.com/role-arn: "arn:aws:iam::350206045032:role/ArgoCDRole" # `argocd-application-controller` assigned to argocd-secrets-global right now
