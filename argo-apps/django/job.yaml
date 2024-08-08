@@ -1,25 +1,30 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: restart-django-secrets
-  namespace: django
+  name: post-sync-annotations-job
   annotations:
-    argocd.argoproj.io/hook: PostSync  # PostSync #
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded  # This will clean up the Job after successful execution
-    #argocd.argoproj.io/sync-wave: "2" #
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
-  #backoffLimit: 2
   template:
     spec:
       serviceAccountName: argocd-image-updater
       containers:
-      - name: kubectl-restart
+      - name: kubectl
         image: bitnami/kubectl:latest
         imagePullPolicy: IfNotPresent
-        command: # kubectl annotate es django-secrets force-sync=$(date +%s) --overwrite -n django # kubectl annotate es jenkins-secrets force-sync=$(date +%s) --overwrite -n jenkins
+        command:
         - /bin/sh
         - -c
         - |
-          kubectl delete secretstore django-secrets -n django;
-          kubectl delete externalsecret django-secrets -n django;;
+          kubectl patch application "specific-application-name" \
+            -p '{"metadata":{"annotations":{\
+            "argocd-image-updater.argoproj.io/image-list":"350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production", \
+            "argocd-image-updater.argoproj.io/django.update-strategy":"newest-build", \
+            "argocd-image-updater.argoproj.io/django.kustomize.image-name":"django-production-kustomize", \
+            "argocd-image-updater.argoproj.io/write-back-method":"git:secret:argocd/argocd-secrets", \
+            "argocd-image-updater.argoproj.io/write-back-target":"kustomization", \
+            "argocd-image-updater.argoproj.io/git-branch":"main", \
+            "argocd-image-updater.argoproj.io/refresh":"hard"\
+            }}}'
       restartPolicy: Never
