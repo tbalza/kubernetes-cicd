@@ -28,3 +28,10 @@ patches:
       - op: add
         path: /metadata/annotations/eks.amazonaws.com~1role-arn
         value: 'arn:aws:iam::${ARGOCD_AWS_ACCOUNT}:role/ImageUpdaterRole'
+  - path: config.yaml
+    target:
+      group: ""
+      version: v1
+      kind: ConfigMap
+      name: argocd-image-updater-config
+      namespace: argocd
