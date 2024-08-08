@@ -14,10 +14,10 @@ spec:
         image: bitnami/kubectl:latest
         imagePullPolicy: IfNotPresent
         command:
-        - /bin/sh
-        - -c
-        - |
-          kubectl patch application "django" -n argocd \
-            -p '{"metadata":{"annotations":{"argocd-image-updater.argoproj.io/image-list":"350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"}}}'
+          - /bin/sh
+          - -c
+          - |
+            kubectl patch application "django" -n argocd --type=merge \
+              -p '{"metadata":{"annotations":{"argocd-image-updater.argoproj.io/image-list":"350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production"}}}'
       restartPolicy: Never
 
