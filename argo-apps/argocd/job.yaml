@@ -1,3 +1,4 @@
+## Reset repo server and redis, in order for EnvFrom to take effect inside the plugin container (that contains envsubst). ${variable} substitutions currently fail without this
 apiVersion: batch/v1
 kind: Job
 metadata:

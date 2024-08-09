@@ -9,15 +9,15 @@ spec:
   generators:
     - git:
         repoURL: https://github.com/tbalza/kubernetes-cicd.git # git@github.com:tbalza/kubernetes-cicd.git
-        revision: HEAD # branch for git write back?
+        revision: HEAD # Branch for git write back? # check
         directories:
           - path: argo-apps/* # argo-apps/*
   strategy:
-    type: RollingSync # this is to have ArgoCD envsubst plugin, image updater, and restart job that makes env available. sync before the rest of the apps
+    type: RollingSync # This is to have ArgoCD envsubst plugin, image updater, and restart job that makes env available. sync before the rest of the apps
     rollingSync:
-      steps: # these are executed sequentially from top to bottom. everything that is argocd first, then everything that is not argocd at the same time
+      steps: # These are executed sequentially from top to bottom. Everything that is labeled `syncorder=argocd` first, then everything that is not `argocd` (NotIn operator) at the same time
         - matchExpressions:
-            - key: syncorder # label "type" defined in appset template
+            - key: syncorder # Label "type" defined in appset template
               operator: In
               values:
                 - argocd
@@ -30,9 +30,9 @@ spec:
     metadata:
       name: '{{.path.basename}}'
       labels:
-        syncorder: '{{.path.basename}}' # label for rollingSync matchExpressions
-      annotations: # image list has `app name` prepended before an `=` (django) and the ecr repo. corresponding annotations are prepended with the same app name (django.xxx)
-#        argocd-image-updater.argoproj.io/image-list: "$ARGOCD_AWS_ECR_REPO/django-production" # argocd, cmp, image updater, are not streamlined to work together. this substitution is abstracted with a job
+        syncorder: '{{.path.basename}}' # Label for rollingSync matchExpressions
+      annotations: # Image list has `app name` prepended before an `=` (django) and the ecr repo. corresponding annotations are prepended with the same app name (django.xxx)
+#        argocd-image-updater.argoproj.io/image-list: "$ARGOCD_AWS_ECR_REPO/django-production" # This substitution is abstracted with /django/job.yaml, argocd, cmp, image updater, are not streamlined to work together.
         argocd-image-updater.argoproj.io/django.update-strategy: "newest-build" # digest # "newest-build" # sem ver
         argocd-image-updater.argoproj.io/django.kustomize.image-name: django-production-kustomize
         argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-secrets # secret:<namespace>/<secret> # <secret> refers to ExternalSecret name not they key. (must contain keys `username` `password`)
@@ -72,6 +72,6 @@ spec:
         - ServerSideDiff=true
         - RespectIgnoreDifferences=true # (custom diffing) fixes syncing error: .status.lastPhaseTransitionTime: field not declared in schema (related to django PV)
   ignoreApplicationDifferences:
-    - name: "django"  # workaround to abstract annotation outside appset and allow cmp substitution # job.yaml
+    - name: "django"  # workaround to abstract annotation outside appset and allow cmp substitution # see /django/job.yaml
       jsonPointers:
         - /metadata/annotations/argocd-image-updater.argoproj.io~1image-list

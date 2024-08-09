@@ -1,3 +1,6 @@
+## Part of ArgoCD Image Updater configuration
+## Adds annotation outside ApplicationSet, since it doesn't allow ${ARGOCD_AWS_ECR_REPO} replacement
+## See /argocd/applicationset.yaml `ignoreApplicationDifferences` definition also required for this workaround
 apiVersion: batch/v1
 kind: Job
 metadata:

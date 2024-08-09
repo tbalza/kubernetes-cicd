@@ -1,5 +1,5 @@
 crds:
-  keep: false # check # Keep CRDs on chart uninstall
+  keep: false # Delete CRDs on chart uninstall
 
 global:
   domain: argocd.tbalza.net # Used for ingresses, certificates, SSO, notifications, etc. (blank allows all domains) # check if it can be replaced by ingress
@@ -9,13 +9,13 @@ global:
     role: ci-cd
 
 configs:
-#  cm: # needed if not using plugin
+#  cm: # Needed if not using plugin
 #    kustomize.buildOptions: "--load-restrictor LoadRestrictionsNone --enable-helm" # Enable Kustomize to install helm charts
   params:
-    server.insecure: true # necessary when SSL termination is handled by ALB
+    server.insecure: true # Necessary when SSL termination is handled by ALB
     applicationsetcontroller.enable.progressive.syncs: true # ApplicationSet compatible with Progressive Syncs. (SyncWave must use app of apps)
-    applicationsetcontroller.default.application.progressing.timeout: 600 # when using rollingSync, prevent sync timeout error with kube prometheus stack (default 300 seconds)
-  cmp: # argocd cmp "env substitution" plugin. needed since kustomize can't retrieve remote values (env/secrets/configmaps) for its own installation (only for resulting pods etc.)
+    applicationsetcontroller.default.application.progressing.timeout: 600 # When using rollingSync, prevent sync timeout error with kube prometheus stack (default 300 seconds)
+  cmp: # ArgoCD cmp "env substitution" plugin. Needed since kustomize can't retrieve remote values (env/secrets/configmaps) for its own installation (only for resulting pods etc.)
     create: true
     plugins: # Plugin yaml files to be added to argocd-cmp-cm
       substitution:
@@ -28,14 +28,14 @@ configs:
         preserveFileMode: true # by default cmp resets file mode
         allowConcurrency: true
 
-server: # kustomize build --load-restrictor LoadRestrictionsNone --enable-helm | envsubst "$AVAILABLE_VARS"
-  ingress: # working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
-    enabled: false # true
+server:
+  ingress: # Working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
+    enabled: false # Configured with ingress.yaml
 
 applicationSet:
   enabled: true
-  nodeSelector:
-    role: ci-cd
+#  nodeSelector:
+#    role: ci-cd
 
 dex:
   enabled: false # This is for SSO

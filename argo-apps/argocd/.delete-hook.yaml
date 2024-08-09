@@ -8,7 +8,7 @@ spec:
   template:
     metadata:
       annotations:
-        "eks.amazonaws.com/role-arn": "arn:aws:iam::350206045032:role/ArgoCDRole"  # Role with permissions to manage resources
+        "eks.amazonaws.com/role-arn": "arn:aws:iam::${ARGOCD_AWS_ACCOUNT}:role/ArgoCDRole"  # Role with permissions to manage resources
     spec:
       serviceAccountName: argocd  # Assuming this account is linked to the necessary IAM role
       restartPolicy: Never

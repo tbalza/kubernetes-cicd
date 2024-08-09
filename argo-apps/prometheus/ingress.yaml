@@ -13,12 +13,12 @@ metadata:
     alb.ingress.kubernetes.io/healthcheck-path: "/login"
     alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
     alb.ingress.kubernetes.io/success-codes: "200"
-    external-dns.alpha.kubernetes.io/hostname: grafana.tbalza.net
+    external-dns.alpha.kubernetes.io/hostname: grafana.${ARGOCD_APP_DOMAIN}
 
 spec:
   ingressClassName: alb
   rules:
-  - host: grafana.tbalza.net
+  - host: grafana.${ARGOCD_APP_DOMAIN}
     http:
       paths:
       - path: /

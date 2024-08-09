@@ -171,6 +171,7 @@ locals {
 ## ArgoCD ImageUpdater Github App Token
 ## must be set before tf apply
 # export TF_VAR_ARGOCD_GITHUB_TOKEN=123example
+# or just use terraform.tfvars
 ## Import environment variables as TF variable
 variable "ARGOCD_GITHUB_TOKEN" {
   description = "ArgoCD Image Updater Github Personal Token"

@@ -5,7 +5,7 @@ FROM alpine:latest
 ENV KUSTOMIZE_VERSION="4.5.7"
 ENV HELM_VERSION="3.9.0"
 
-# Install required packages
+# Install required envsubst
 RUN apk add --no-cache curl gettext tar gzip
 
 # Install kustomize
@@ -18,8 +18,6 @@ RUN curl -L "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" | \
     mv /tmp/linux-amd64/helm /usr/local/bin/helm && \
     rm -rf /tmp/linux-amd64
 
-# Install envsubst from gettext package (already installed)
-
 # Add a non-root user 'argocd' and create home directory
 RUN adduser -D argocd
 
@@ -29,5 +27,5 @@ USER argocd
 # Set the working directory
 WORKDIR /home/argocd
 
-# Command to keep the container running
+# Command to keep the container running # check
 CMD ["tail", "-f", "/dev/null"]

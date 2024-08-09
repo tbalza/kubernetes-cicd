@@ -28,11 +28,11 @@ spec:
 #              command: [ "mysql", "-h", "127.0.0.1", "-e", "SELECT 1" ]
 #            initialDelaySeconds: 12
 #            periodSeconds: 10
-          image: django-production-kustomize # django-production:latest # pending . ESO # will be replaced by kustomize?
+          image: django-production-kustomize # defined in kustomization.yaml, dynamically updated by ArgoCD image updater
           imagePullPolicy: Always
-          envFrom: # this loads all the secrets as ENV variables
+          envFrom: # This loads all the secrets as ENV variables
             - secretRef:
-                name: django-secrets # Reference the ExternalSecret name
+                name: django-secrets # ExternalSecret name (not keys)
           ports:
             - containerPort: 8000 # Match the port exposed in your Dockerfile (django)
           volumeMounts:
