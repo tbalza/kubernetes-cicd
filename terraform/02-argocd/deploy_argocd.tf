@@ -115,7 +115,7 @@ resource "helm_release" "argo_cd" {
 }
 
 ## ArgoCD apply ApplicationSet
-## Uses directory generator to dynamically create argo-apps in subfolders
+## Uses directory generator to dynamically create argo-apps in subdirectories
 ## Kustomize uses helmChart for 3rd party charts with local repo overrides (values.yaml) and load additional k8s manifests
 
 resource "kubectl_manifest" "example_applicationset" {
