@@ -51,7 +51,7 @@ repoServer:
   envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
     - secretRef:
         name: argocd-secrets-global
-        optional: true
+        optional: false
 
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
     - name: substitution
