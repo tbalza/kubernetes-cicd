@@ -41,10 +41,10 @@ dex:
   enabled: false # This is for SSO
 
 redis:
-#  envFrom:
-#    - secretRef:
-#        name: argocd-secrets-global
-#        optional: true
+  envFrom:
+    - secretRef:
+        name: argocd-secrets-global
+        optional: true
   extraContainers: # extraContainers:
     - name: redis-reset
       command: [ "/bin/sh", "-c" ]
