@@ -13,13 +13,13 @@ spec:
         repoURL: https://github.com/tbalza/kubernetes-cicd.git # git@github.com:tbalza/kubernetes-cicd.git
         revision: HEAD # Branch for git write back? # check
         directories:
-          - path: argo-apps/* # argo-apps/*
+          - path: argo-apps/*
   strategy:
-    type: RollingSync # This is to have ArgoCD envsubst plugin, image updater, and restart job that makes env available. sync before the rest of the apps
+    type: RollingSync # Sync ArgoCD first (along with envsubst plugin and restart job that makes env available). Afterward, sync the rest of the apps so that env substitution works
     rollingSync:
       steps: # These are executed sequentially from top to bottom. Everything that is labeled `syncorder=argocd` first, then everything that is not `argocd` (NotIn operator) at the same time
         - matchExpressions:
-            - key: syncorder # Label "type" defined in appset template
+            - key: syncorder # Label defined in appset template:,metadata:,labels:
               operator: In
               values:
                 - argocd
@@ -33,15 +33,15 @@ spec:
       name: '{{.path.basename}}'
       labels:
         syncorder: '{{.path.basename}}' # Label for rollingSync matchExpressions
-      annotations: # Image list has `app name` prepended before an `=` (django) and the ecr repo. corresponding annotations are prepended with the same app name (django.xxx)
-#        argocd-image-updater.argoproj.io/image-list: "$ARGOCD_AWS_ECR_REPO/django-production" # This substitution is abstracted with /django/job.yaml, argocd, cmp, image updater, are not streamlined to work together.
+      annotations: # Image list has `app name` prepended before an `=` (django) and the ecr repo. Corresponding annotations are prepended with the same app name (django.xxx)
+#        argocd-image-updater.argoproj.io/image-list: "$ARGOCD_AWS_ECR_REPO/django-production" # This substitution is abstracted with /django/job.yaml, argocd, cmp, image updater, are not streamlined to work together
         argocd-image-updater.argoproj.io/image-list: django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production
         #argocd-image-updater.argoproj.io/django.force-update: "true"
         argocd-image-updater.argoproj.io/django.update-strategy: "newest-build" # digest # "newest-build" # sem ver
         argocd-image-updater.argoproj.io/django.kustomize.image-name: django-production-kustomize
         argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-secrets # secret:<namespace>/<secret> # <secret> refers to ExternalSecret name not they key. (must contain keys `username` `password`)
         argocd-image-updater.argoproj.io/write-back-target: kustomization
-        argocd-image-updater.argoproj.io/git-branch: main # where the git writeback will be created
+        argocd-image-updater.argoproj.io/git-branch: main # Where the git writeback will be created
         argocd-image-updater.argoproj.io/refresh: hard
     spec:
       project: "default"
