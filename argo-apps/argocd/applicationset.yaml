@@ -4,8 +4,8 @@ metadata:
   name: cluster-addons
   namespace: argocd
 spec:
-  preservedFields:
-    annotations: ["argocd-image-updater.argoproj.io/image-list"]
+#  preservedFields:
+#    annotations: ["argocd-image-updater.argoproj.io/image-list"]
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   generators:
