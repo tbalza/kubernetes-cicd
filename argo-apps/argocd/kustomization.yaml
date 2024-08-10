@@ -18,7 +18,7 @@ resources:
   - secrets2.yaml
   - ingress.yaml
   - rbac.yaml
-  - init-container.yaml
+#  - init-container.yaml
 #  - serviceaccount.yaml
 #  - applicationset.yaml
 
