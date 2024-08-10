@@ -1,3 +1,9 @@
+controller:
+  envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
+    - secretRef:
+        name: argocd-secrets-global
+        optional: true
+
 crds:
   keep: false # Delete CRDs on chart uninstall
 
@@ -31,11 +37,19 @@ configs:
 server:
   ingress: # Working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
     enabled: false # Configured with ingress.yaml
+  envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
+    - secretRef:
+        name: argocd-secrets-global
+        optional: true
 
 applicationSet:
   enabled: true
 #  nodeSelector:
 #    role: ci-cd
+  envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
+    - secretRef:
+        name: argocd-secrets-global
+        optional: true
 
 dex:
   enabled: false # This is for SSO
