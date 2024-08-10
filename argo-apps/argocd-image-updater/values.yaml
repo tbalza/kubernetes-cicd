@@ -10,6 +10,9 @@ extraEnvFrom:
    - secretRef:
        name: argocd-secrets
 
+config:
+  applicationsAPIKind: "kubernetes"
+
 authScripts:
   enabled: true
   scripts:
