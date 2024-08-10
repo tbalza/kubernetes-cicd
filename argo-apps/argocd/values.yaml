@@ -45,6 +45,8 @@ redis:
     - secretRef:
         name: argocd-secrets-global
         optional: true
+  serviceAccount:
+    name: "argo-cd-argocd-repo-server"
 
 repoServer:
   rbac: # check. when restricting, remember restart for deployment argo-cd-argocd-repo-server must be allowed (for the job, that restarts and allows for env to be loaded)
