@@ -40,6 +40,12 @@ applicationSet:
 dex:
   enabled: false # This is for SSO
 
+redis:
+  envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
+    - secretRef:
+        name: argocd-secrets-global
+        optional: true
+
 repoServer:
   rbac: # check. when restricting, remember restart for deployment argo-cd-argocd-repo-server must be allowed (for the job, that restarts and allows for env to be loaded)
      - apiGroups:
