@@ -5,11 +5,8 @@ metadata:
   namespace: argocd
 spec:
   preservedFields:
-    #annotations: ["argocd-image-updater.argoproj.io/image-list"]
     annotations:
-      - "argocd-image-updater.argoproj.io/image-list"
-#      - "argocd-image-updater.argoproj.io/django.update-strategy"
-#      - "argocd-image-updater.argoproj.io/django.kustomize.image-name"
+      - "argocd-image-updater.argoproj.io/image-list" # workaround to abstract annotation outside appset and allow cmp substitution # see /django/job.yaml
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   generators:
@@ -38,9 +35,7 @@ spec:
       labels:
         syncorder: '{{.path.basename}}' # Label for rollingSync matchExpressions
       annotations: # Image list has `app name` prepended before an `=` (django) and the ecr repo. Corresponding annotations are prepended with the same app name (django.xxx)
-        #argocd-image-updater.argoproj.io/image-list: "$ARGOCD_AWS_ECR_REPO/django-production" # This substitution is abstracted with /django/job.yaml, argocd, cmp, image updater, are not streamlined to work together
-        #argocd-image-updater.argoproj.io/image-list: django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production
-        #argocd-image-updater.argoproj.io/django.force-update: "true"
+        #argocd-image-updater.argoproj.io/image-list: "django=$ARGOCD_AWS_ECR_REPO/django-production" # This substitution is abstracted with /django/job.yaml, argocd, cmp, image updater, are not streamlined to work together
         argocd-image-updater.argoproj.io/django.update-strategy: "newest-build"
         argocd-image-updater.argoproj.io/django.kustomize.image-name: django-production-kustomize
         argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-secrets # secret:<namespace>/<secret> # <secret> refers to ExternalSecret name not they key. (must contain keys `username` `password`)
@@ -79,7 +74,3 @@ spec:
         - ServerSideApply=true
         - ServerSideDiff=true
         - RespectIgnoreDifferences=true # (custom diffing) fixes syncing error: .status.lastPhaseTransitionTime: field not declared in schema (related to django PV)
-#  ignoreApplicationDifferences:
-#    - name: "django"  # workaround to abstract annotation outside appset and allow cmp substitution # see /django/job.yaml
-#      jsonPointers:
-#        - /metadata/annotations/argocd-image-updater.argoproj.io~1image-list
