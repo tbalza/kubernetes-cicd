@@ -45,13 +45,12 @@ redis:
 #    - secretRef:
 #        name: argocd-secrets-global
 #        optional: true
-  initContainers: # extraContainers:
+  extraContainers: # extraContainers:
     - name: redis-reset
       command: [ "/bin/sh", "-c" ]
       args:
         - |
-          sleep 5
-          kill -9 1
+          echo hello
       image: bitnami/kubectl:latest
 
 repoServer:
