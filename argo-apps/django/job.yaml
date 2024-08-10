@@ -6,7 +6,7 @@ kind: Job
 metadata:
   name: post-sync-annotations-job
   annotations:
-    argocd.argoproj.io/hook: PreSync # PreSync
+    argocd.argoproj.io/hook: PostSync # PreSync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
   template:
