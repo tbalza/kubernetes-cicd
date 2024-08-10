@@ -21,6 +21,9 @@ spec:
           - -c
           - |
             kubectl patch application "django" -n argocd --type=merge \
-            -p '{"metadata":{"annotations":{"argocd-image-updater.argoproj.io/image-list":"${ARGOCD_AWS_ECR_REPO}/django-production"}}}'
+            -p '{"metadata":{"annotations":{ \
+                                    "argocd-image-updater.argoproj.io/image-list":"${ARGOCD_AWS_ECR_REPO}/django-production", \
+                                    "argocd-image-updater.argoproj.io/django.update-strategy":"newest-build", \
+                                    "argocd-image-updater.argoproj.io/django.kustomize.image-name":"django-production-kustomize"}}}'
       restartPolicy: Never
 
