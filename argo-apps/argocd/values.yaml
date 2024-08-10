@@ -45,7 +45,7 @@ redis:
 #    - secretRef:
 #        name: argocd-secrets-global
 #        optional: true
-  extraContainers:
+  initContainers: # extraContainers:
     - name: redis-reset
       command: [ "/bin/sh", "-c" ]
       args:
