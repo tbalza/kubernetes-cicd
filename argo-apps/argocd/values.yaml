@@ -36,10 +36,6 @@ applicationSet:
   enabled: true
 #  nodeSelector:
 #    role: ci-cd
-  envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
-    - secretRef:
-        name: argocd-secrets-global
-        optional: true
 
 dex:
   enabled: false # This is for SSO
