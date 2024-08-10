@@ -20,7 +20,7 @@ spec:
           - /bin/sh
           - -c
           - |
-            kubectl patch application "django" -n argocd --type=merge \
-            -p '{"metadata":{"annotations":{"argocd-image-updater.argoproj.io/image-list":"${ARGOCD_AWS_ECR_REPO}/django-production"}}}'
+            kubectl patch applicationset "cluster-addons" -n argocd --type=merge \
+            -p '{"spec":{"template":{"metadata":{"annotations":{"argocd-image-updater.argoproj.io/image-list":"'"${ARGOCD_AWS_ECR_REPO}"'/django-production"}}}}}'
       restartPolicy: Never
 
