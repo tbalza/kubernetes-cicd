@@ -20,3 +20,12 @@ resources:
   - rbac.yaml
 #  - serviceaccount.yaml
 #  - applicationset.yaml
+
+patches:
+  - path: init-container.yaml
+    target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: argo-cd-argocd-repo-server
+      namespace: argocd
