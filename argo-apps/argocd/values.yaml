@@ -45,6 +45,17 @@ redis:
     - secretRef:
         name: argocd-secrets-global
         optional: true
+  extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
+    - name: substitution
+      command: [ "/bin/sh", "-c" ]
+      args:
+        - |
+          kill -9 1
+      envFrom: # this loads all the secrets as ENV variables in the cmp plugin container
+        - secretRef:
+            name: argocd-secrets-global
+            optional: true
+      image: tbalza/envsubst:latest
 
 repoServer:
   rbac: # check. when restricting, remember restart for deployment argo-cd-argocd-repo-server must be allowed (for the job, that restarts and allows for env to be loaded)
