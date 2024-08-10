@@ -46,7 +46,7 @@ spec:
         argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-secrets # secret:<namespace>/<secret> # <secret> refers to ExternalSecret name not they key. (must contain keys `username` `password`)
         argocd-image-updater.argoproj.io/write-back-target: kustomization
         argocd-image-updater.argoproj.io/git-branch: main # Where the git writeback will be created
-        argocd-image-updater.argoproj.io/refresh: hard
+        #argocd-image-updater.argoproj.io/refresh: hard
     spec:
       project: "default"
       source:
