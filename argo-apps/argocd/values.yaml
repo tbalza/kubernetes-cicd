@@ -51,7 +51,7 @@ redis:
       args:
         - |
           echo hello
-      image: bitnami/kubectl:latest
+      image: quay.io/argoproj/argocd
 
 repoServer:
   rbac: # check. when restricting, remember restart for deployment argo-cd-argocd-repo-server must be allowed (for the job, that restarts and allows for env to be loaded)
