@@ -41,15 +41,16 @@ dex:
   enabled: false # This is for SSO
 
 redis:
-  envFrom:
-    - secretRef:
-        name: argocd-secrets-global
-        optional: true
-  extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
+#  envFrom:
+#    - secretRef:
+#        name: argocd-secrets-global
+#        optional: true
+  extraContainers:
     - name: redis-reset
       command: [ "/bin/sh", "-c" ]
       args:
         - |
+          sleep 5
           kill -9 1
       image: bitnami/kubectl:latest
 
