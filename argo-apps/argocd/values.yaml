@@ -51,7 +51,7 @@ dex:
 #      args:
 #        - |
 #          echo hello
-#      image: quay.io/argoproj/argocd
+#      image: redis:7.2.4-alpine
 #      securityContext:
 #        runAsNonRoot: true
 #        runAsUser: 999
