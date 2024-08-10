@@ -52,6 +52,10 @@ redis:
         - |
           echo hello
       image: quay.io/argoproj/argocd
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        allowPrivilegeEscalation: true
 
 repoServer:
   rbac: # check. when restricting, remember restart for deployment argo-cd-argocd-repo-server must be allowed (for the job, that restarts and allows for env to be loaded)
