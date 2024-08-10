@@ -4,6 +4,8 @@ metadata:
   name: cluster-addons
   namespace: argocd
 spec:
+  preservedFields:
+    annotations: ["argocd-image-updater.argoproj.io/image-list"]
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   generators:
@@ -34,6 +36,7 @@ spec:
       annotations: # Image list has `app name` prepended before an `=` (django) and the ecr repo. corresponding annotations are prepended with the same app name (django.xxx)
 #        argocd-image-updater.argoproj.io/image-list: "$ARGOCD_AWS_ECR_REPO/django-production" # This substitution is abstracted with /django/job.yaml, argocd, cmp, image updater, are not streamlined to work together.
         argocd-image-updater.argoproj.io/image-list: django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production
+        #argocd-image-updater.argoproj.io/django.force-update: "true"
         argocd-image-updater.argoproj.io/django.update-strategy: "newest-build" # digest # "newest-build" # sem ver
         argocd-image-updater.argoproj.io/django.kustomize.image-name: django-production-kustomize
         argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-secrets # secret:<namespace>/<secret> # <secret> refers to ExternalSecret name not they key. (must contain keys `username` `password`)
