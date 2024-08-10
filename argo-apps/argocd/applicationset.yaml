@@ -38,8 +38,8 @@ spec:
       labels:
         syncorder: '{{.path.basename}}' # Label for rollingSync matchExpressions
       annotations: # Image list has `app name` prepended before an `=` (django) and the ecr repo. Corresponding annotations are prepended with the same app name (django.xxx)
-        argocd-image-updater.argoproj.io/image-list: "$ARGOCD_AWS_ECR_REPO/django-production" # This substitution is abstracted with /django/job.yaml, argocd, cmp, image updater, are not streamlined to work together
-        #argocd-image-updater.argoproj.io/image-list: django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production
+        #argocd-image-updater.argoproj.io/image-list: "$ARGOCD_AWS_ECR_REPO/django-production" # This substitution is abstracted with /django/job.yaml, argocd, cmp, image updater, are not streamlined to work together
+        argocd-image-updater.argoproj.io/image-list: django=350206045032.dkr.ecr.us-east-1.amazonaws.com/django-production
         #argocd-image-updater.argoproj.io/django.force-update: "true"
         argocd-image-updater.argoproj.io/django.update-strategy: "newest-build"
         argocd-image-updater.argoproj.io/django.kustomize.image-name: django-production-kustomize
