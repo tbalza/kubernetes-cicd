@@ -17,7 +17,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-  - host: argocd.${ARGOCD_APP_DOMAIN2}
+  - host: argocd.${ARGOCD_APP_DOMAIN2} #
     http:
       paths:
       - path: /
