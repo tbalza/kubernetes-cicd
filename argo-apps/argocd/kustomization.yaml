@@ -29,3 +29,5 @@ patches:
       kind: Deployment
       name: argo-cd-argocd-repo-server
       namespace: argocd
+    options:
+      patchType: merge
