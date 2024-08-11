@@ -7,7 +7,7 @@ metadata:
   annotations:
     argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
-    argocd.argoproj.io/sync-wave: "1"
+    #argocd.argoproj.io/sync-wave: "1"
 spec:
   template:
     spec:
@@ -21,7 +21,8 @@ spec:
         - -c
         - |
           sleep 15;
-          kubectl rollout restart deployment argo-cd-argocd-redis -n argocd
+          kubectl rollout restart deployment argo-cd-argocd-redis -n argocd;
+          Sleep 15;
       restartPolicy: Never
 # kubectl rollout restart deployment argo-cd-argocd-repo-server -n argocd;
 # kubectl rollout restart deployment argo-cd-argocd-applicationset-controller -n argocd
