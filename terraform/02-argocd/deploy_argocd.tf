@@ -84,16 +84,16 @@ resource "helm_release" "argo_cd" {
 
   create_namespace = true
 # "${tostring(data.terraform_remote_state.eks.outputs.ecr_repo_url)}"
-#  values = [file("../../${path.module}/argo-apps/argocd/values.yaml")]
-  values = [
-    file("../../${path.module}/argo-apps/argocd/values.yaml"),
-    <<-EOT
-    global:
-      env:
-        - name: ARGOCD_APP_DOMAIN2
-          value: "${data.terraform_remote_state.eks.outputs.argo_cd_aws_domain}"
-    EOT
-  ]
+  values = [file("../../${path.module}/argo-apps/argocd/values.yaml")]
+#  values = [
+#    file("../../${path.module}/argo-apps/argocd/values.yaml"),
+#    <<-EOT
+#    global:
+#      env:
+#        - name: ARGOCD_APP_DOMAIN2
+#          value: "${data.terraform_remote_state.eks.outputs.argo_cd_aws_domain}"
+#    EOT
+#  ]
 
 #  set { # used for ImageUpdater secrets. contains github credentials
 #    name  = "controller.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn" # annotation to allows service account to assume aws role
