@@ -34,8 +34,6 @@ server:
 
 applicationSet:
   enabled: true
-#  nodeSelector:
-#    role: ci-cd
 
 dex:
   enabled: false # This is for SSO
