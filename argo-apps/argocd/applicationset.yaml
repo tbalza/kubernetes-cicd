@@ -50,9 +50,6 @@ spec:
         path: '{{.path.path}}'
         plugin: # maybe disabling this allows for git writeback (instead of kustomization)? use discover instead? # image updater kustomization writeback ignores this
           name: substitution
-          env:
-            - name: ARGOCD_APP_DOMAIN
-              value: tbalza.net # $ARGOCD_APP_DOMAIN2
       destination:
         server: https://kubernetes.default.svc # pending make dynamic from repo files
         namespace: '{{.path.basename}}'
