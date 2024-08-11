@@ -22,7 +22,7 @@ spec:
         - |
           sleep 10;
           kubectl rollout restart deployment argo-cd-argocd-redis -n argocd;
-          Sleep 10
+          sleep 10
       restartPolicy: Never
 # kubectl rollout restart deployment argo-cd-argocd-repo-server -n argocd;
 # kubectl rollout restart deployment argo-cd-argocd-applicationset-controller -n argocd
