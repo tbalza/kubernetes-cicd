@@ -34,8 +34,8 @@ configs:
 server:
   ingress: # Working helm ingress with externalDNS as per https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd # no grpc warning errors
     enabled: false # Configured with ingress.yaml
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
+#  annotations:
+#    argocd.argoproj.io/sync-wave: "1"
 
 applicationSet:
   enabled: true
