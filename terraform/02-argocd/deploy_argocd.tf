@@ -90,7 +90,7 @@ resource "helm_release" "argo_cd" {
     <<-EOT
     global:
       env:
-        - name: ARGOCD_APP_DOMAIN
+        - name: ARGOCD_APP_DOMAIN2
           value: "${data.terraform_remote_state.eks.outputs.argo_cd_aws_domain}"
     EOT
   ]
