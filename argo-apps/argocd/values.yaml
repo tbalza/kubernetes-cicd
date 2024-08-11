@@ -69,7 +69,7 @@ repoServer:
   extraContainers: # all of this is default required installation params for cmp, only the plugin yaml name and envsubst need to be defined as additional mounts
     - name: substitution
       command: [ "/bin/sh", "-c" ]
-      args:
+      args: # restart argocd-cmp-server (via kill -9) for envFrom to become effective
         - |
           /var/run/argocd/argocd-cmp-server
           sleep 5

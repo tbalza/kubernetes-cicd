@@ -15,7 +15,7 @@ spec:
       - name: kubectl-restart
         image: bitnami/kubectl:latest
         imagePullPolicy: IfNotPresent
-        command:
+        command: # currently both repo server and redis need to be restarted for envFrom to take effect. Repo server restart is done in the plugin container
         - /bin/sh
         - -c
         - |
@@ -23,5 +23,4 @@ spec:
       restartPolicy: Never
 # kubectl rollout restart deployment argo-cd-argocd-repo-server -n argocd;
 # kubectl rollout restart deployment argo-cd-argocd-applicationset-controller -n argocd
-# argo-cd-argocd-server
 # kubectl rollout restart deployment argo-cd-argocd-server -n argocd;
