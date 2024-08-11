@@ -20,7 +20,6 @@ spec:
         - /bin/sh
         - -c
         - |
-          sleep 10;
           kubectl rollout restart deployment argo-cd-argocd-redis -n argocd;
           sleep 10
       restartPolicy: Never
