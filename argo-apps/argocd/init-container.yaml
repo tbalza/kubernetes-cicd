@@ -7,7 +7,7 @@ spec:
   template:
     spec:
       initContainers:
-      - name: copyutil
+      - name: copyutil # copyutil
         envFrom:
         - secretRef:
             name: argocd-secrets-global
