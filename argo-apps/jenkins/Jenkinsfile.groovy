@@ -86,7 +86,7 @@ pipeline {
                 expression { env.BUILD_NEEDED == 'true' }
             }
             steps {
-                container('kaniko') {
+                container('kaniko') { // old repo file being loaded as configmap from another project?
                     sh """
                     /kaniko/executor --dockerfile /home/jenkins/agent/workspace/build-django/django-app/Dockerfile \
                                       --context /home/jenkins/agent/workspace/build-django/django-app/ \
